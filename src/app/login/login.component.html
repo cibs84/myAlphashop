@@ -1,0 +1,11 @@
+<div>
+  <label for="userId">Username:</label>
+  <input type="text" name="userId" id="userId" placeholder="Username" [(ngModel)]=userId>
+
+  <label for="password">Password:</label>
+  <input type="password" name="password" id="password" placeholder="Password" [(ngModel)]=password>
+
+  <button class="btn btn-primary" (click)=gestAuth()>Invio</button>
+</div>
+
+<div *ngIf="!autenticato">{{ errMsg }}</div>
