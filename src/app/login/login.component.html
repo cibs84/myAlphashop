@@ -1,12 +1,36 @@
+<!-- JumbotronComponent -->
 <app-jumbotron [titolo]="titolo" [sottotitolo]="sottotitolo"></app-jumbotron>
-<div>
-  <label for="userId">Username:</label>
-  <input type="text" name="userId" id="userId" placeholder="Username" [(ngModel)]=userId>
 
-  <label for="password">Password:</label>
-  <input type="password" name="password" id="password" placeholder="Password" [(ngModel)]=password>
+<!-- Form Login -->
+<section class="form-signin">
+  <form #f="ngForm" (ngSubmit)="gestAuth(f)">
+    <h1 class="h3 mb-3 fw-normal">Login</h1>
+    <div class="form-floating">
+      <input type="text" class="form-control"
+             id="username" name="username" placeholder="Username"
+             ngModel
+      >
+      <label for="username">Username</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control"
+             id="password" name="password" placeholder="Password"
+             ngModel
+      >
+      <label for="password">Password</label>
+    </div>
 
-  <button class="btn btn-primary" (click)=gestAuth()>Invio</button>
-</div>
+    <div class="my-3">
+      <label>
+        <a routerLink="recupero-password">Hai dimenticato la password?</a>
+      </label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary"
+            >Accedi</button>
 
-<div *ngIf="!autenticato">{{ errMsg }}</div>
+    <!-- Auth Failed - Error Message -->
+    <div *ngIf="!autenticato" class="alert alert-danger mt-4" role="alert">
+      {{ errMsg }}
+    </div>
+  </form>
+</section>

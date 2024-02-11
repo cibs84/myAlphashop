@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthappService } from '../services/authapp.service';
 
 @Component({
   selector: 'app-login',
@@ -11,23 +13,22 @@ export class LoginComponent implements OnInit {
   titolo: string = "Accesso & Autenticazione";
   sottotitolo: string = "Accedi oppure registrati";
 
-  userId: string = "";
-  password: string = "";
+  userId: string = "Dario";
 
   autenticato: boolean = true;
   errMsg: string = "Spiacente, le credenziali inserite non sono corrette!";
 
-  constructor(private route: Router) { }
+  constructor(private route: Router, private authapp: AuthappService) { }
 
   ngOnInit(): void {
   }
 
-  gestAuth = (): void => {
-    if (this.userId !== "Dario" || this.password !== "password") {
-      this.autenticato = false;
-    } else {
+  gestAuth(f: NgForm): void {
+    if (this.authapp.autentica(f.value.username, f.value.password)) {
       this.route.navigate(['welcome', this.userId]);
       this.autenticato = true;
+    } else {
+      this.autenticato = false;
     }
   }
 

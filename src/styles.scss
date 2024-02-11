@@ -2,6 +2,15 @@
 @import '~bootstrap/dist/css/bootstrap.css';
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
 li {
   list-style-type: none;
+}
+section {
+  padding: 0;
 }
