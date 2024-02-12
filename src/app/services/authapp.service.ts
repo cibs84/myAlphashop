@@ -7,7 +7,13 @@ export class AuthappService {
 
   constructor() { }
 
-  autentica(username: string, password: string): boolean {
-    return username === "dario" || password === "pass" ? true : false;
+  authenticate(username: string, password: string): boolean {
+    return username === "dario" && password === "pass" ? true : false;
   }
+
+  usernameLogged = (): string|null => sessionStorage.getItem("username") ?? "";
+  isLogged = (): boolean => sessionStorage.getItem("username") ? true : false;
+
+  clearUsername = (): void => sessionStorage.removeItem("username");
+  clearAll = (): void => sessionStorage.clear();
 }

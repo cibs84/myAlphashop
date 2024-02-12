@@ -24,7 +24,8 @@ export class LoginComponent implements OnInit {
   }
 
   gestAuth(f: NgForm): void {
-    if (this.authapp.autentica(f.value.username, f.value.password)) {
+    if (this.authapp.authenticate(f.value.username, f.value.password)) {
+      sessionStorage.setItem("username", f.value.username);
       this.route.navigate(['welcome', this.userId]);
       this.autenticato = true;
     } else {
