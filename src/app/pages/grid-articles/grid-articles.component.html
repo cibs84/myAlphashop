@@ -37,27 +37,12 @@
       </div>
     </div>
     <!-- GRID - BODY -->
-    <div class="row row-cols-1 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 grid-body">
+    <div *ngIf="articoli$" class="row row-cols-1 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 grid-body">
       <!-- Product CARD -->
-      <div class="col" *ngFor="let n of numberIterates">
-        <div class="card">
-          <img src="https://www.tutto-buono.it/media/prodotti/pennerigate.jpg" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">Barilla - Penne Rigate 500gr</h5>
-            <p class="card-text">€0.89</p>
-            <div class="d-flex flex-wrap">
-              <a href="#" class="btn btn-outline-secondary d-flex">
-                <span class="material-icons-outlined">edit</span>
-                Modifica
-              </a>
-              <a href="#" class="btn btn-danger d-flex">
-                <span class="material-icons-outlined">delete</span>
-                Elimina
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <app-articolo-card *ngFor="let articolo of articoli$"
+                         [articolo]="articolo"
+                         (eventEdit)="handleEdit($event)"
+                         (eventDelete)="handleDelete($event)"></app-articolo-card>
     </div>
   </div>
 </section>

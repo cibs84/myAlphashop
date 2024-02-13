@@ -11,6 +11,7 @@ import { ArticoliComponent } from './pages/articoli/articoli.component';
 import { CoreModule } from './core/core.module';
 import { LogoutComponent } from './pages/logout/logout.component';
 import { GridArticlesComponent } from './pages/grid-articles/grid-articles.component';
+import { ArticoloCardComponent } from './components/articolo-card/articolo-card.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { GridArticlesComponent } from './pages/grid-articles/grid-articles.compo
     ErrorComponent,
     ArticoliComponent,
     LogoutComponent,
-    GridArticlesComponent
+    GridArticlesComponent,
+    ArticoloCardComponent
   ],
   imports: [
     BrowserModule,
