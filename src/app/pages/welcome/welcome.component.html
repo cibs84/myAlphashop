@@ -1,4 +1,7 @@
 <app-jumbotron [titolo]="titolo" [sottotitolo]="sottotitolo" [show]="false"></app-jumbotron>
 <section>
-  <h1>Benvenuto {{userId}}, clicca <a routerLink="/articoli">qui</a> per visualizzare i nostri articoli</h1>
+  <h1 class="mb-3">Benvenuto {{userId}}, clicca <a routerLink="/articoli">qui</a> per visualizzare i nostri articoli</h1>
+  <button class="btn btn-primary mb-3 mx-auto" (click)="getSaluti()">SALUTA</button>
+  <h3 *ngIf="saluti !== ''">{{ saluti }}</h3>
+  <h3 *ngIf="errore" class="text-danger">{{ errore }}</h3>
 </section>

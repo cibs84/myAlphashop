@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthappService } from '../../services/authapp.service';
 
 @Component({
@@ -32,5 +32,4 @@ export class LoginComponent implements OnInit {
       this.autenticato = false;
     }
   }
-
 }
