@@ -1,0 +1,49 @@
+version: '3.3'
+
+networks: 
+  ntpgsql:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
+
+services:
+  pgsql:
+    image: postgres:latest
+    restart: unless-stopped
+    container_name: postgresql
+    volumes: 
+      - psdb-volume:/var/lib/postgresql/data
+    networks: 
+      ntpgsql:
+        ipv4_address: 172.21.0.2
+    ports:
+      - target: 5432
+        published: 5433 
+        protocol: tcp
+        mode: host
+    environment:
+      - POSTGRES_PASSWORD=pass123
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    container_name: pgadmin4
+    
+    networks:
+      ntpgsql:
+        ipv4_address: 172.21.0.3
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+    environment:
+      - PGADMIN_CONFIG_SERVER_MODE=True
+      - PGADMIN_DEFAULT_EMAIL=d.tilesi@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=pass123
+
+
+volumes:
+  psdb-volume:
+

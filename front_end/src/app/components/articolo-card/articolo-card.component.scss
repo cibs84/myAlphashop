@@ -1,0 +1,26 @@
+.card {
+  margin-bottom: 1.5rem;
+
+  &-title{
+    font-size: 1rem;
+    color: #7a7a7a;
+    margin-bottom: 0.1rem;
+  }
+  &-text{
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  // Buttons
+  .btn {
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+    min-width: 6.5rem;
+    margin-bottom: 0.5rem;
+
+    span.material-icons-outlined {
+      vertical-align: top;
+      font-size: 1.3rem;
+    }
+  }
+}

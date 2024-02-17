@@ -1,0 +1,10 @@
+<section class="mb-4 bg-light rounded-3">
+  <div class="ms_small_container">
+    <h1 class="fw-bold">{{ titolo }}</h1>
+    <p class="fs-4">{{ sottotitolo }}</p>
+    <ng-container *ngIf="show">
+      <button class="btn btn-primary btn-lg me-2" routerLink="/login">Accedi</button>
+      <button class="btn btn-success btn-lg" routerLink="/registrati">Registrati</button>
+    </ng-container>
+  </div>
+</section>

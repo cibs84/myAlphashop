@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Alphashop</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <span class="material-icons-outlined">home</span>
+          <a class="nav-link active" aria-current="page" routerLink="/welcome">Home</a>
+        </li>
+        <li class="nav-item">
+          <span class="material-icons-outlined">view_list</span>
+          <a class="nav-link" routerLink="/articoli">Prodotti</a>
+        </li>
+        <li class="nav-item">
+          <span class="material-icons-outlined">local_offer</span>
+          <a class="nav-link" routerLink="/promozioni">Promozioni</a>
+        </li>
+        <li class="nav-item">
+          <span class="material-icons-outlined">card_membership</span>
+          <a class="nav-link" routerLink="/fidelity">Fidelity</a>
+        </li>
+        <li class="nav-item">
+          <span class="material-icons-outlined">shopping_cart</span>
+          <a class="nav-link" routerLink="/ordini">Ordini</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+      <li class="nav-item dropdown user-item">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fa-solid fa-user"></i>
+        </a>
+        <ul class="dropdown-menu ms_dropdown-menu-user" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" routerLink="/login">Accedi</a></li>
+          <li><a class="dropdown-item" routerLink="/registra">Registra</a></li>
+          <li><a class="dropdown-item" routerLink="/disabilita">Disabilita</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" [class]="basicAuth.isLogged() ? '' : 'disabled'"
+                 routerLink="/logout">Logout {{ basicAuth.usernameLogged() }}</a>
+          </li>
+        </ul>
+      </li>
+    </div>
+  </div>
+</nav>
