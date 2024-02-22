@@ -3,13 +3,14 @@ package com.xantrix.webapp.tests.RepositoryTests;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 
 import com.xantrix.webapp.Application;
 import com.xantrix.webapp.entities.Barcode;
 import com.xantrix.webapp.repository.BarcodeRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
 @ContextConfiguration(classes = Application.class)

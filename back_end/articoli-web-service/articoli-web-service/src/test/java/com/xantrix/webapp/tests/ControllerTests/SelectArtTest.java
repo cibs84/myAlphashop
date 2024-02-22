@@ -53,12 +53,12 @@ public class SelectArtTest
 			"    \"codStat\": \"\",\n" + 
 			"    \"pzCart\": 6,\n" + 
 			"    \"pesoNetto\": 1.5,\n" + 
-			"    \"idStatoArt\": \"1\",\n" + 
-			"    \"dataCreazione\": \"2010-06-14\",\n" + 
+			"    \"idStatoArt\": \"1 \",\n" + 
+			"    \"dataCreaz\": \"2010-06-14\",\n" + 
 			"    \"barcode\": [\n" + 
 			"        {\n" + 
 			"            \"barcode\": \"8008490000021\",\n" + 
-			"            \"tipo\": \"CP\"\n" + 
+			"            \"idTipoArt\": \"CP\"\n" + 
 			"        }\n" + 
 			"    ],\n" + 
 			"    \"famAssort\": {\n" + 
@@ -96,13 +96,13 @@ public class SelectArtTest
 				.andExpect(jsonPath("$.pesoNetto").value("1.5"))
 				.andExpect(jsonPath("$.idStatoArt").exists())
 				.andExpect(jsonPath("$.idStatoArt").value("1"))
-				.andExpect(jsonPath("$.dataCreazione").exists())
-				.andExpect(jsonPath("$.dataCreazione").value("2010-06-14"))
+				.andExpect(jsonPath("$.dataCreaz").exists())
+				.andExpect(jsonPath("$.dataCreaz").value("2010-06-14"))
 				 //barcode
 				.andExpect(jsonPath("$.barcode[0].barcode").exists())
 				.andExpect(jsonPath("$.barcode[0].barcode").value("8008490000021")) 
-				.andExpect(jsonPath("$.barcode[0].tipo").exists())
-				.andExpect(jsonPath("$.barcode[0].tipo").value("CP")) 
+				.andExpect(jsonPath("$.barcode[0].idTipoArt").exists())
+				.andExpect(jsonPath("$.barcode[0].idTipoArt").value("CP")) 
 				 //famAssort
 				.andExpect(jsonPath("$.famAssort.id").exists())
 				.andExpect(jsonPath("$.famAssort.id").value("1")) 

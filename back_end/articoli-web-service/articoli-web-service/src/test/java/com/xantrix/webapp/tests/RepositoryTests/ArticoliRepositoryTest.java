@@ -15,7 +15,8 @@ import com.xantrix.webapp.Application;
 import com.xantrix.webapp.entities.Articoli;
 import com.xantrix.webapp.repository.ArticoliRepository;
 
-@SpringBootTest
+
+@SpringBootTest()
 @ContextConfiguration(classes = Application.class)
 public class ArticoliRepositoryTest
 {
@@ -41,7 +42,7 @@ public class ArticoliRepositoryTest
 	@Test
 	public void TestfindByCodArt() throws Exception
 	{
-		assertThat(articoliRepository.findByCodArt("002000301").get())
+		assertThat(articoliRepository.findByCodArt("002000301"))
 				.extracting(Articoli::getDescrizione)
 				.isEqualTo("ACQUA ULIVETO 15 LT");
 				
