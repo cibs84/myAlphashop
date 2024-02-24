@@ -1,6 +1,5 @@
 package com.xantrix.webapp.entities;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -15,14 +14,14 @@ import lombok.Data;
 @Table(name = "ingredienti")
 @Data
 public class Ingredienti {
-	
+
 	@Id
 	@Column(name = "codart")
 	private String codArt;
-	
+
 	@Column
 	private String info;
-	
+
 	@OneToOne
 	@PrimaryKeyJoinColumn
 	@JsonIgnore

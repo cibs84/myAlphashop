@@ -17,35 +17,34 @@ import com.xantrix.webapp.repository.ArticoliRepository;
 
 @SpringBootTest
 @ContextConfiguration(classes = Application.class)
-public class ArticoliRepositoryTest
-{
-	
+public class ArticoliRepositoryTest {
+
 	@Autowired
 	private ArticoliRepository articoliRepository;
 
 	@Test
-	public void TestfindByDescrizioneLike()
-	{
+	public void TestfindByDescrizioneLike() {
 		List<Articoli> items = articoliRepository.SelByDescrizioneLike("ACQUA ULIVETO%");
 		assertEquals(2, items.size());
 	}
-	
+
 	@Test
-	public void TestfindByDescrizioneLikePage()
-	{
-		List<Articoli> items = articoliRepository.findByDescrizioneLike("ACQUA%",PageRequest.of(0, 10));
+	public void TestfindByDescrizioneLikePage() {
+		List<Articoli> items = articoliRepository.findByDescrizioneLike("ACQUA%", PageRequest.of(0, 10));
 		assertEquals(10, items.size());
 	}
 
-	
 	@Test
-	public void TestfindByCodArt() throws Exception
-	{
-		assertThat(articoliRepository.findByCodArt("002000301").get())
-				.extracting(Articoli::getDescrizione)
+	public void TestfindByCodArt() throws Exception {
+		assertThat(articoliRepository.findByCodArt("002000301").get()).extracting(Articoli::getDescrizione)
 				.isEqualTo("ACQUA ULIVETO 15 LT");
-				
-	}
-	
 
+	}
+
+	@Test
+	public void TestSelByEan() {
+		assertThat(articoliRepository.selByEan("8008490000021").get())
+			.extracting(Articoli::getDescrizione)
+			.isEqualTo("ACQUA ULIVETO 15 LT");
+	}
 }

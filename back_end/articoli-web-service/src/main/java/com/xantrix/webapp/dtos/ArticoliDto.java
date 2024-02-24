@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 public class ArticoliDto {
-	
+
 	private String codArt;
 	private String descrizione;
 	private String um;
@@ -18,7 +18,7 @@ public class ArticoliDto {
 	private String idStatoArt;
 	private Date dataCreazione;
 	private double prezzo = 0;
-	
+
 	private Set<BarcodeDto> barcode = new HashSet<>();
 	private IngredientiDto ingredienti;
 	private CategoriaDto famAssort;

@@ -22,10 +22,10 @@ public class FamAssort {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	@Column
 	private String descrizione;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "famAssort")
 	@JsonBackReference
 	private Set<Articoli> articoli;
