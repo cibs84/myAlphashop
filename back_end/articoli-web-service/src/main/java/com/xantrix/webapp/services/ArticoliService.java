@@ -2,7 +2,6 @@ package com.xantrix.webapp.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.xantrix.webapp.dtos.ArticoliDto;
+import com.xantrix.webapp.dtos.common.PaginatedResponseList;
 import com.xantrix.webapp.entities.Articoli;
 import com.xantrix.webapp.exceptions.ItemAlreadyExistsException;
 import com.xantrix.webapp.exceptions.NotFoundException;
@@ -32,29 +32,47 @@ public class ArticoliService {
 		this.articoliRepository = articoliRepository;
 		this.modelMapper = modelMapper;
 	}
+//	
+//	public Iterable<ArticoliDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) {
+//		List<ArticoliDto> articoliDto = null;
+//		Pageable articlesPagination = PageRequest.of(currentPage.filter(n -> n > -1).orElse(1),
+//				pageSize.filter(n -> n > 0).orElse(10));
+//		Page<Articoli> articoli = articoliRepository.findAll(articlesPagination);
+//		articoliDto = articoli.stream().map(art -> modelMapper.map(art, ArticoliDto.class))
+//				.collect(Collectors.toList());
+//		return articoliDto;
+//	}
 
-	public Iterable<ArticoliDto> getAll(Optional<Integer> pageNumber, Optional<Integer> maxRecords) {
-		List<ArticoliDto> articoliDto = null;
-		Pageable articlesPagination = PageRequest.of(pageNumber.filter(n -> n > -1).orElse(1),
-				maxRecords.filter(n -> n > 0).orElse(10));
+	public PaginatedResponseList<ArticoliDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) {
+		Pageable articlesPagination = PageRequest.of(currentPage.filter(n -> n > -1).orElse(1),
+				pageSize.filter(n -> n > 0).orElse(10));
 		Page<Articoli> articoli = articoliRepository.findAll(articlesPagination);
-		articoliDto = articoli.stream().map(art -> modelMapper.map(art, ArticoliDto.class))
+		List<ArticoliDto> articoliDto = articoli.stream().map(art -> modelMapper.map(art, ArticoliDto.class))
 				.collect(Collectors.toList());
-		return articoliDto;
+		
+		PaginatedResponseList<ArticoliDto> articoliResponse = new PaginatedResponseList<>(articoli, articoliDto);
+		
+		return articoliResponse;
 	}
 
-	public List<ArticoliDto> getByDescrizione(String descrizione, Optional<Integer> pageNumber,
-			Optional<Integer> maxRecords) {
+	public PaginatedResponseList<ArticoliDto> getByDescrizione(String descrizione, Optional<Integer> currentPage,
+			Optional<Integer> pageSize) {
 
 		descrizione = descrizione.toUpperCase().concat("%");
 
-		Pageable articlesPagination = PageRequest.of(pageNumber.filter(n -> n > -1).orElse(0),
-				maxRecords.filter(n -> n > 0).orElse(10));
-		List<Articoli> articoli = articoliRepository.findByDescrizioneLike(descrizione, articlesPagination);
+		Pageable articlesPagination = PageRequest.of(currentPage.map(n -> n-1).filter(n -> n > -1).orElse(0),
+				pageSize.filter(n -> n > 0).orElse(10));
+		
+		Page<Articoli> articoli = articoliRepository.findByDescrizioneLike(descrizione, articlesPagination);
+		
+		// Convertire da Page<Articoli> a List<ArticoliDto>
 		List<ArticoliDto> articoliDto = articoli.stream().map(art -> modelMapper.map(art, ArticoliDto.class))
 				.collect(Collectors.toList());
 
-		return articoliDto;
+		PaginatedResponseList<ArticoliDto> articoliResponse = new PaginatedResponseList<ArticoliDto>(articoli, articoliDto);
+		
+		
+		return articoliResponse;
 	}
 
 	public ArticoliDto getByCodArt(String codArt) throws NotFoundException {

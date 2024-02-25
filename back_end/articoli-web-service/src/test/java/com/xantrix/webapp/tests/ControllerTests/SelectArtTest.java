@@ -40,14 +40,41 @@ public class SelectArtTest {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
 
-	String JsonData = "{\n" + "    \"codArt\": \"002000301\",\n" + "    \"descrizione\": \"ACQUA ULIVETO 15 LT\",\n"
-			+ "    \"um\": \"PZ\",\n" + "    \"codStat\": \"\",\n" + "    \"pzCart\": 6,\n"
-			+ "    \"pesoNetto\": 1.5,\n" + "    \"idStatoArt\": \"1\",\n" + "    \"dataCreazione\": \"2010-06-14\",\n"
-			+ "    \"barcode\": [\n" + "        {\n" + "            \"barcode\": \"8008490000021\",\n"
-			+ "            \"tipo\": \"CP\"\n" + "        }\n" + "    ],\n" + "    \"famAssort\": {\n"
-			+ "        \"id\": 1,\n" + "        \"descrizione\": \"DROGHERIA ALIMENTARE\"\n" + "    },\n"
-			+ "    \"ingredienti\": null,\n" + "    \"iva\": {\n" + "        \"idIva\": 22,\n"
-			+ "        \"descrizione\": \"IVA RIVENDITA 22%\",\n" + "        \"aliquota\": 22\n" + "    }\n" + "}";
+//	String JsonData = "{\n" + "    \"codArt\": \"002000301\",\n" + "    \"descrizione\": \"ACQUA ULIVETO 15 LT\",\n"
+//			+ "    \"um\": \"PZ\",\n" + "    \"codStat\": \"\",\n" + "    \"pzCart\": 6,\n"
+//			+ "    \"pesoNetto\": 1.5,\n" + "    \"idStatoArt\": \"1\",\n" + "    \"dataCreazione\": \"2010-06-14\",\n"
+//			+ "    \"barcode\": [\n" + "        {\n" + "            \"barcode\": \"8008490000021\",\n"
+//			+ "            \"tipo\": \"CP\"\n" + "        }\n" + "    ],\n" + "    \"famAssort\": {\n"
+//			+ "        \"id\": 1,\n" + "        \"descrizione\": \"DROGHERIA ALIMENTARE\"\n" + "    },\n"
+//			+ "    \"ingredienti\": null,\n" + "    \"iva\": {\n" + "        \"idIva\": 22,\n"
+//			+ "        \"descrizione\": \"IVA RIVENDITA 22%\",\n" + "        \"aliquota\": 22\n" + "    }\n" + "}";
+	String JsonData = """
+			{
+			    "codArt": "002000301",
+			    "descrizione": "ACQUA ULIVETO 15 LT",
+			    "um": "PZ",
+			    "codStat": "",
+			    "pzCart": 6,
+			    "pesoNetto": 1.5,
+			    "idStatoArt": "1",
+			    "dataCreazione": "2010-06-14",
+			    "barcode": [
+			        {
+			            "barcode": "8008490000021",
+			            "tipo": "CP"
+			        }
+			    ],
+			    "famAssort": {
+			        "id": 1,
+			        "descrizione": "DROGHERIA ALIMENTARE"
+			    },
+			    "ingredienti": null,
+			    "iva": {
+			        "idIva": 22,
+			        "descrizione": "IVA RIVENDITA 22%",
+			        "aliquota": 22
+			    }
+			}""";
 
 	@Test
 	@Order(1)
@@ -117,13 +144,49 @@ public class SelectArtTest {
 				.andDo(print());
 	}
 
-	private String JsonData2 = "[" + JsonData + "]";
+	private String JsonData2 = "{\r\n"
+			+ "    \"currentPage\": 1,\r\n"
+			+ "    \"totalPages\": 1,\r\n"
+			+ "    \"nextPage\": 1,\r\n"
+			+ "    \"previousPage\": 0,\r\n"
+			+ "    \"pageSize\": 10,\r\n"
+			+ "    \"totalElements\": 1,\r\n"
+			+ "    \"itemList\": [\r\n"
+			+ "        {\r\n"
+			+ "            \"codArt\": \"002000301\",\r\n"
+			+ "            \"descrizione\": \"ACQUA ULIVETO 15 LT\",\r\n"
+			+ "            \"um\": \"PZ\",\r\n"
+			+ "            \"codStat\": \"\",\r\n"
+			+ "            \"pzCart\": 6,\r\n"
+			+ "            \"pesoNetto\": 1.5,\r\n"
+			+ "            \"idStatoArt\": \"1\",\r\n"
+			+ "            \"dataCreazione\": \"2010-06-14\",\r\n"
+			+ "            \"prezzo\": 0.0,\r\n"
+			+ "            \"barcode\": [\r\n"
+			+ "                {\r\n"
+			+ "                    \"barcode\": \"8008490000021\",\r\n"
+			+ "                    \"tipo\": \"CP\"\r\n"
+			+ "                }\r\n"
+			+ "            ],\r\n"
+			+ "            \"ingredienti\": null,\r\n"
+			+ "            \"famAssort\": {\r\n"
+			+ "                \"id\": 1,\r\n"
+			+ "                \"descrizione\": \"DROGHERIA ALIMENTARE\"\r\n"
+			+ "            },\r\n"
+			+ "            \"iva\": {\r\n"
+			+ "                \"idIva\": 22,\r\n"
+			+ "                \"descrizione\": \"IVA RIVENDITA 22%\",\r\n"
+			+ "                \"aliquota\": 22\r\n"
+			+ "            }\r\n"
+			+ "        }\r\n"
+			+ "    ]\r\n"
+			+ "}";
 
 	@Test
 	@Order(5)
 	public void listArtByDesc() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articoli/cerca/descrizione/ACQUA ULIVETO 15 LT")
-				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(1)))
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.itemList", hasSize(1)))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(content().json(JsonData2)).andReturn();
 	}

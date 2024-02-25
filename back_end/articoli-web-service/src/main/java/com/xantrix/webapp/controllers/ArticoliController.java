@@ -1,8 +1,6 @@
 package com.xantrix.webapp.controllers;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -20,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xantrix.webapp.dtos.ArticoliDto;
-import com.xantrix.webapp.dtos.BarcodeDto;
+import com.xantrix.webapp.dtos.common.PaginatedResponseList;
 import com.xantrix.webapp.entities.Articoli;
 import com.xantrix.webapp.exceptions.ItemAlreadyExistsException;
 import com.xantrix.webapp.exceptions.NotFoundException;
@@ -39,13 +37,15 @@ public class ArticoliController {
 	@Autowired
 	ModelMapper modelMapper;
 
-	@GetMapping(params = { "pageNumber", "maxRecords" })
-	public ResponseEntity<Iterable<ArticoliDto>> listAll(@RequestParam("pageNumber") Optional<Integer> pageNumber,
-			@RequestParam("maxRecords") Optional<Integer> maxRecords) {
+	@GetMapping
+	public ResponseEntity<PaginatedResponseList<ArticoliDto>> listAll(
+			@RequestParam(name = "currentPage", required = false) Optional<Integer> currentPage,
+			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) {
 		logger.info("******** Otteniamo tutti gli articoli ********");
 
-		Iterable<ArticoliDto> articoli = articoliService.getAll(pageNumber, maxRecords);
-		return new ResponseEntity<Iterable<ArticoliDto>>(articoli, HttpStatus.OK);
+		PaginatedResponseList<ArticoliDto> articoli = articoliService.getAll(currentPage, pageSize);
+		
+		return new ResponseEntity<PaginatedResponseList<ArticoliDto>>(articoli, HttpStatus.OK);
 	}
 
 	@GetMapping("/cerca/barcode/{ean}")
@@ -69,14 +69,14 @@ public class ArticoliController {
 	}
 	
 	@GetMapping(path = "/cerca/descrizione/{descrizione}")
-	public ResponseEntity<List<ArticoliDto>> listArtByDesc(@PathVariable("descrizione") String descrizione,
-			@RequestParam(value = "pageNumber", required = false) Optional<Integer> pageNumber,
-			@RequestParam(value = "maxRecords", required = false) Optional<Integer> maxRecords) {
+	public ResponseEntity<PaginatedResponseList<ArticoliDto>> listArtByDesc(@PathVariable("descrizione") String descrizione,
+			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
+			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) {
 		
 		logger.info("******** Otteniamo l'articolo con descrizione %s ********".formatted(descrizione));
 		
-		List<ArticoliDto> articoli = articoliService.getByDescrizione(descrizione, pageNumber, maxRecords);
-		return new ResponseEntity<List<ArticoliDto>>(articoli, HttpStatus.OK);
+		PaginatedResponseList<ArticoliDto> articoli = articoliService.getByDescrizione(descrizione, currentPage, pageSize);
+		return new ResponseEntity<PaginatedResponseList<ArticoliDto>>(articoli, HttpStatus.OK);
 	}
 
 	@PostMapping("/inserisci")
