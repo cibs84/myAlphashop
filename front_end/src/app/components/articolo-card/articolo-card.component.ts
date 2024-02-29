@@ -1,6 +1,5 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { Articolo } from 'src/app/models/Articolo';
-import { EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-articolo-card',
@@ -11,14 +10,16 @@ export class ArticoloCardComponent implements OnInit {
 
   @Input()
   articolo: Articolo = {
-    codart: "",
+    codArt: "",
     descrizione: "",
     um: "",
-    pzcart: 0,
-    peso: 0,
+    codStat: "",
+    pzCart: 0,
+    pesoNetto: 0,
+    idStatoArt: "",
     prezzo: 0,
     active: true,
-    data: new Date(),
+    dataCreazione: new Date(),
     urlImage: ""
   }
 
@@ -33,9 +34,9 @@ export class ArticoloCardComponent implements OnInit {
   }
 
   editArticle = (): void => {
-    this.eventEdit.emit(this.articolo.codart);
+    this.eventEdit.emit(this.articolo.codArt);
   }
   deleteArticle = (): void => {
-    this.eventDelete.emit(this.articolo.codart);
+    this.eventDelete.emit(this.articolo.codArt);
   }
 }

@@ -1,11 +1,13 @@
 export interface Articolo {
-  codart: string,
+  codArt: string,
   descrizione: string,
   um: string,
-  pzcart: number,
-  peso: number,
+  codStat: string,
+  pzCart: number,
+  pesoNetto: number,
+  idStatoArt: string,
   prezzo: number,
   active: boolean,
-  data: Date,
+  dataCreazione: Date,
   urlImage: string
 }

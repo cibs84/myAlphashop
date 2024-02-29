@@ -1,28 +1,104 @@
-<h1>Articoli Disponibili</h1>
+<!-- SECTION: Grid-Articles -->
+<section id="grid-articles" class="py-4">
+  <!-- HEADING -->
+  <div class="container mb-4">
+    <div class="row align-items-center">
+      <h1 class="col">Prodotti Disponibili</h1>
+      <div class="col-3">
+        <button class="btn btn-outline-secondary ms-2">Esporta</button>
+        <button class="btn btn-outline-secondary ms-2">Importa</button>
+        <button class="btn btn-primary ms-2">Crea</button>
+      </div>
+    </div>
+  </div>
 
-<table id="articoli" border="1">
-  <thead>
-    <tr>
-      <th>CodArt</th>
-      <th>Descrizione</th>
-      <th>Um</th>
-      <th>Pezzi</th>
-      <th>Peso(KG/LT)</th>
-      <th>Prezzo</th>
-      <th>Active</th>
-      <th>Data</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let articolo of articoli$">
-      <td>{{ articolo.codart }}</td>
-      <td>{{ articolo.descrizione }}</td>
-      <td>{{ articolo.um }}</td>
-      <td>{{ articolo.pzcart }}</td>
-      <td>{{ articolo.peso }}</td>
-      <td>{{ articolo.prezzo | currency:"EUR" }}</td>
-      <td>{{ articolo.active }}</td>
-      <td>{{ articolo.data | date:"dd-MM-yyyy" }}</td>
-    </tr>
-  </tbody>
-</table>
+  <div class="container">
+    <!-- GRID - HEADER -->
+    <div class="row grid-header justify-content-between align-items-center">
+      <div class="col-4">
+        <!-- Input: Descrizione -->
+        <input type="text" placeholder="Cerca..." [(ngModel)]="filter" (keyup.enter)="refresh()" >
+      </div>
+      <div class="col-4">
+        <div class="d-flex justify-content-between">
+          <!-- Select - Tutti -->
+          <select class="form-select">
+            <option selected>Tutti</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
+          <!-- Select - Nuovi -->
+          <select class="form-select ms-3">
+            <option selected>Nuovi</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- GRID - BODY -->
+    <div class="row grid-body">
+      <!-- Product CARD -->
+      <table *ngIf="!errore" id="articoli" class="table table-hover mb-5">
+        <thead>
+          <tr>
+            <th scope="col">CodArt</th>
+            <th scope="col">Descrizione</th>
+            <th scope="col">Um</th>
+            <th scope="col">CodStat</th>
+            <th scope="col">Pezzi</th>
+            <th scope="col">Peso(KG/LT)</th>
+            <th scope="col">IdStatoArt</th>
+            <th scope="col">Prezzo</th>
+            <th scope="col">Active</th>
+            <th scope="col">Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let articolo of articoli$">
+            <td>{{ articolo.codArt }}</td>
+            <td>{{ articolo.descrizione }}</td>
+            <td>{{ articolo.um }}</td>
+            <td>{{ articolo.codStat }}</td>
+            <td>{{ articolo.pzCart }}</td>
+            <td>{{ articolo.pesoNetto }}</td>
+            <td class="text-center">
+              <span class="badge rounded-pill" [ngClass]="{'bg-success': articolo.idStatoArt === 'Attivo',
+              'bg-warning text-dark': articolo.idStatoArt === 'Sospeso', 'bg-danger': articolo.idStatoArt === 'Eliminato'}">
+                {{ articolo.idStatoArt }}
+              </span>
+            </td>
+            <td>{{ articolo.prezzo | currency:"EUR" }}</td>
+            <td>{{ articolo.active }}</td>
+            <td>{{ articolo.dataCreazione | date:"dd-MM-yyyy" }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Search Failed - Error Message -->
+      <div *ngIf="errore" class="alert alert-danger mt-4" role="alert">
+        {{ errore }}
+      </div>
+
+      <!-- PAGINATION -->
+      <ul *ngIf="!errore" class="pagination justify-content-end">
+        <!-- Previous -->
+        <li class="page-item" [class]="pagination$.currentPage==1 ? 'disabled pe-none' : ''">
+          <a class="page-link" (click)="setPageNumber(pagination$.currentPage-1)">Previous</a>
+        </li>
+        <!-- Loop: Page Number -->
+        <li *ngFor="let pageNr of totalPages" class="page-item"
+            [class]="(pagination$.currentPage).toString()==mydiv1.innerHTML ? 'active' : ''">
+          <a class="page-link" #mydiv1 (click)="setPageNumber(mydiv1.innerHTML)">{{pageNr}}</a>
+        </li>
+        <!-- Next -->
+        <li class="page-item" [class]="pagination$.currentPage==pagination$.totalPages ? 'disabled pe-none' : ''">
+          <a class="page-link" (click)="setPageNumber(pagination$.currentPage+1)">Next</a>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</section>

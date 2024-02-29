@@ -19,6 +19,11 @@ export class WelcomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.userId = (this.route.snapshot.params['username'] !== undefined) ? this.route.snapshot.params['username'] : "";
+
+    //*** Alternativa con le query param ***/
+    // this.route.queryParams.subscribe(
+    //   params => this.userId = params['username'] || 'Gianfranco'
+    // )
   }
 
   getSaluti = (): void => {
