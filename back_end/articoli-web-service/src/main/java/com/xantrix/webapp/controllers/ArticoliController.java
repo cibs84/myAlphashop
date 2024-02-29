@@ -40,7 +40,7 @@ public class ArticoliController {
 	@GetMapping
 	public ResponseEntity<PaginatedResponseList<ArticoliDto>> listAll(
 			@RequestParam(name = "currentPage", required = false) Optional<Integer> currentPage,
-			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) {
+			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
 		logger.info("******** Otteniamo tutti gli articoli ********");
 
 		PaginatedResponseList<ArticoliDto> articoli = articoliService.getAll(currentPage, pageSize);
@@ -71,7 +71,7 @@ public class ArticoliController {
 	@GetMapping(path = "/cerca/descrizione/{descrizione}")
 	public ResponseEntity<PaginatedResponseList<ArticoliDto>> listArtByDesc(@PathVariable("descrizione") String descrizione,
 			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
-			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) {
+			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
 		
 		logger.info("******** Otteniamo l'articolo con descrizione %s ********".formatted(descrizione));
 		

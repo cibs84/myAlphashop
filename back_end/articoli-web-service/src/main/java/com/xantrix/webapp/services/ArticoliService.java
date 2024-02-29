@@ -32,21 +32,20 @@ public class ArticoliService {
 		this.articoliRepository = articoliRepository;
 		this.modelMapper = modelMapper;
 	}
-//	
-//	public Iterable<ArticoliDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) {
-//		List<ArticoliDto> articoliDto = null;
-//		Pageable articlesPagination = PageRequest.of(currentPage.filter(n -> n > -1).orElse(1),
-//				pageSize.filter(n -> n > 0).orElse(10));
-//		Page<Articoli> articoli = articoliRepository.findAll(articlesPagination);
-//		articoliDto = articoli.stream().map(art -> modelMapper.map(art, ArticoliDto.class))
-//				.collect(Collectors.toList());
-//		return articoliDto;
-//	}
 
-	public PaginatedResponseList<ArticoliDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) {
+	public PaginatedResponseList<ArticoliDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) throws NotFoundException {
 		Pageable articlesPagination = PageRequest.of(currentPage.filter(n -> n > -1).orElse(1),
 				pageSize.filter(n -> n > 0).orElse(10));
 		Page<Articoli> articoli = articoliRepository.findAll(articlesPagination);
+		
+		if (articoli.isEmpty()) {
+			String errMessage = "Non è stato trovato alcun articolo";
+			
+			logger.warn(errMessage);
+			
+			throw new NotFoundException(errMessage);
+		}
+		
 		List<ArticoliDto> articoliDto = articoli.stream().map(art -> modelMapper.map(art, ArticoliDto.class))
 				.collect(Collectors.toList());
 		
@@ -56,14 +55,22 @@ public class ArticoliService {
 	}
 
 	public PaginatedResponseList<ArticoliDto> getByDescrizione(String descrizione, Optional<Integer> currentPage,
-			Optional<Integer> pageSize) {
+			Optional<Integer> pageSize) throws NotFoundException {
 
-		descrizione = descrizione.toUpperCase().concat("%");
+		String descrizioneMod = "%" + descrizione.toUpperCase() + "%";
 
 		Pageable articlesPagination = PageRequest.of(currentPage.map(n -> n-1).filter(n -> n > -1).orElse(0),
 				pageSize.filter(n -> n > 0).orElse(10));
 		
-		Page<Articoli> articoli = articoliRepository.findByDescrizioneLike(descrizione, articlesPagination);
+		Page<Articoli> articoli = articoliRepository.findByDescrizioneLike(descrizioneMod, articlesPagination);
+		
+		if (articoli.isEmpty()) {
+			String errMessage = "Non è stato trovato alcun articolo avente descrizione '%s'".formatted(descrizione);
+			
+			logger.warn(errMessage);
+			
+			throw new NotFoundException(errMessage);
+		}
 		
 		// Convertire da Page<Articoli> a List<ArticoliDto>
 		List<ArticoliDto> articoliDto = articoli.stream().map(art -> modelMapper.map(art, ArticoliDto.class))
