@@ -20,13 +20,13 @@ spring:
     hibernate:
       ddl-auto: none
     properties:
-      javax.persistence.schema-generation.scripts.action: none
+#      javax.persistence.schema-generation.scripts.action: none
       hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
+#        jdbc:
+#          lob:
+#            non_contextual_creation: true
     show-sql: true  
-  sql:
-    init:
-      mode: always
-      platform: postgres
+#  sql:
+#    init:
+#      mode: always
+#      platform: postgres

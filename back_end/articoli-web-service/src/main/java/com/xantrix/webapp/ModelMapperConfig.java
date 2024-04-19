@@ -14,11 +14,13 @@ import com.xantrix.webapp.entities.Barcode;
 
 @Configuration
 public class ModelMapperConfig {
-	@Bean
-	ModelMapper modelMapper() {
+
+    @Bean
+    ModelMapper modelMapper() {
+		
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setSkipNullEnabled(true);
-		modelMapper.addMappings(articoliMapping);
+		modelMapper.addMappings(toArticoliDtoMapping);
 
 		modelMapper.addMappings(new PropertyMap<Barcode, BarcodeDto>() {
 			@Override
@@ -26,14 +28,32 @@ public class ModelMapperConfig {
 				map().setTipo(source.getIdTipoArt());
 			}
 		});
-
+		
 		modelMapper.addConverter(articoliConverter);
-
+//		modelMapper.addMappings(toArticoliMapping); 
+		
+		
 		return modelMapper;
-
 	}
 
-	PropertyMap<Articoli, ArticoliDto> articoliMapping = new PropertyMap<Articoli, ArticoliDto>() {
+//	PropertyMap<ArticoliDto, Articoli> toArticoliMapping = new PropertyMap<ArticoliDto, Articoli>() {
+//		
+//		@Override
+//		protected void configure() {
+//			Set<Barcode> barcodeSet = new HashSet<Barcode>();
+//			
+//			for (BarcodeDto barcodeDto : source.getBarcode()) {
+//				Barcode barcode = new Barcode();
+//				barcode.setBarcode(barcodeDto.getBarcode());
+//				barcode.setIdTipoArt(barcodeDto.getTipo());
+//				
+//				barcodeSet.add(barcode);
+//			}
+//			map().setBarcode(barcodeSet);
+//		}
+//	};
+	
+	PropertyMap<Articoli, ArticoliDto> toArticoliDtoMapping = new PropertyMap<Articoli, ArticoliDto>() {
 		protected void configure() {
 			map().setDataCreazione(source.getDataCreaz());
 		}

@@ -1,5 +1,6 @@
-package com.xantrix.webapp.dtos.common;
+package com.xantrix.webapp.common;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,6 +33,7 @@ public class PaginatedResponseList<L> {
 		private int previousPage = 1;
 		private int pageSize = 10; // numero massimo di elementi presenti nella pagina
 		private int totalElements = 10; // numero elementi presenti nella pagina corrente
+		private int[] totalPagesArray = new int[getTotalPages()]; // nel frontend stampa numero pagine
 
 		public Pagination() {
 		}
@@ -44,6 +46,7 @@ public class PaginatedResponseList<L> {
 			setTotalPages(page.getTotalPages());
 			setNextPage();
 			setPreviousPage();
+			setTotalPagesArray();
 		}
 
 		public int getCurrentPage() {
@@ -94,28 +97,27 @@ public class PaginatedResponseList<L> {
 			this.totalElements = totalElements;
 		}
 
+		public int[] getTotalPagesArray() {
+			return totalPagesArray;
+		}
+		
+		public void setTotalPagesArray() {
+			int[] newArr = new int[getTotalPages()];
+			for (int i = 0; i < newArr.length; i++) {
+				newArr[i] = i + 1;
+			}
+			this.totalPagesArray = newArr;
+		}
+
+		public void setTotalPagesArray(int[] totalPagesArray) {
+			this.totalPagesArray = totalPagesArray;
+		}
+
 		@Override
 		public String toString() {
-			return "PaginationDto [currentPage=" + currentPage + ", totalPages=" + totalPages + ", nextPage=" + nextPage
-					+ ", previousPage=" + previousPage + "]";
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(currentPage, nextPage, previousPage, totalPages);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Pagination other = (Pagination) obj;
-			return currentPage == other.getCurrentPage() && nextPage == other.getNextPage() && previousPage == other.getPreviousPage()
-					&& totalPages == other.getTotalPages();
+			return "Pagination [currentPage=" + currentPage + ", totalPages=" + totalPages + ", nextPage=" + nextPage
+					+ ", previousPage=" + previousPage + ", pageSize=" + pageSize + ", totalElements=" + totalElements
+					+ ", totalPagesArray=" + Arrays.toString(totalPagesArray) + "]";
 		}
 	}
 }

@@ -1,11 +1,11 @@
 package com.xantrix.webapp.tests.ControllerTests;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,94 +37,160 @@ public class InsertArtTest {
 	private WebApplicationContext wac;
 
 	@Autowired
-	private ArticoliRepository articoliRepository;
+	ArticoliRepository articoliRepository;
 
 	@BeforeEach
 	public void setup() throws JSONException, IOException {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-
-		Optional<Articoli> articolo = articoliRepository.findByCodArt("123Test");
-		if (articolo.isPresent()) {
-			articoliRepository.delete(articolo.get());
-		}
-
 	}
 
-	private String JsonData = "{\r\n" + "    \"codArt\": \"123Test\",\r\n"
-			+ "    \"descrizione\": \"Articolo Unit Test Inserimento\",\r\n" + "    \"um\": \"PZ\",\r\n"
-			+ "    \"codStat\": \"TESTART\",\r\n" + "    \"pzCart\": 6,\r\n" + "    \"pesoNetto\": 1.75,\r\n"
-			+ "    \"idStatoArt\": \"1\",\r\n" + "    \"dataCreazione\": \"2019-05-14\",\r\n" + "    \"barcode\": [\r\n"
-			+ "        {\r\n" + "            \"barcode\": \"12345678\",\r\n" + "            \"tipo\": \"CP\"\r\n"
-			+ "        }\r\n" + "    ],\r\n" + "    \"ingredienti\": {\r\n" + "		\"codArt\" : \"123Test\",\r\n"
-			+ "		\"info\" : \"TEST INGREDIENTI\"\r\n" + "	},\r\n" + "    \"iva\": {\r\n"
-			+ "        \"idIva\": 22\r\n" + "    },\r\n" + "    \"famAssort\": {\r\n" + "        \"id\": 1\r\n"
-			+ "    }\r\n" + "}";
+	private String JsonData = """
+			{
+			  "codArt": "123Test",
+			  "descrizione": "Articolo Unit Test Inserimento",
+			  "um": "PZ",
+			  "codStat": "TESTART",
+			  "pzCart": 6,
+			  "pesoNetto": 1.75,
+			  "idStatoArt": "1",
+			  "dataCreazione": "2019-05-14",
+			  "barcode": [{
+			      "barcode": "12345678",
+			      "tipo": "CP"
+			    }],
+			  "ingredienti": {
+			    "codArt": "123Test",
+			    "info": "TEST INGREDIENTI"
+			  },
+			  "iva": {
+			    "idIva": 22
+			  },
+			  "famAssort": {
+			    "id": 1
+			  }
+			}""";
 
 	@Test
 	@Order(1)
 	public void testInsArticolo() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/articoli/inserisci").contentType(MediaType.APPLICATION_JSON)
-				.content(JsonData).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andDo(print());
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/articoli/inserisci")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(JsonData)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andDo(print());
+		
+		Articoli articolo = articoliRepository.findByCodArt("123Test").get();
+		assertThat(articolo.getDescrizione()).isEqualTo("ARTICOLO UNIT TEST INSERIMENTO");
 	}
 
 	@Test
 	@Order(2)
 	public void testErrInsArticolo1() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/articoli/inserisci").contentType(MediaType.APPLICATION_JSON)
-				.content(JsonData).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotAcceptable())
-				.andExpect(jsonPath("$.codice").value(406))
-				.andExpect(jsonPath("$.messaggio")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/articoli/inserisci")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(JsonData)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotAcceptable())
+				.andExpect(jsonPath("$.code").value(406))
+				.andExpect(jsonPath("$.message")
 						.value("Articolo 123Test presente in anagrafica! Impossibile utilizzare il metodo POST"))
 				.andDo(print());
 	}
 
-	String ErrJsonData = "{\r\n" + "    \"codArt\": \"123Test\",\r\n" + "    \"descrizione\": \"\",\r\n" // <--
-																											// Descrizione
-																											// Assente
-			+ "    \"um\": \"PZ\",\r\n" + "    \"codStat\": \"TESTART\",\r\n" + "    \"pzCart\": 6,\r\n"
-			+ "    \"pesoNetto\": 1.75,\r\n" + "    \"idStatoArt\": \"1\",\r\n"
-			+ "    \"dataCreaz\": \"2019-05-14\",\r\n" + "    \"barcode\": [\r\n" + "        {\r\n"
-			+ "            \"barcode\": \"12345678\",\r\n" + "            \"idTipoArt\": \"CP\"\r\n" + "        }\r\n"
-			+ "    ],\r\n" + "    \"ingredienti\": {\r\n" + "		\"codArt\" : \"123Test\",\r\n"
-			+ "		\"info\" : \"TEST INGREDIENTI\"\r\n" + "	},\r\n" + "    \"iva\": {\r\n"
-			+ "        \"idIva\": 22\r\n" + "    },\r\n" + "    \"famAssort\": {\r\n" + "        \"id\": 1\r\n"
-			+ "    }\r\n" + "}";
+	String ErrJsonData = """
+		{
+			"codArt": "123Test",
+			"descrizione": "asd",
+			"um": "PZ",
+			"codStat": "TESTART",
+			"pzCart": 6,
+			"pesoNetto": 1.75,
+			"idStatoArt": "1",
+			"dataCreazione": "2019-05-14",
+			"barcode": [
+			  {
+				"barcode": "12345678",
+				"tipo": "CP"
+			  }
+			],
+			"ingredienti": {
+			  "codArt": "123Test",
+			  "info": "TEST INGREDIENTI"
+			},
+			"iva": {
+			  "idIva": 22
+			},
+			"famAssort": {
+			  "id": 1
+			}
+		}""";
 
 	@Test
 	@Order(3)
 	public void testErrInsArticolo2() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/articoli/inserisci").contentType(MediaType.APPLICATION_JSON)
-				.content(ErrJsonData).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.codice").value(400))
-				.andExpect(jsonPath("$.messaggio")
-						.value("Articolo 123Test presente in anagrafica! Impossibile utilizzare il metodo POST"))
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/articoli/inserisci")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(ErrJsonData)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.code").value(400))
+				.andExpect(jsonPath("$.message")
+						.value("Il campo Descrizione deve avere un numero di caratteri compreso tra 6 e 80"))
 				.andDo(print());
 	}
 
-	private String JsonDataMod = "{\r\n" + "    \"codArt\": \"123Test\",\r\n"
-			+ "    \"descrizione\": \"Articolo Unit Test Modifica\",\r\n" + "    \"um\": \"PZ\",\r\n"
-			+ "    \"codStat\": \"TESTART\",\r\n" + "    \"pzCart\": 6,\r\n" + "    \"pesoNetto\": 1.75,\r\n"
-			+ "    \"idStatoArt\": \"1\",\r\n" + "    \"dataCreaz\": \"2019-05-14\",\r\n" + "    \"barcode\": [\r\n"
-			+ "        {\r\n" + "            \"barcode\": \"12345678\",\r\n" + "            \"idTipoArt\": \"CP\"\r\n"
-			+ "        }\r\n" + "    ],\r\n" + "    \"ingredienti\": {\r\n" + "		\"codArt\" : \"123Test\",\r\n"
-			+ "		\"info\" : \"TEST INGREDIENTI\"\r\n" + "	},\r\n" + "    \"iva\": {\r\n"
-			+ "        \"idIva\": 22\r\n" + "    },\r\n" + "    \"famAssort\": {\r\n" + "        \"id\": 1\r\n"
-			+ "    }\r\n" + "}";
+	private String JsonDataMod = """
+		{
+			"codArt": "123Test",
+			"descrizione": "Articolo Unit Test Modifica",
+			"um": "PZ",
+			"codStat": "TESTART",
+			"pzCart": 6,
+			"pesoNetto": 1.75,
+			"idStatoArt": "1",
+			"dataCreaz": "2019-05-14",
+			"barcode": [
+			  {
+				"barcode": "12345678",
+				"tipo": "CP"
+			  }
+			],
+			"ingredienti": {
+			  "codArt": "123Test",
+			  "info": "TEST INGREDIENTI"
+			},
+			"iva": {
+			  "idIva": 22
+			},
+			"famAssort": {
+			  "id": 1
+			}
+		}""";
 
 	@Test
 	@Order(4)
 	public void testUpdArticolo() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/articoli/modifica").contentType(MediaType.APPLICATION_JSON)
-				.content(JsonData).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andDo(print());
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/articoli/modifica")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(JsonDataMod).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andDo(print());
+		
+		Articoli articolo = articoliRepository.findByCodArt("123Test").get();
+		assertThat(articolo.getDescrizione()).isEqualTo("ARTICOLO UNIT TEST MODIFICA");
 	}
 
 	@Test
 	@Order(5)
 	public void testDelArticolo() throws Exception {
 		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/articoli/elimina/123Test").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.code").value("200 OK"))
-				.andExpect(jsonPath("$.message").value("Eliminazione Articolo 123Test Eseguita Con Successo"))
+				MockMvcRequestBuilders.delete("/api/articoli/elimina/123Test")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.code").value("200 OK"))
+				.andExpect(jsonPath("$.message")
+						.value("Eliminazione Articolo 123Test Eseguita Con Successo"))
 				.andDo(print());
 	}
 

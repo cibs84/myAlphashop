@@ -57,8 +57,9 @@ public class Articoli implements Serializable {
 	@OneToOne(mappedBy = "articolo", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Ingredienti ingredienti;
 
-	@OneToMany(mappedBy = "articolo", cascade = CascadeType.ALL, orphanRemoval = true)
+	
 	@JsonManagedReference
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "articolo", orphanRemoval = true)
 	private Set<Barcode> barcode = new HashSet<>();
 
 	@ManyToOne

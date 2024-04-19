@@ -2,6 +2,7 @@ package com.xantrix.webapp.exceptions;
 
 import java.util.Date;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,5 +32,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		response.setMessage(ex.getMessage());
 
 		return new ResponseEntity<ErrorResponse>(response, HttpStatus.NOT_ACCEPTABLE);
+	}
+	
+	@ExceptionHandler(BindingException.class)
+	public final ResponseEntity<ErrorResponse> exceptionBindingHandler(Exception ex)
+	{
+		ErrorResponse errore = new ErrorResponse();
+		errore.setDate(new Date());
+		errore.setCode(HttpStatus.BAD_REQUEST.value());
+		errore.setMessage(ex.getMessage());
+		
+		return new ResponseEntity<ErrorResponse>(errore, HttpStatus.BAD_REQUEST);
 	}
 }

@@ -24,16 +24,16 @@ public class Barcode implements Serializable {
 	@Id
 	@Column(name = "barcode")
 	private String barcode;
-
+	
 	@Column(name = "idtipoart")
 	private String idTipoArt;
 
-	@ManyToOne
-	@EqualsAndHashCode.Exclude
 	// 'codart' è la FK che apparirà solo nel db ed è riferita
 	// alla colonna 'codart' della tabella 'articoli'
 	// che corrisponde alla variabile 'codArt' della classe Articolo
-	@JoinColumn(name = "codart", referencedColumnName = "codArt")
 	@JsonBackReference
-	private Articoli articolo;
+	@EqualsAndHashCode.Exclude
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "codart", referencedColumnName = "codArt")
+    private Articoli articolo;
 }
