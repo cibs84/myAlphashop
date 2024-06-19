@@ -25,13 +25,13 @@ public class ArticoliRepositoryTest {
 
 	@Test
 	public void TestfindByDescrizioneLike() {
-		List<Articoli> items = articoliRepository.SelByDescrizioneLike("ACQUA ULIVETO%");
+		List<Articoli> items = articoliRepository.SelByDescrizioneLike("%ACQUA ULIVETO%");
 		assertEquals(2, items.size());
 	}
 
 	@Test
 	public void TestfindByDescrizioneLikePage() {
-		Page<Articoli> items = articoliRepository.findByDescrizioneLike("ACQUA%", PageRequest.of(0, 10));
+		Page<Articoli> items = articoliRepository.findByDescrizioneLikeOrderByCodArtAsc("%ACQUA%", PageRequest.of(0, 10));
 		assertEquals(10, items.getNumberOfElements());
 	}
 

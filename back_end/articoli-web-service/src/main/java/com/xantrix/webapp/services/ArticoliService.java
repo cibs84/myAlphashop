@@ -37,7 +37,7 @@ public class ArticoliService {
 	public PaginatedResponseList<ArticoliDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) throws NotFoundException {
 		Pageable articlesPagination = PageRequest.of(currentPage.filter(n -> n > -1).orElse(1),
 				pageSize.filter(n -> n > 0).orElse(10));
-		Page<Articoli> articoli = articoliRepository.findAll(articlesPagination);
+		Page<Articoli> articoli = articoliRepository.findAllByOrderByCodArtAsc(articlesPagination);
 		
 		if (articoli.isEmpty()) {
 			String errMessage = "Non è stato trovato alcun articolo";
@@ -63,7 +63,7 @@ public class ArticoliService {
 		Pageable articlesPagination = PageRequest.of(currentPage.map(n -> n-1).filter(n -> n > -1).orElse(0),
 				pageSize.filter(n -> n > 0).orElse(10));
 		
-		Page<Articoli> articoli = articoliRepository.findByDescrizioneLike(descrizioneMod, articlesPagination);
+		Page<Articoli> articoli = articoliRepository.findByDescrizioneLikeOrderByCodArtAsc(descrizioneMod, articlesPagination);
 		
 		if (articoli.isEmpty()) {
 			String errMessage = "Non è stato trovato alcun articolo avente descrizione '%s'".formatted(descrizione);
@@ -73,7 +73,7 @@ public class ArticoliService {
 			throw new NotFoundException(errMessage);
 		}
 		
-		// Convertire da Page<Articoli> a List<ArticoliDto>
+		// Converte Page<Articoli> in List<ArticoliDto>
 		List<ArticoliDto> articoliDto = articoli.stream().map(art -> articoliMapper.toModel(art))
 				.collect(Collectors.toList());
 
@@ -100,7 +100,8 @@ public class ArticoliService {
 		
 		if (articolo.isEmpty()) {
 
-			String errMessage = "Il barcode %s non è stato trovato!".formatted(ean);
+			// Questo messaggio di errore potrebbe non essere usato nel frontend
+			String errMessage = "L'articolo con barcode '%s' non è stato trovato!".formatted(ean);
 			logger.warn(errMessage);
 			
 			throw new NotFoundException(errMessage);

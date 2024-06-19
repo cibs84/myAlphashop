@@ -35,4 +35,8 @@ public class ArticoliDto {
 	private IngredientiDto ingredienti;
 	private CategoriaDto famAssort;
 	private IvaDto iva;
+	
+	public void setDescrizione(String descrizione) {
+		this.descrizione = descrizione.trim(); 
+	}
 }

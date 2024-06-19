@@ -13,10 +13,15 @@ import com.xantrix.webapp.entities.Articoli;
 
 public interface ArticoliRepository extends JpaRepository<Articoli, String> {
 
+	Page<Articoli> findAllByOrderByCodArtAsc(Pageable pageRequest);
+	
+	// SelByDescrizioneLike e findByDescrizioneLike sono alternativi.
+	// Usare findByDescrizioneLike se si vogliono i risultati con paginazione
 	@Query(value = "SELECT * FROM ARTICOLI WHERE DESCRIZIONE LIKE :desArt", nativeQuery = true)
 	List<Articoli> SelByDescrizioneLike(@Param("desArt") String descrizione);
 
-	Page<Articoli> findByDescrizioneLike(String descrizione, Pageable pageRequest);
+	Page<Articoli> findByDescrizioneLikeOrderByCodArtAsc(String descrizione, Pageable pageRequest);
+	// ------------------------------------------------------------------------------------------
 
 	Optional<Articoli> findByCodArt(String codArt);
 
