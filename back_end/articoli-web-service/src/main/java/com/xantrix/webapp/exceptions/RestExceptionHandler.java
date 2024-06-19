@@ -28,20 +28,30 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<ErrorResponse> exceptionItemAlreadyExistsHandler(Exception ex) {
 		ErrorResponse response = new ErrorResponse();
 		response.setDate(new Date());
-		response.setCode(HttpStatus.NOT_ACCEPTABLE.value());
+		response.setCode(HttpStatus.CONFLICT.value());
 		response.setMessage(ex.getMessage());
 
-		return new ResponseEntity<ErrorResponse>(response, HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<ErrorResponse>(response, HttpStatus.CONFLICT);
 	}
 	
 	@ExceptionHandler(BindingException.class)
 	public final ResponseEntity<ErrorResponse> exceptionBindingHandler(Exception ex)
 	{
-		ErrorResponse errore = new ErrorResponse();
-		errore.setDate(new Date());
-		errore.setCode(HttpStatus.BAD_REQUEST.value());
-		errore.setMessage(ex.getMessage());
+		ErrorResponse response = new ErrorResponse();
+		response.setDate(new Date());
+		response.setCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+		response.setMessage(ex.getMessage());
 		
-		return new ResponseEntity<ErrorResponse>(errore, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<ErrorResponse>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+	
+	@ExceptionHandler(NotErasableException.class)
+	public final ResponseEntity<ErrorResponse> exceptionNotErasableHandler(Exception ex) {
+		ErrorResponse response = new ErrorResponse();
+		response.setDate(new Date());
+		response.setCode(HttpStatus.FORBIDDEN.value());
+		response.setMessage(ex.getMessage());
+
+		return new ResponseEntity<ErrorResponse>(response, HttpStatus.FORBIDDEN);
 	}
 }

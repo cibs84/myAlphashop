@@ -30,6 +30,7 @@ import com.xantrix.webapp.dtos.InfoMsg;
 import com.xantrix.webapp.entities.Articoli;
 import com.xantrix.webapp.exceptions.BindingException;
 import com.xantrix.webapp.exceptions.ItemAlreadyExistsException;
+import com.xantrix.webapp.exceptions.NotErasableException;
 import com.xantrix.webapp.exceptions.NotFoundException;
 import com.xantrix.webapp.mappers.ArticoliMapper;
 import com.xantrix.webapp.services.ArticoliService;
@@ -122,8 +123,8 @@ public class ArticoliController {
 		// controlla se l'articolo da creare già esiste
 		ArticoliDto articolo = articoliService.getByCodArt(articoloDto.getCodArt());
 		if (articolo != null) {
-			String errorMessage = "Articolo %s presente in anagrafica! Impossibile utilizzare il metodo POST"
-					.formatted(articoloDto.getCodArt());
+			String errorMessage = "Articolo '%s - %s' già presente in anagrafica"
+					.formatted(articoloDto.getCodArt(), articoloDto.getDescrizione());
 			logger.warn(errorMessage);
 
 			throw new ItemAlreadyExistsException(errorMessage);
@@ -131,7 +132,7 @@ public class ArticoliController {
 		
 		articoliService.create(articoloDto);
 		return new ResponseEntity<InfoMsg>(new InfoMsg(LocalDate.now(), 
-				"Inserimento Articolo Eseguita con successo!"), HttpStatus.CREATED);
+				String.format("Inserimento articolo '%s' eseguito con successo", articoloDto.getCodArt())), HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/modifica")
@@ -152,8 +153,7 @@ public class ArticoliController {
 		ArticoliDto articoloCheck = articoliService.getByCodArt(articoloDto.getCodArt());
 		
 		if (articoloCheck == null) {
-			String errMsg = String.format("Articolo %s non presente in anagrafica! "
-					+ "Impossibile utilizzare il metodo PUT", articoloDto.getCodArt());
+			String errMsg = String.format("Articolo '%s' già presente in anagrafica", articoloDto.getCodArt());
 
 			logger.warn(errMsg);
 	
@@ -163,19 +163,25 @@ public class ArticoliController {
 		articoliService.create(articoloDto);
 		
 		return new ResponseEntity<InfoMsg>(new InfoMsg(LocalDate.now(),
-				"Modifica Articolo Eseguita con successo!"), HttpStatus.CREATED);
+				String.format("Modifica articolo '%s' eseguita con successo", articoloDto.getCodArt())), HttpStatus.CREATED);
 	}
 	
 	
 	@DeleteMapping("/elimina/{codart}")
-	public ResponseEntity<ObjectNode> delArt(@PathVariable("codart") String codArt) throws NotFoundException {
+	public ResponseEntity<ObjectNode> delArt(@PathVariable("codart") String codArt) throws NotFoundException, NotErasableException {
 		ArticoliDto articoloDto = articoliService.getByCodArt(codArt);
 		
 		if (articoloDto == null) {
-			String errMessage = String.format("Articolo %s non presente in anagrafica! ",codArt);
+			String errMessage = String.format("Articolo da eliminare '%s' non è stato trovato", codArt);
 			logger.warn(errMessage);
 			
 			throw new NotFoundException(errMessage);
+		}
+		
+		if (articoloDto.getCodArt().equals("abcTest")) {
+			String errMessage = String.format("Articolo '%s' non eliminabile", "abcTest");
+			logger.warn(errMessage);
+			throw new NotErasableException(errMessage);
 		}
 
 		Articoli articolo = articoliMapper.toEntity(articoloDto);
@@ -185,7 +191,7 @@ public class ArticoliController {
 		ObjectNode responseNode = mapper.createObjectNode();
 		
 		responseNode.put("code", HttpStatus.OK.toString());
-		responseNode.put("message", "Eliminazione Articolo " + codArt + " Eseguita Con Successo");
+		responseNode.put("message", String.format("Eliminazione articolo '%s - %s' eseguita con successo", articolo.getCodArt(), articolo.getDescrizione()));
 		
 		return new ResponseEntity<ObjectNode>(responseNode, HttpStatus.OK);
 	}

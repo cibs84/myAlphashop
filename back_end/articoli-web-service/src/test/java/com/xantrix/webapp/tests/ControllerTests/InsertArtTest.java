@@ -47,7 +47,7 @@ public class InsertArtTest {
 	private String JsonData = """
 			{
 			  "codArt": "123Test",
-			  "descrizione": "Articolo Unit Test Inserimento",
+			  "descrizione": "ARTICOLO UNIT TEST INSERIMENTO",
 			  "um": "PZ",
 			  "codStat": "TESTART",
 			  "pzCart": 6,
@@ -91,10 +91,10 @@ public class InsertArtTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonData)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotAcceptable())
-				.andExpect(jsonPath("$.code").value(406))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.code").value(409))
 				.andExpect(jsonPath("$.message")
-						.value("Articolo 123Test presente in anagrafica! Impossibile utilizzare il metodo POST"))
+						.value("Articolo '123Test - ARTICOLO UNIT TEST INSERIMENTO' già presente in anagrafica"))
 				.andDo(print());
 	}
 
@@ -133,8 +133,8 @@ public class InsertArtTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(ErrJsonData)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.code").value(400))
+				.andExpect(status().isUnprocessableEntity())
+				.andExpect(jsonPath("$.code").value(422))
 				.andExpect(jsonPath("$.message")
 						.value("Il campo Descrizione deve avere un numero di caratteri compreso tra 6 e 80"))
 				.andDo(print());
@@ -180,17 +180,43 @@ public class InsertArtTest {
 		Articoli articolo = articoliRepository.findByCodArt("123Test").get();
 		assertThat(articolo.getDescrizione()).isEqualTo("ARTICOLO UNIT TEST MODIFICA");
 	}
-
+	
 	@Test
 	@Order(5)
 	public void testDelArticolo() throws Exception {
 		mockMvc.perform(
 				MockMvcRequestBuilders.delete("/api/articoli/elimina/123Test")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.code").value("200 OK"))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.code").value("200 OK"))
+		.andExpect(jsonPath("$.message")
+				.value("Eliminazione articolo '123Test - ARTICOLO UNIT TEST MODIFICA' eseguita con successo"))
+		.andDo(print());
+	}
+	
+	@Test
+	@Order(5)
+	public void testDelArticoloNonEliminabile() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/articoli/elimina/abcTest")
+				.accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isForbidden())
+		.andExpect(jsonPath("$.code").value(403))
+		.andExpect(jsonPath("$.message")
+				.value("Articolo 'abcTest' non eliminabile"))
+		.andDo(print());
+	}
+
+	@Test
+	@Order(5)
+	public void testDelArticoloNonTrovato() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/articoli/elimina/xxxx")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.code").value(404))
 				.andExpect(jsonPath("$.message")
-						.value("Eliminazione Articolo 123Test Eseguita Con Successo"))
+						.value("Articolo da eliminare 'xxxx' non è stato trovato"))
 				.andDo(print());
 	}
 

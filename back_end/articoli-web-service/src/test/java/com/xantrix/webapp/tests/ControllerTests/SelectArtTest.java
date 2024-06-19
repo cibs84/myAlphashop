@@ -110,7 +110,7 @@ public class SelectArtTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articoli/cerca/barcode/" + Barcode)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
-				.andExpect(jsonPath("$.message").value("Il barcode " + Barcode + " non è stato trovato!"))
+				.andExpect(jsonPath("$.message").value("L'articolo con barcode \'" + Barcode + "\' non è stato trovato!"))
 				.andDo(print());
 	}
 
