@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Articolo } from '../../models/Articolo';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import { Pagination } from 'src/app/models/Pagination';
 import { ArticoloResponse } from 'src/app/models/ArticoloResponse';
 
@@ -41,8 +40,12 @@ export class ArticoliService {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articoli/cerca/barcode/${filter}`)
+    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articoli/cerca/barcode/${filter}`);
   };
+
+  deleteArticleByCodart = (codArt: string) => {
+    return this.httpClient.delete(`http://${this.server}:${this.port}/api/articoli/elimina/${codArt}`);
+  }
 
   private setPagination = (pagination: Pagination|undefined) => {
     if (typeof(pagination)!=='undefined') {

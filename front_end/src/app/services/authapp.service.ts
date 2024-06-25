@@ -11,7 +11,7 @@ export class AuthappService {
     return username === "dario" && password === "pass" ? true : false;
   }
 
-  usernameLogged = (): string|null => sessionStorage.getItem("username") ?? "";
+  usernameLogged = (): string|null => sessionStorage.getItem("username") || "";
   isLogged = (): boolean => sessionStorage.getItem("username") ? true : false;
 
   clearUsername = (): void => sessionStorage.removeItem("username");

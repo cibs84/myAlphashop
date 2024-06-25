@@ -40,7 +40,7 @@
           <li><a class="dropdown-item" routerLink="/registra">Registra</a></li>
           <li><a class="dropdown-item" routerLink="/disabilita">Disabilita</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" [class]="basicAuth.isLogged() ? '' : 'disabled'"
+          <li><a class="dropdown-item" [ngClass]="{'disabled': !basicAuth.isLogged()}"
                  routerLink="/logout">Logout {{ basicAuth.usernameLogged() }}</a>
           </li>
         </ul>

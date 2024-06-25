@@ -7,13 +7,16 @@ export class Pagination {
 	private _pageSize: number = 10; // numero massimo di elementi presenti nella pagina
 	private _totalElements: number = 10; // numero elementi presenti nella pagina corrente
 
-  constructor(currentPage?: number|any, pageSize?: number|any) {
-    this.currentPage = currentPage;
-    this.pageSize = pageSize;
+  private _totalPagesArray: number[] = Array.of(this.totalPages); // usato con ngFor per creare i pulsanti di paginazione nel template ( deafult: un elemento/un pulsante)
+
+
+  constructor(currentPage?: number, pageSize?: number) {
+    this.currentPage = currentPage || this.currentPage;
+    this.pageSize = pageSize || this.pageSize;
   }
 
   public set currentPage(currentPage: number){
-    this._currentPage = typeof(currentPage)!=='undefined' && currentPage > -1 ? currentPage : this._currentPage;
+    this._currentPage = currentPage > -1 ? currentPage : this.currentPage;
   }
 
   public get currentPage(){
@@ -21,7 +24,7 @@ export class Pagination {
   }
 
   public set pageSize(pageSize: number){
-    this._pageSize = typeof(pageSize)!=='undefined' && pageSize > 0 ? pageSize : this._pageSize;
+    this._pageSize = pageSize > 0 ? pageSize : this.pageSize;
   }
 
   public get pageSize(){
@@ -29,7 +32,8 @@ export class Pagination {
   }
 
   public set totalPages(totalPages: number){
-    this._totalPages = typeof(totalPages)!=='undefined' && totalPages > 0 ? totalPages : this._totalPages;
+    this._totalPages = totalPages > 0 ? totalPages : this.totalPages;
+    this.totalPagesArray = Array.of(this.totalPages);
   }
 
   public get totalPages(){
@@ -37,8 +41,8 @@ export class Pagination {
   }
 
   public set nextPage(nextPage: number){
-    this._totalPages = typeof(nextPage)!=='undefined' && nextPage > 0 && nextPage <= this._totalPages
-                       ? nextPage : this._nextPage;
+    this._totalPages = nextPage > 0 && nextPage <= this.totalPages
+                       ? nextPage : this.nextPage;
   }
 
   public get nextPage(){
@@ -46,8 +50,8 @@ export class Pagination {
   }
 
   public set previousPage(previousPage: number){
-    this._previousPage = typeof(previousPage)!=='undefined' && previousPage > 0
-                         ? previousPage : this._previousPage;
+    this._previousPage = previousPage > 0
+                         ? previousPage : this.previousPage;
   }
 
   public get previousPage(){
@@ -55,11 +59,19 @@ export class Pagination {
   }
 
   public set totalElements(totalElements: number){
-    this._totalElements = typeof(totalElements)!=='undefined' && totalElements > 0 && totalElements <= this._pageSize
-                          ? totalElements : this._totalElements;
+    this._totalElements = totalElements > 0 && totalElements <= this.pageSize
+                          ? totalElements : this.totalElements;
   }
 
   public get totalElements(){
     return this._totalElements;
+  }
+
+  public set totalPagesArray(newTotalPagesArray: number[]){
+    this._totalPagesArray = newTotalPagesArray;
+  }
+
+  public get totalPagesArray(): number[] {
+    return this._totalPagesArray;
   }
 }
