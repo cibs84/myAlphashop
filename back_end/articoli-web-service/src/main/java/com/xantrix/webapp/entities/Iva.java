@@ -27,5 +27,5 @@ public class Iva {
 
 	@OneToMany(mappedBy = "iva")
 	@JsonBackReference
-	private Set<Articoli> articoli;
+	private Set<Articolo> articolo;
 }

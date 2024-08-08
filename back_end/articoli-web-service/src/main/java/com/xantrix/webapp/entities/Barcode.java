@@ -35,5 +35,5 @@ public class Barcode implements Serializable {
 	@EqualsAndHashCode.Exclude
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "codart", referencedColumnName = "codArt")
-    private Articoli articolo;
+    private Articolo articolo;
 }

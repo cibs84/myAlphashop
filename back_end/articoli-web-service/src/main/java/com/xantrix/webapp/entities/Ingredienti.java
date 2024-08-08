@@ -25,5 +25,5 @@ public class Ingredienti {
 	@OneToOne
 	@PrimaryKeyJoinColumn
 	@JsonIgnore
-	private Articoli articolo;
+	private Articolo articolo;
 }

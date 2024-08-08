@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 import com.xantrix.webapp.common.mappers.BaseAlphaMapper;
 import com.xantrix.webapp.dtos.BarcodeDto;
 import com.xantrix.webapp.entities.Barcode;
-import com.xantrix.webapp.repository.ArticoliRepository;
+import com.xantrix.webapp.repository.ArticoloRepository;
 
 @Component
 public class BarcodeMapper extends BaseAlphaMapper<Barcode, BarcodeDto> {
 
 	@Autowired
-	ArticoliRepository articoliRepository;
+	ArticoloRepository articoloRepository;
 	
 	@Override
 	public BarcodeDto toModel(Barcode entity, BarcodeDto model) {

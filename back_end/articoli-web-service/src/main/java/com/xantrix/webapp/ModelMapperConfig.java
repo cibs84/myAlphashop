@@ -7,9 +7,9 @@ import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.xantrix.webapp.dtos.ArticoliDto;
+import com.xantrix.webapp.dtos.ArticoloDto;
 import com.xantrix.webapp.dtos.BarcodeDto;
-import com.xantrix.webapp.entities.Articoli;
+import com.xantrix.webapp.entities.Articolo;
 import com.xantrix.webapp.entities.Barcode;
 
 @Configuration
@@ -36,7 +36,7 @@ public class ModelMapperConfig {
 		return modelMapper;
 	}
 
-//	PropertyMap<ArticoliDto, Articoli> toArticoliMapping = new PropertyMap<ArticoliDto, Articoli>() {
+//	PropertyMap<ArticoloDto, Articolo> toArticoliMapping = new PropertyMap<ArticoloDto, Articolo>() {
 //		
 //		@Override
 //		protected void configure() {
@@ -53,7 +53,7 @@ public class ModelMapperConfig {
 //		}
 //	};
 	
-	PropertyMap<Articoli, ArticoliDto> toArticoliDtoMapping = new PropertyMap<Articoli, ArticoliDto>() {
+	PropertyMap<Articolo, ArticoloDto> toArticoliDtoMapping = new PropertyMap<Articolo, ArticoloDto>() {
 		protected void configure() {
 			map().setDataCreazione(source.getDataCreaz());
 		}

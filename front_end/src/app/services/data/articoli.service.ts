@@ -26,25 +26,25 @@ export class ArticoliService {
     this.setPagination(pagination);
     filter = filter ? filter : ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articoli/cerca/codice/${filter}`)
+    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articolo/cerca/codice/${filter}`)
   };
 
   getArticoliByDesc = (/*descrizione*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articoli/cerca/descrizione/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`);
+    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articolo/cerca/descrizione/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`);
   }
 
   getArticoloByBarcode = (/*barcode(=ean)*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articoli/cerca/barcode/${filter}`);
+    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articolo/cerca/barcode/${filter}`);
   };
 
   deleteArticleByCodart = (codArt: string) => {
-    return this.httpClient.delete(`http://${this.server}:${this.port}/api/articoli/elimina/${codArt}`);
+    return this.httpClient.delete(`http://${this.server}:${this.port}/api/articolo/elimina/${codArt}`);
   }
 
   private setPagination = (pagination: Pagination|undefined) => {

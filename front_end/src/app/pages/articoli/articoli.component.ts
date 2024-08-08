@@ -5,6 +5,7 @@ import { Articolo } from 'src/app/models/Articolo';
 import { ArticoloResponse } from 'src/app/models/ArticoloResponse';
 import { Pagination } from 'src/app/models/Pagination';
 import { ArticoliService } from 'src/app/services/data/articoli.service';
+import { log } from 'console';
 
 enum FilterTypes {
   ByCodart = 1,
@@ -20,7 +21,8 @@ enum StatusCodes {
   UnprocessableEntity = 422, // e.g validation error (create, update)
   Forbidden = 403, // e.g. not erasable item (delete)
   Success = 200,
-  Accepted = 202
+  Accepted = 202,
+  NoContent = 204
 }
 
 enum ErrorMessages {
@@ -48,6 +50,7 @@ export class ArticoliComponent implements OnInit {
   errorMessages: typeof ErrorMessages = ErrorMessages;
 
   // PAGINATION
+  readonly MAX_PAG_BTNS_NR = 7;
   readonly MINIMUM_MAX_PAG_BTNS_NR = 5;
 
   articoli$: Articolo[] = [];
@@ -80,10 +83,10 @@ export class ArticoliComponent implements OnInit {
   ) {
     console.log("constructor()");
 
-    // Numero massimo di bottoniPagina inclusi i bottoni '...' ed esclusi 'previous' e 'next'
+    // Numero massimo di bottoni-pagina inclusi i bottoni '...' ed esclusi 'previous' e 'next'
     // Il minimo valore impostabile è rappresentato da MINIMUM_MAX_PAG_BTNS_NR
     // e verrà utilizzato quando 'maxPagBtnsNr' non sarà più impostato hardcoded
-    this.pagination.maxPagBtnsNr = 7;
+    this.pagination.maxPagBtnsNr = this.MAX_PAG_BTNS_NR;
     this.pagination.pagButtonsNr = this.pagination.maxPagBtnsNr;
   }
 
@@ -113,13 +116,13 @@ export class ArticoliComponent implements OnInit {
 
   setPagination = (): void => {
     console.log("setPagination()")
-    // I bottoniPagina (pagButtons) mostrano le pagine (pages)
+    // I bottoni-pagina (pagButtons) mostrano le pagine (pages)
     // attenzione a non confonderli
 
     // Se il numero totale delle pagine 'totalPages'
-    // è inferiore al numero massimo di bottoniPagina 'maxPagBtnsNr'
-    // reimposta il numero totale di bottoniPagina 'pagButtonsNr' che è
-    // impostato di default come il numero massimo di bottoniPagina 'maxPagBtnsNr'
+    // è inferiore al numero massimo di bottoni-pagina 'maxPagBtnsNr'
+    // reimposta il numero totale di bottoni-pagina 'pagButtonsNr' che è
+    // impostato di default come il numero massimo di bottoni-pagina 'maxPagBtnsNr'
     if (this.pagination$.totalPages < this.pagination.maxPagBtnsNr) {
       this.pagination.pagButtonsNr = this.pagination$.totalPages;
     }
@@ -141,11 +144,42 @@ export class ArticoliComponent implements OnInit {
       this.getArticoli();
       this.lastFilter = this.filter;
 
-      this.resetResponses(); // reset respObj$ and error$
+
     }
   }
 
+
+
+  private getLiteralStatoArt = (idStatoArt: string): string => {
+    if (idStatoArt === '1') {
+      return StatoArt.Attivo;
+    } else if (idStatoArt === '2') {
+      return StatoArt.Sospeso;
+    } else if (idStatoArt === '3') {
+      return StatoArt.Eliminato;
+    } else {
+      return StatoArt.Errore;
+    }
+  }
+
+  // ******** CRUD Articoli ********
+  resetResponses = (): void => {
+    this.respObj$ = {
+      code: "",
+      message: ""
+    };
+
+    this.error$ = {
+      date: new Date(),
+      code: "",
+      message: ""
+    }
+  }
+
+  // READ
   getArticoli = (): void => {
+    this.resetResponses(); // reset respObj$ and error$
+
     console.log("articoli.components.ts -> getArticoli()");
     console.log("filterType -> " + this.filterType);
 
@@ -161,15 +195,20 @@ export class ArticoliComponent implements OnInit {
     console.log(this.pagination$);
     console.log("filterType -> " + this.filterType);
 
-    switch (this.filterType) {
-      case FilterTypes.ByCodart:
-        return this.articoliService.getArticoloByCodart(this.filter, this.pagination$);
-      case FilterTypes.ByDesc:
-        return this.articoliService.getArticoliByDesc(this.filter, this.pagination$);
-      case FilterTypes.ByBarcode:
+    if (this.filterType === FilterTypes.ByCodart) {
+      return this.articoliService.getArticoloByCodart(this.filter, this.pagination$);
+    } else if (this.filterType === FilterTypes.ByDesc) {
+      return this.articoliService.getArticoliByDesc(this.filter, this.pagination$);
+    } else if (this.filterType === FilterTypes.ByBarcode) {
+      if (this.filter === '') {
+        console.log("ALOHA!!!");
+
+        return this.articoliService.getArticoliByDesc(this.filter, this.pagination$);;
+      } else {
         return this.articoliService.getArticoloByBarcode(this.filter, this.pagination$);
-      default:
-        throw new Error("Invalid filterType");
+      }
+    } else {
+      throw new Error("Invalid filterType");
     }
   }
 
@@ -198,11 +237,11 @@ export class ArticoliComponent implements OnInit {
     console.log(error);
 
     if (error.status === StatusCodes.ServerUnavailable) {
-      console.log("filter: "+this.filter);
-      console.log(ErrorMessages.ServerNonDisponibile);
+        console.log("filter: "+this.filter);
+        console.log(ErrorMessages.ServerNonDisponibile);
 
-      this.error$.code = 0;
-      this.error$.message = ErrorMessages.ServerNonDisponibile;
+        this.error$.code = 0;
+        this.error$.message = ErrorMessages.ServerNonDisponibile;
     } else if (error.status === StatusCodes.NotFound) {
       if (this.filterType < 3) {
         console.log("error.status -> " + error.status);
@@ -211,6 +250,11 @@ export class ArticoliComponent implements OnInit {
 
         this.filterType++;
         this.getArticoli();
+      } else if (this.filter === '') {
+          console.log(`Al momento non ci sono articoli!`);
+
+          this.error$.code = error.error.code;
+          this.error$.message = `Al momento non ci sono articoli!`;
       } else {
         console.log(`Articolo con filtro '${this.filter}' non è stato trovato!`);
 
@@ -221,23 +265,10 @@ export class ArticoliComponent implements OnInit {
       console.log(ErrorMessages.ErroreGenerico);
       console.error(error); // Registra l'errore nella console
     }
-
+    //  Scrolla la pagina all'elemento di alert con il messaggio d'errore
     this.scrollToErrorAlert();
   }
 
-  private getLiteralStatoArt = (idStatoArt: string): string => {
-    if (idStatoArt === '1') {
-      return StatoArt.Attivo;
-    } else if (idStatoArt === '2') {
-      return StatoArt.Sospeso;
-    } else if (idStatoArt === '3') {
-      return StatoArt.Eliminato;
-    } else {
-      return StatoArt.Errore;
-    }
-  }
-
-  // ******** CRUD Articoli ********
   // DELETE
   deleteArt = (codArt: string): void => {
     this.resetResponses();
@@ -259,6 +290,7 @@ export class ArticoliComponent implements OnInit {
     this.filterType = FilterTypes.ByDesc;
     this.getArticoli();
 
+    //  Scrolla la pagina all'elemento di alert con il messaggio di risposta
     this.scrollToSuccessAlert();
   }
   private handleErrorResp = (error: any): void => {
@@ -275,35 +307,22 @@ export class ArticoliComponent implements OnInit {
       console.log("this.error$.code -> " + this.error$.code);
       console.log('this.error$.message -> ' + this.error$.message);
     } else if (error.status === StatusCodes.NotFound){
-      console.log(ErrorMessages.ElementoNonTrovato);
+      console.error(ErrorMessages.ElementoNonTrovato);
     } else if (error.status === StatusCodes.Forbidden){
-      console.log(ErrorMessages.OperazioneNonConsentita);
+      console.error(ErrorMessages.OperazioneNonConsentita);
     } else {
-      console.log(ErrorMessages.ErroreGenerico);
+      console.error(ErrorMessages.ErroreGenerico);
       console.error(error); // Registra l'errore nella console
     }
-
-    console.log("handleErrorResp()>this.error$.message -> " + this.error$.message);
+    //  Scrolla la pagina all'elemento di alert con il messaggio di errore
     this.scrollToErrorAlert();
   }
   // ******** End - CRUD Articoli ********
 
-  resetResponses = (): void => {
-    this.respObj$ = {
-      code: "",
-      message: ""
-    };
-
-    this.error$ = {
-      date: new Date(),
-      code: "",
-      message: ""
-    }
-  }
 
   // ----- PAGINATION -----
   // pageNr -> numeroPagina passato dalla pagina HTML al metodo
-  // this.pagination.pagButtonsNr -> Attuale numero di bottoniPagina visualizzato
+  // this.pagination.pagButtonsNr -> Attuale numero di bottoni-pagina visualizzato
   // this.pagination$.currentPage -> numeroPagina corrente
   // this.pagination$.totalPages -> totale delle pagine messe a disposizione dal server
 
@@ -323,23 +342,23 @@ export class ArticoliComponent implements OnInit {
     this.getArticoli();
   }
 
-  // Ritorna un booleano per mostrare o meno il 'pageNr' su uno dei bottoniPagina
+  // Ritorna un booleano per mostrare o meno il 'pageNr' su uno dei bottoni-pagina
   shouldDisplayPageNr(pageNr: number): boolean {
     const firstPage = 1;
     const lastPage = this.pagination$.totalPages;
     const currentPage = this.pagination$.currentPage;
     const maxPagBtnsNr = this.pagination.maxPagBtnsNr; // 7
-    const costantNrBtns = 2; // Il primo e l'ultimo bottone-pagina hanno valore costante
+    const constNrBtns = 2; // Il primo e l'ultimo bottone-pagina hanno valore costante
     const isFirstOrLastPage = (pageNr === firstPage || pageNr === lastPage);
 
     return (
             isFirstOrLastPage
             ||
-            (pageNr >= 1 && pageNr <= firstPage+(maxPagBtnsNr-costantNrBtns))
+            (pageNr >= 1 && pageNr <= firstPage+(maxPagBtnsNr-constNrBtns))
               &&
             (currentPage >= firstPage && currentPage <= 4)
             ||
-            (pageNr >= lastPage-(maxPagBtnsNr-costantNrBtns) && pageNr <= lastPage)
+            (pageNr >= lastPage-(maxPagBtnsNr-constNrBtns) && pageNr <= lastPage)
               &&
             (currentPage >= lastPage-3 && currentPage <= lastPage)
             ||
@@ -359,16 +378,16 @@ export class ArticoliComponent implements OnInit {
     const lastPage = this.pagination$.totalPages;
     const currentPage = this.pagination$.currentPage;
     const maxPagBtnsNr = this.pagination.maxPagBtnsNr; // 7
-    const costantNrBtns = 2; // Il primo e l'ultimo bottone-pagina hanno valore costante
+    const constNrBtns = 2; // Il primo e l'ultimo bottone-pagina hanno valore costante
 
     const showEllipsis = (
                           (currentPage >= firstPage && currentPage <= 4)
                             &&
-                          pageNr == firstPage+(maxPagBtnsNr-costantNrBtns)
+                          pageNr == firstPage+(maxPagBtnsNr-constNrBtns)
                           ||
                           (currentPage >= lastPage-3 && currentPage <= lastPage)
                             &&
-                          pageNr == lastPage-(maxPagBtnsNr-costantNrBtns)
+                          pageNr == lastPage-(maxPagBtnsNr-constNrBtns)
                           ||
                           (currentPage >= firstPage+4 && currentPage <= lastPage-4)
                             &&
