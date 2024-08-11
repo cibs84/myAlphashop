@@ -22,29 +22,29 @@ export class ArticoliService {
   constructor(private httpClient: HttpClient) { }
 
 
-  getArticoloByCodart = (/*codArt*/ filter: string, pagination?: Pagination) => {
+  getArticleByCodart = (/*codArt*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
     filter = filter ? filter : ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articolo/cerca/codice/${filter}`)
+    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/article/findByCodart/${filter}`)
   };
 
-  getArticoliByDesc = (/*descrizione*/ filter: string, pagination?: Pagination) => {
+  getArticlesByDesc = (/*descrizione*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articolo/cerca/descrizione/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`);
+    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articles/findByDescription/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`);
   }
 
-  getArticoloByBarcode = (/*barcode(=ean)*/ filter: string, pagination?: Pagination) => {
+  getArticleByBarcode = (/*barcode(=ean)*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articolo/cerca/barcode/${filter}`);
+    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/article/findByBarcode/${filter}`);
   };
 
   deleteArticleByCodart = (codArt: string) => {
-    return this.httpClient.delete(`http://${this.server}:${this.port}/api/articolo/elimina/${codArt}`);
+    return this.httpClient.delete(`http://${this.server}:${this.port}/api/article/update/${codArt}`);
   }
 
   private setPagination = (pagination: Pagination|undefined) => {
@@ -52,4 +52,8 @@ export class ArticoliService {
       this.pagination = pagination;
     }
   }
+
+  // updateArticle = (codArt: string) => {
+  //   return this.httpClient.put(`http://${this.server}:${this.port}/api/article/update/${codArt}`);
+  // }
 }

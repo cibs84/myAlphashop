@@ -20,7 +20,7 @@ export class GridArticlesComponent implements OnInit {
   constructor(private articoliService: ArticoliService) { }
 
   ngOnInit(): void {
-    this.articoliService.getArticoliByDesc(this.filter, this.pagination$).subscribe({
+    this.articoliService.getArticlesByDesc(this.filter, this.pagination$).subscribe({
       next: this.handleResponse.bind(this),
       error: this.handleError.bind(this)
     })

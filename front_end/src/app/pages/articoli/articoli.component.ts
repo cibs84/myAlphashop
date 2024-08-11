@@ -196,16 +196,16 @@ export class ArticoliComponent implements OnInit {
     console.log("filterType -> " + this.filterType);
 
     if (this.filterType === FilterTypes.ByCodart) {
-      return this.articoliService.getArticoloByCodart(this.filter, this.pagination$);
+      return this.articoliService.getArticleByCodart(this.filter, this.pagination$);
     } else if (this.filterType === FilterTypes.ByDesc) {
-      return this.articoliService.getArticoliByDesc(this.filter, this.pagination$);
+      return this.articoliService.getArticlesByDesc(this.filter, this.pagination$);
     } else if (this.filterType === FilterTypes.ByBarcode) {
       if (this.filter === '') {
         console.log("ALOHA!!!");
 
-        return this.articoliService.getArticoliByDesc(this.filter, this.pagination$);;
+        return this.articoliService.getArticlesByDesc(this.filter, this.pagination$);;
       } else {
-        return this.articoliService.getArticoloByBarcode(this.filter, this.pagination$);
+        return this.articoliService.getArticleByBarcode(this.filter, this.pagination$);
       }
     } else {
       throw new Error("Invalid filterType");
@@ -279,6 +279,17 @@ export class ArticoliComponent implements OnInit {
       error: this.handleErrorResp
     });
   }
+
+  // UPDATE
+  // updateArt(codArt: string) {
+  //   this.resetResponses();
+
+  //   this.codArt = codArt;
+  //   this.articoliService.updateArticle(codArt).subscribe({
+  //     next: this.handleSuccessResp,
+  //     error: this.handleErrorResp
+  //   });
+  // }
 
   private handleSuccessResp = (resp: any): void => {
     console.log("handleSuccessResp()");

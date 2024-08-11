@@ -13,6 +13,7 @@ import { LogoutComponent } from './pages/logout/logout.component';
 import { GridArticlesComponent } from './pages/grid-articles/grid-articles.component';
 import { ArticoloCardComponent } from './components/articolo-card/articolo-card.component';
 import { HttpClientModule } from '@angular/common/http';
+import { GestartComponent } from './pages/gestart/gestart.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { HttpClientModule } from '@angular/common/http';
     ArticoliComponent,
     LogoutComponent,
     GridArticlesComponent,
-    ArticoloCardComponent
+    ArticoloCardComponent,
+    GestartComponent
   ],
   imports: [
     BrowserModule,
