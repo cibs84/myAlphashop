@@ -3,19 +3,20 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { LogoutComponent } from './pages/logout/logout.component';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
-import { ArticoliComponent } from './pages/articoli/articoli.component';
 import { ErrorComponent } from './pages/error/error.component';
 import { RouteGuardService } from './services/route-guard.service';
-import { GridArticlesComponent } from './pages/grid-articles/grid-articles.component';
+import { ArticlesGridComponent } from './pages/articles-grid/articles-grid.component';
+import { ArticlesComponent } from './pages/articles/articles.component';
 
 const routes: Routes = [
   {path:'', component:LoginComponent},
   {path:'login', component:LoginComponent},
   {path:'logout', component:LogoutComponent},
   {path:'welcome', component:WelcomeComponent, canActivate:[RouteGuardService]},
+  {path:'home', component:WelcomeComponent, canActivate:[RouteGuardService]},
   {path:'welcome/:username', component:WelcomeComponent, canActivate:[RouteGuardService]},
-  {path:'articoli', component:ArticoliComponent, canActivate:[RouteGuardService]},
-  {path:'articoli/grid', component:GridArticlesComponent, canActivate:[RouteGuardService]},
+  {path:'articles', component:ArticlesComponent, canActivate:[RouteGuardService]},
+  {path:'articles/grid', component:ArticlesGridComponent, canActivate:[RouteGuardService]},
   {path:'**', component:ErrorComponent, canActivate:[RouteGuardService]},
   {path:'**', component:ErrorComponent}
 ];

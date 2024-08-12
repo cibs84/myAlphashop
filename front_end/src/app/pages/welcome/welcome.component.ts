@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SalutiDataService } from 'src/app/services/data/saluti-data.service';
+import { log } from 'console';
+import { GreetingsDataService } from 'src/app/services/data/greetings-data.service';
 
 @Component({
   selector: 'app-welcome',
@@ -9,13 +10,13 @@ import { SalutiDataService } from 'src/app/services/data/saluti-data.service';
 })
 export class WelcomeComponent implements OnInit {
 
-  titolo: string = "Benvenuti in Alphashop";
-  sottotitolo: string = "Visualizza le offerte del giorno";
-  saluti: string = "";
-  errore: string = "";
+  title: string = "Welcome to Alphashop";
+  subtitle: string = "View deals of the day";
+  greetings: string = "";
+  error: string = "";
   userId: string = '';
 
-  constructor(private route: ActivatedRoute, private salutiService: SalutiDataService) { }
+  constructor(private route: ActivatedRoute, private greetingsDataService: GreetingsDataService) { }
 
   ngOnInit(): void {
     this.userId = (this.route.snapshot.params['username'] !== undefined) ? this.route.snapshot.params['username'] : "";
@@ -26,18 +27,18 @@ export class WelcomeComponent implements OnInit {
     // )
   }
 
-  getSaluti = (): void => {
-    this.salutiService.getSaluti(this.userId).subscribe({
+  getGreetings = (): void => {
+    this.greetingsDataService.getGreetings(this.userId).subscribe({
       next: this.responseHandler.bind(this),
       error: this.errorHandler.bind(this)
     });
   };
 
   responseHandler = (response: Object): void => {
-    this.saluti = response.toString();
+    this.greetings = response.toString();
   }
 
   errorHandler = (error: any): void => {
-    this.errore = error.error.message;
+    this.error = error.error.message;
   }
 }

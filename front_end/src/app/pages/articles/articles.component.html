@@ -3,11 +3,11 @@
   <!-- HEADING -->
   <div class="container mb-4">
     <div class="row align-items-center">
-      <h1 class="col">Prodotti Disponibili</h1>
+      <h1 class="col">Products Availables</h1>
       <div class="col-3">
-        <button class="btn btn-outline-secondary ms-2">Esporta</button>
-        <button class="btn btn-outline-secondary ms-2">Importa</button>
-        <button class="btn btn-primary ms-2">Crea</button>
+        <button class="btn btn-outline-secondary ms-2">Export</button>
+        <button class="btn btn-outline-secondary ms-2">Import</button>
+        <button class="btn btn-primary ms-2">Create</button>
       </div>
     </div>
   </div>
@@ -15,21 +15,21 @@
     <!-- GRID - HEADER -->
     <div class="row grid-header justify-content-between align-items-center">
       <div class="col-4">
-        <!-- Input: Descrizione -->
-        <input type="text" placeholder="Cerca..." [(ngModel)]="filter" (keyup.enter)="refresh()" >
+        <!-- Input: Description -->
+        <input type="text" placeholder="Search..." [(ngModel)]="filter" (keyup.enter)="refresh()" >
       </div>
       <div class="col-4">
         <div class="d-flex justify-content-between">
-          <!-- Select - Tutti -->
+          <!-- Select - All -->
           <select class="form-select">
-            <option selected>Tutti</option>
+            <option selected>All</option>
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
           </select>
-          <!-- Select - Nuovi -->
+          <!-- Select - New -->
           <select class="form-select ms-3">
-            <option selected>Nuovi</option>
+            <option selected>New</option>
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
@@ -40,49 +40,53 @@
     <!-- GRID - BODY -->
     <div class="row grid-body">
       <!-- Product CARD -->
-      <table id="articoli" class="table table-hover mb-5">
+      <table id="articles" class="table table-hover mb-5">
         <thead>
           <tr>
             <th scope="col">CodArt</th>
-            <th scope="col">Descrizione</th>
+            <th scope="col">Description</th>
             <th scope="col">Um</th>
             <th scope="col">CodStat</th>
-            <th scope="col">Pezzi</th>
-            <th scope="col">Peso(KG/LT)</th>
-            <th scope="col">IdStatoArt</th>
-            <th scope="col">Prezzo</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Weight(KG/LT)</th>
+            <th scope="col">IdArtStatus</th>
+            <th scope="col">Price</th>
             <th scope="col">Active</th>
-            <th scope="col">Data</th>
+            <th scope="col">Date</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
-        <tbody *ngIf="error$.message != errorMessages.ServerNonDisponibile">
-          <tr *ngFor="let articolo of articoli$">
-            <td>{{ articolo.codArt }}</td>
-            <td>{{ articolo.descrizione }}</td>
-            <td>{{ articolo.um }}</td>
-            <td>{{ articolo.codStat }}</td>
-            <td>{{ articolo.pzCart }}</td>
-            <td>{{ articolo.pesoNetto }}</td>
+        <tbody *ngIf="error$.message != errorMessages.UnavailableServer">
+          <tr *ngFor="let article of articles$">
+            <td>{{ article.codArt }}</td>
+            <td>{{ article.description }}</td>
+            <td>{{ article.um }}</td>
+            <td>{{ article.codStat }}</td>
+            <td>{{ article.pzCart }}</td>
+            <td>{{ article.netWeight }}</td>
             <td class="text-center">
-              <span class="badge rounded-pill" [ngClass]="{'bg-success': articolo.idStatoArt === statoArt.Attivo,
-              'bg-warning text-dark': articolo.idStatoArt === statoArt.Sospeso, 'bg-danger': articolo.idStatoArt === statoArt.Eliminato}">
-                {{ articolo.idStatoArt }}
+              <span class="badge rounded-pill"
+                [ngClass]="{'bg-success': article.idArtStatus === artStatus.Active,
+                'bg-warning text-dark': article.idArtStatus === artStatus.Suspended,
+                'bg-danger': article.idArtStatus === artStatus.Deleted}">
+                  {{ article.idArtStatus }}
               </span>
             </td>
-            <td>{{ articolo.prezzo | currency:"EUR" }}</td>
-            <td>{{ articolo.active }}</td>
-            <td>{{ articolo.dataCreazione | date:"dd-MM-yyyy" }}</td>
+            <td>{{ article.price | currency:"EUR" }}</td>
+            <td>{{ article.active }}</td>
+            <td>{{ article.creationDate | date:"dd-MM-yyyy" }}</td>
             <td class="btn-group">
               <button type="button" class="btn btn-light text-danger me-3"
-              (click)="deleteArt(articolo.codArt)">Elimina</button>
+                (click)="deleteArt(article.codArt)">
+                Delete
+              </button>
               <button type="button" class="btn btn-light fw-bold" data-bs-toggle="dropdown" aria-expanded="false">
                 ...
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="#">Dettaglio</a></li>
                 <li><a class="dropdown-item" href="#">Info</a></li>
-                <!-- <li><a class="dropdown-item" (click)="updateArt(articolo.codArt)">Modifica</a></li> -->
+                <!-- <li><a class="dropdown-item" (click)="updateArt(article.codArt)">Modifica</a></li> -->
               </ul>
             </td>
           </tr>

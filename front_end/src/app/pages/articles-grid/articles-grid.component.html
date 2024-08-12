@@ -2,11 +2,11 @@
   <!-- HEADING -->
   <div class="container mb-4">
     <div class="row align-items-center">
-      <h1 class="col">Griglia Prodotti</h1>
+      <h1 class="col">Products Grid</h1>
       <div class="col-3">
-        <button class="btn btn-outline-secondary ms-2">Esporta</button>
-        <button class="btn btn-outline-secondary ms-2">Importa</button>
-        <button class="btn btn-primary ms-2">Crea</button>
+        <button class="btn btn-outline-secondary ms-2">Export</button>
+        <button class="btn btn-outline-secondary ms-2">Import</button>
+        <button class="btn btn-primary ms-2">Create</button>
       </div>
     </div>
   </div>
@@ -15,20 +15,20 @@
     <!-- GRID - HEADER -->
     <div class="row grid-header justify-content-between align-items-center">
       <div class="col-4">
-        <input type="text" placeholder="Cerca...">
+        <input type="text" placeholder="Search...">
       </div>
       <div class="col-4">
         <div class="d-flex justify-content-between">
-          <!-- Select - Tutti -->
+          <!-- Select - All -->
           <select class="form-select">
-            <option selected>Tutti</option>
+            <option selected>All</option>
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
           </select>
-          <!-- Select - Tutti -->
+          <!-- Select - New -->
           <select class="form-select ms-3">
-            <option selected>Nuovi</option>
+            <option selected>New</option>
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
@@ -37,12 +37,12 @@
       </div>
     </div>
     <!-- GRID - BODY -->
-    <div *ngIf="articoli$" class="row row-cols-1 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 grid-body">
+    <div *ngIf="articles$" class="row row-cols-1 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 grid-body">
       <!-- Product CARD -->
-      <app-articolo-card *ngFor="let articolo of articoli$"
-                         [articolo]="articolo"
+      <app-article-card *ngFor="let article of articles$"
+                         [article]="article"
                          (eventEdit)="handleEdit($event)"
-                         (eventDelete)="handleDelete($event)"></app-articolo-card>
+                         (eventDelete)="handleDelete($event)"></app-article-card>
     </div>
   </div>
 </section>

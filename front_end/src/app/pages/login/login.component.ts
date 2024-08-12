@@ -10,13 +10,13 @@ import { AuthappService } from '../../services/authapp.service';
 })
 export class LoginComponent implements OnInit {
 
-  titolo: string = "Accesso & Autenticazione";
-  sottotitolo: string = "Accedi oppure registrati";
+  title: string = "Login & Authentication";
+  subtitle: string = "Login or Sign Up";
 
   userId: string = "Dario";
 
-  autenticato: boolean = true;
-  errMsg: string = "Spiacente, le credenziali inserite non sono corrette!";
+  authenticated: boolean = true;
+  errMsg: string = "Sorry, the credentials entered are incorrect!";
 
   constructor(private route: Router, private authapp: AuthappService) { }
 
@@ -27,9 +27,9 @@ export class LoginComponent implements OnInit {
     if (this.authapp.authenticate(f.value.username, f.value.password)) {
       sessionStorage.setItem("username", f.value.username);
       this.route.navigate(['welcome', this.userId]);
-      this.autenticato = true;
+      this.authenticated = true;
     } else {
-      this.autenticato = false;
+      this.authenticated = false;
     }
   }
 }

@@ -4,10 +4,11 @@ export class Pagination {
 	private _totalPages: number = 1;
 	private _nextPage: number = 1;
 	private _previousPage: number = 1;
-	private _pageSize: number = 10; // numero massimo di elementi presenti nella pagina
-	private _totalElements: number = 10; // numero elementi presenti nella pagina corrente
+	private _pageSize: number = 10; // maximum number of elements on the page
+	private _totalElements: number = 10; // number of items on the current page
 
-  private _totalPagesArray: number[] = Array.of(this.totalPages); // usato con ngFor per creare i pulsanti di paginazione nel template ( deafult: un elemento/un pulsante)
+  // used with ngFor to create the pagination buttons in the template ( deafult: one button element)
+  private _totalPagesArray: number[] = Array.of(this.totalPages);
 
 
   constructor(currentPage?: number, pageSize?: number) {

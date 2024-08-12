@@ -8,15 +8,15 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <span class="material-icons-outlined">home</span>
-          <a class="nav-link active" aria-current="page" routerLink="/welcome">Home</a>
+          <a class="nav-link active" aria-current="page" routerLink="/home">Home</a>
         </li>
         <li class="nav-item">
           <span class="material-icons-outlined">view_list</span>
-          <a class="nav-link" routerLink="/articoli">Prodotti</a>
+          <a class="nav-link" routerLink="/articles">Products</a>
         </li>
         <li class="nav-item">
           <span class="material-icons-outlined">local_offer</span>
-          <a class="nav-link" routerLink="/promozioni">Promozioni</a>
+          <a class="nav-link" routerLink="/promotions">Promotions</a>
         </li>
         <li class="nav-item">
           <span class="material-icons-outlined">card_membership</span>
@@ -24,7 +24,7 @@
         </li>
         <li class="nav-item">
           <span class="material-icons-outlined">shopping_cart</span>
-          <a class="nav-link" routerLink="/ordini">Ordini</a>
+          <a class="nav-link" routerLink="/orders">Orders</a>
         </li>
       </ul>
       <form class="d-flex">
@@ -36,13 +36,15 @@
           <i class="fa-solid fa-user"></i>
         </a>
         <ul class="dropdown-menu ms_dropdown-menu-user" aria-labelledby="navbarDropdown">
-          <li><a class="dropdown-item" routerLink="/login">Accedi</a></li>
-          <li><a class="dropdown-item" routerLink="/registra">Registra</a></li>
-          <li><a class="dropdown-item" routerLink="/disabilita">Disabilita</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" [ngClass]="{'disabled': !basicAuth.isLogged()}"
-                 routerLink="/logout">Logout {{ basicAuth.usernameLogged() }}</a>
-          </li>
+          <ng-template [ngIf]="!basicAuth.isLogged()">
+            <li><a class="dropdown-item" routerLink="/login">Login</a></li>
+            <li><a class="dropdown-item" routerLink="/signup">Sign Up</a></li>
+          </ng-template>
+          <ng-template [ngIf]="basicAuth.isLogged()">
+            <li><a class="dropdown-item"
+                  routerLink="/logout">Logout {{ basicAuth.usernameLogged() }}</a>
+            </li>
+          </ng-template>
         </ul>
       </li>
     </div>

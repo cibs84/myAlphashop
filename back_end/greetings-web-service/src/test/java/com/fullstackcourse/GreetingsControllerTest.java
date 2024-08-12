@@ -15,10 +15,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.alphashop.GreetingsWebServiceApplication;
+
 
 @SpringBootTest
-@ContextConfiguration(classes = SalutiWebServiceApplication.class)
-class SalutiControllerTest {
+@ContextConfiguration(classes = GreetingsWebServiceApplication.class)
+class GreetingsControllerTest {
 
 	private MockMvc mockMvc;
 	
@@ -32,19 +34,19 @@ class SalutiControllerTest {
 	
 	@Test
 	public void getSaluti() throws Exception {
-		mockMvc.perform(get("/api/saluti")
+		mockMvc.perform(get("/api/greetings")
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$").value("Ciao, questo è un saluto di benvenuto!"))
+		.andExpect(jsonPath("$").value("Hello, this is a welcome greeting!"))
 		.andDo(print());
 	}
 	
 	@Test
 	public void getSalutiWithUsernamePathVariable() throws Exception {
-		mockMvc.perform(get("/api/saluti/Dario")
+		mockMvc.perform(get("/api/greetings/Dario")
 										.contentType(MediaType.APPLICATION_JSON))
 										.andExpect(status().isOk())
-										.andExpect(jsonPath("@").value("Ciao Dario, questo è un saluto di benvenuto!"))
+										.andExpect(jsonPath("@").value("Hello Dario, this is a welcome greeting!"))
 										.andDo(print());
 	}
 

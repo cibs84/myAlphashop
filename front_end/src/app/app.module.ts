@@ -4,16 +4,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './pages/login/login.component';
+import { ArticlesComponent } from './pages/articles/articles.component';
+import { ArticlesGridComponent } from './pages/articles-grid/articles-grid.component';
+import { ArticleCardComponent } from './components/article-card/article-card.component';
+import { ArticleManagerComponent } from './pages/article-manager/article-manager.component';
 import { FormsModule } from '@angular/forms';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { ErrorComponent } from './pages/error/error.component';
-import { ArticoliComponent } from './pages/articoli/articoli.component';
 import { CoreModule } from './core/core.module';
 import { LogoutComponent } from './pages/logout/logout.component';
-import { GridArticlesComponent } from './pages/grid-articles/grid-articles.component';
-import { ArticoloCardComponent } from './components/articolo-card/articolo-card.component';
 import { HttpClientModule } from '@angular/common/http';
-import { GestartComponent } from './pages/gestart/gestart.component';
+
+
 
 @NgModule({
   declarations: [
@@ -21,11 +23,11 @@ import { GestartComponent } from './pages/gestart/gestart.component';
     LoginComponent,
     WelcomeComponent,
     ErrorComponent,
-    ArticoliComponent,
+    ArticlesComponent,
     LogoutComponent,
-    GridArticlesComponent,
-    ArticoloCardComponent,
-    GestartComponent
+    ArticlesGridComponent,
+    ArticleCardComponent,
+    ArticleManagerComponent
   ],
   imports: [
     BrowserModule,

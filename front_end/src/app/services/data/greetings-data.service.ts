@@ -5,12 +5,12 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class SalutiDataService {
+export class GreetingsDataService {
 
   constructor(private http: HttpClient) { }
 
-  getSaluti = (userId: string): Observable<Object> => {
-    let url: string = "http://localhost:8080/api/saluti";
+  getGreetings = (userId: string): Observable<Object> => {
+    let url: string = "http://localhost:8080/api/greetings";
     if (userId !== "") {
       url += "/" + userId;
     }

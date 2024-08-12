@@ -1,4 +1,4 @@
-package com.fullstackcourse;
+package com.alphashop;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,20 +7,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/saluti")
+@RequestMapping("/api/greetings")
 @CrossOrigin(origins = "http://localhost:4200/")
-public class SalutiController {
+public class GreetingsController {
 	
 	@GetMapping
-	public String getSaluti() {
-		return "\"Ciao, questo è un saluto di benvenuto!\"";
+	public String getGreetings() {
+		return "\"Hello, this is a welcome greeting!\"";
 	}
 	
 	@GetMapping("{username}")
-	public String getSaluti(@PathVariable(value="username")  String usernamexxx) {
+	public String getGreetings(@PathVariable(value="username")  String usernamexxx) {
 		if (usernamexxx.equals("Marco")) {
-			throw new RuntimeException("L'utente %s è disabilitato".formatted(usernamexxx));
+			throw new RuntimeException("User %s is disabled".formatted(usernamexxx));
 		}
-		return String.format("\"Ciao %s, questo è un saluto di benvenuto!\"", usernamexxx);
+		return String.format("\"Hello %s, this is a welcome greeting!\"", usernamexxx);
 	}
 }

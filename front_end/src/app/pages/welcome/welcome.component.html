@@ -1,7 +1,7 @@
-<app-jumbotron [titolo]="titolo" [sottotitolo]="sottotitolo" [show]="false"></app-jumbotron>
+<app-jumbotron [title]="title" [subtitle]="subtitle" [show]="false"></app-jumbotron>
 <section>
-  <h1 class="mb-3">Benvenuto {{userId}}, clicca <a routerLink="/articoli">qui</a> per visualizzare i nostri articoli</h1>
-  <button class="btn btn-primary mb-3 mx-auto" (click)="getSaluti()">SALUTA</button>
-  <h3 *ngIf="saluti !== ''">{{ saluti }}</h3>
-  <h3 *ngIf="errore" class="text-danger">{{ errore }}</h3>
+  <h1 class="mb-3">Welcome {{userId}}, click <a routerLink="/articles">here</a> to view our products</h1>
+  <button class="btn btn-primary mb-3 mx-auto" (click)="getGreetings()">SAY HELLO</button>
+  <h3 *ngIf="greetings !== ''">{{ greetings }}</h3>
+  <h3 *ngIf="error" class="text-danger">{{ error }}</h3>
 </section>

@@ -12,11 +12,11 @@ export class RouteGuardService implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
     if (!this.basicAuth.isLogged()) {
-      console.log("Non è loggato -> " + this.basicAuth.isLogged());
+      console.log("Not logged in -> " + this.basicAuth.isLogged());
       this.route.navigate(['login']);
       return false;
     } else {
-      console.log("E' loggato -> " + this.basicAuth.isLogged());
+      console.log("Logged in -> " + this.basicAuth.isLogged());
       return true;
     }
   }

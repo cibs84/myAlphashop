@@ -1,11 +1,10 @@
 import { Component, OnInit} from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { Observable } from 'rxjs';
-import { Articolo } from 'src/app/models/Articolo';
-import { ArticoloResponse } from 'src/app/models/ArticoloResponse';
+import { Article } from 'src/app/models/Article';
+import { ArticleResponse } from 'src/app/models/ArticleResponse';
 import { Pagination } from 'src/app/models/Pagination';
-import { ArticoliService } from 'src/app/services/data/articoli.service';
-import { log } from 'console';
+import { ArticleService } from 'src/app/services/data/article.service';
 
 enum FilterTypes {
   ByCodart = 1,
@@ -14,7 +13,7 @@ enum FilterTypes {
 }
 
 enum StatusCodes {
-  ServerUnavailable = 0, // e.g. server disconnected
+  UnavailableServer = 0, // e.g. server disconnected
   BadRequest = 400, // e.g. malformed request syntax
   NotFound = 404, // item not found (read)
   Conflict = 409, // e.g. item already exists (create)
@@ -26,34 +25,34 @@ enum StatusCodes {
 }
 
 enum ErrorMessages {
-  ServerNonDisponibile = 'Il server è momentaneamente non disponibile',
-  OperazioneNonConsentita = "Operazione non consentita",
-  ErroreGenerico = 'Si è verificato un errore',
-  ElementoNonTrovato = 'Elemento non trovato'
+  UnavailableServer = 'The server is temporarily unavailable',
+  OperationNotAllowed = "Operation not allowed",
+  GenericError = 'An error occurred',
+  ElementNotFound = 'Element not found'
 }
 
-enum StatoArt {
-  Attivo = 'Attivo',
-  Sospeso = 'Sospeso',
-  Eliminato = 'Eliminato',
-  Errore = 'Errore'
+enum ArtStatus {
+  Active = 'Active',
+  Suspended = 'Suspended',
+  Deleted = 'Deleted',
+  Error = 'Error'
 }
 
 @Component({
-  selector: 'app-articoli',
-  templateUrl: './articoli.component.html',
-  styleUrls: ['./articoli.component.scss']
+  selector: 'app-articles',
+  templateUrl: './articles.component.html',
+  styleUrls: ['./articles.component.scss']
 })
-export class ArticoliComponent implements OnInit {
+export class ArticlesComponent implements OnInit {
 
-  statoArt: typeof StatoArt = StatoArt;
+  artStatus: typeof ArtStatus = ArtStatus;
   errorMessages: typeof ErrorMessages = ErrorMessages;
 
   // PAGINATION
   readonly MAX_PAG_BTNS_NR = 7;
   readonly MINIMUM_MAX_PAG_BTNS_NR = 5;
 
-  articoli$: Articolo[] = [];
+  articles$: Article[] = [];
 
   filter: string = '';
 
@@ -76,9 +75,9 @@ export class ArticoliComponent implements OnInit {
   pagination$: Pagination = new Pagination(); // default values -> currentPage:1, pageSize:10
   pagination: any = {};
 
-  filterType: number = FilterTypes.ByDesc; // start with getArticoliByDesc
+  filterType: number = FilterTypes.ByDesc; // start with getArticlesByDesc
 
-  constructor(private articoliService: ArticoliService,
+  constructor(private articleService: ArticleService,
               private scroller: ViewportScroller
   ) {
     console.log("constructor()");
@@ -93,7 +92,7 @@ export class ArticoliComponent implements OnInit {
   ngOnInit(): void {
     console.log("ngOnInit()");
 
-    this.getArticoli();
+    this.getArticles();
   }
 
   scrollToSuccessAlert = (): void => {
@@ -141,28 +140,24 @@ export class ArticoliComponent implements OnInit {
       // si imposta il filtro ricerca per descrizione
       this.filterType = this.filter === '' ? FilterTypes.ByDesc : FilterTypes.ByCodart;
 
-      this.getArticoli();
+      this.getArticles();
       this.lastFilter = this.filter;
-
-
     }
   }
 
-
-
-  private getLiteralStatoArt = (idStatoArt: string): string => {
-    if (idStatoArt === '1') {
-      return StatoArt.Attivo;
-    } else if (idStatoArt === '2') {
-      return StatoArt.Sospeso;
-    } else if (idStatoArt === '3') {
-      return StatoArt.Eliminato;
+  private getLiteralArtStatus = (idArtStatus: string): string => {
+    if (idArtStatus === '1') {
+      return ArtStatus.Active;
+    } else if (idArtStatus === '2') {
+      return ArtStatus.Suspended;
+    } else if (idArtStatus === '3') {
+      return ArtStatus.Deleted;
     } else {
-      return StatoArt.Errore;
+      return ArtStatus.Error;
     }
   }
 
-  // ******** CRUD Articoli ********
+  // ******** CRUD Articles ********
   resetResponses = (): void => {
     this.respObj$ = {
       code: "",
@@ -177,35 +172,35 @@ export class ArticoliComponent implements OnInit {
   }
 
   // READ
-  getArticoli = (): void => {
+  getArticles = (): void => {
     this.resetResponses(); // reset respObj$ and error$
 
-    console.log("articoli.components.ts -> getArticoli()");
+    console.log("articles.components.ts -> getArticles()");
     console.log("filterType -> " + this.filterType);
 
-    const observable: Observable<ArticoloResponse> = this.getObservableByFilterType();
+    const observable: Observable<ArticleResponse> = this.getObservableByFilterType();
     observable.subscribe({
       next: this.handleResponse,
       error: this.handleError
     });
   }
 
-  private getObservableByFilterType(): Observable<ArticoloResponse> {
+  private getObservableByFilterType(): Observable<ArticleResponse> {
     console.log("filter -> " + this.filter);
     console.log(this.pagination$);
     console.log("filterType -> " + this.filterType);
 
     if (this.filterType === FilterTypes.ByCodart) {
-      return this.articoliService.getArticleByCodart(this.filter, this.pagination$);
+      return this.articleService.getArticleByCodart(this.filter, this.pagination$);
     } else if (this.filterType === FilterTypes.ByDesc) {
-      return this.articoliService.getArticlesByDesc(this.filter, this.pagination$);
+      return this.articleService.getArticlesByDesc(this.filter, this.pagination$);
     } else if (this.filterType === FilterTypes.ByBarcode) {
       if (this.filter === '') {
         console.log("ALOHA!!!");
 
-        return this.articoliService.getArticlesByDesc(this.filter, this.pagination$);;
+        return this.articleService.getArticlesByDesc(this.filter, this.pagination$);;
       } else {
-        return this.articoliService.getArticleByBarcode(this.filter, this.pagination$);
+        return this.articleService.getArticleByBarcode(this.filter, this.pagination$);
       }
     } else {
       throw new Error("Invalid filterType");
@@ -216,12 +211,12 @@ export class ArticoliComponent implements OnInit {
     console.log("handleResponse()");
     console.log(response);
 
-    // In base alla risposta, assegna ad articoli$ la lista di articoli OR il singolo articolo
-    this.articoli$ = response.itemList || [response];
+    // In base alla risposta, assegna ad articles$ la lista di articles OR il singolo article
+    this.articles$ = response.itemList || [response];
 
-    // Converte lo stato id numerico di ogni articolo in letterale (es. 1 -> 'Attivo')
-    this.articoli$.map(art => {
-      art.idStatoArt = this.getLiteralStatoArt(art.idStatoArt);
+    // Converte lo stato id numerico di ogni article in letterale (es. 1 -> 'Attivo')
+    this.articles$.map(art => {
+      art.idArtStatus = this.getLiteralArtStatus(art.idArtStatus);
     });
 
     if (response.pagination) {
@@ -236,12 +231,12 @@ export class ArticoliComponent implements OnInit {
     console.log("handleError()");
     console.log(error);
 
-    if (error.status === StatusCodes.ServerUnavailable) {
+    if (error.status === StatusCodes.UnavailableServer) {
         console.log("filter: "+this.filter);
-        console.log(ErrorMessages.ServerNonDisponibile);
+        console.log(ErrorMessages.UnavailableServer);
 
         this.error$.code = 0;
-        this.error$.message = ErrorMessages.ServerNonDisponibile;
+        this.error$.message = ErrorMessages.UnavailableServer;
     } else if (error.status === StatusCodes.NotFound) {
       if (this.filterType < 3) {
         console.log("error.status -> " + error.status);
@@ -249,20 +244,20 @@ export class ArticoliComponent implements OnInit {
         console.log("this.filterType -> " + this.filterType);
 
         this.filterType++;
-        this.getArticoli();
+        this.getArticles();
       } else if (this.filter === '') {
-          console.log(`Al momento non ci sono articoli!`);
+          console.log(`Currently there are no articles!`);
 
           this.error$.code = error.error.code;
-          this.error$.message = `Al momento non ci sono articoli!`;
+          this.error$.message = `Currently there are no articles!`;
       } else {
-        console.log(`Articolo con filtro '${this.filter}' non è stato trovato!`);
+        console.log(`Article with filter '${this.filter}' is not found!`);
 
         this.error$.code = error.error.code;
-        this.error$.message = `L'articolo '${this.filter}' non è stato trovato`;
+        this.error$.message = `The article '${this.filter}' is not found`;
       }
     } else {
-      console.log(ErrorMessages.ErroreGenerico);
+      console.log(ErrorMessages.GenericError);
       console.error(error); // Registra l'errore nella console
     }
     //  Scrolla la pagina all'elemento di alert con il messaggio d'errore
@@ -274,7 +269,7 @@ export class ArticoliComponent implements OnInit {
     this.resetResponses();
 
     this.codArt = codArt;
-    this.articoliService.deleteArticleByCodart(codArt).subscribe({
+    this.articleService.deleteArticleByCodart(codArt).subscribe({
       next: this.handleSuccessResp,
       error: this.handleErrorResp
     });
@@ -285,7 +280,7 @@ export class ArticoliComponent implements OnInit {
   //   this.resetResponses();
 
   //   this.codArt = codArt;
-  //   this.articoliService.updateArticle(codArt).subscribe({
+  //   this.articleService.updateArticle(codArt).subscribe({
   //     next: this.handleSuccessResp,
   //     error: this.handleErrorResp
   //   });
@@ -299,7 +294,7 @@ export class ArticoliComponent implements OnInit {
     this.respObj$ = resp;
 
     this.filterType = FilterTypes.ByDesc;
-    this.getArticoli();
+    this.getArticles();
 
     //  Scrolla la pagina all'elemento di alert con il messaggio di risposta
     this.scrollToSuccessAlert();
@@ -309,26 +304,26 @@ export class ArticoliComponent implements OnInit {
     console.log(error);
 
     this.error$ = error.error;
-    if (error.status === StatusCodes.ServerUnavailable) {
-      console.log(ErrorMessages.ServerNonDisponibile);
+    if (error.status === StatusCodes.UnavailableServer) {
+      console.log(ErrorMessages.UnavailableServer);
 
       this.error$.code = 0;
-      this.error$.message = ErrorMessages.ServerNonDisponibile;
+      this.error$.message = ErrorMessages.UnavailableServer;
 
       console.log("this.error$.code -> " + this.error$.code);
       console.log('this.error$.message -> ' + this.error$.message);
     } else if (error.status === StatusCodes.NotFound){
-      console.error(ErrorMessages.ElementoNonTrovato);
+      console.error(ErrorMessages.ElementNotFound);
     } else if (error.status === StatusCodes.Forbidden){
-      console.error(ErrorMessages.OperazioneNonConsentita);
+      console.error(ErrorMessages.OperationNotAllowed);
     } else {
-      console.error(ErrorMessages.ErroreGenerico);
+      console.error(ErrorMessages.GenericError);
       console.error(error); // Registra l'errore nella console
     }
     //  Scrolla la pagina all'elemento di alert con il messaggio di errore
     this.scrollToErrorAlert();
   }
-  // ******** End - CRUD Articoli ********
+  // ******** End - CRUD Articles ********
 
 
   // ----- PAGINATION -----
@@ -343,14 +338,14 @@ export class ArticoliComponent implements OnInit {
     this.pagination$.currentPage = typeof(currentPage)==='string' ? parseInt(currentPage) : currentPage;
 
     // Reimposta 'filterType' con FilterTypes.ByDesc così
-    // 'this.getArticoli()' invoca 'getObservableByFilterType()'
-    // che a sua volta invoca 'getArticoliByDesc()'.
+    // 'this.getArticles()' invoca 'getObservableByFilterType()'
+    // che a sua volta invoca 'getArticlesByDesc()'.
     // Questo è l'unico dei 3 metodi GET che invia al server
     // i valori di 'pagination$' tramite url
-    // (es. http://localhost:5051/api/articoli/cerca/descrizione/pane?currentPage=1&pageSize=10)
+    // (es. http://localhost:5051/api/articles/cerca/descrizione/pane?currentPage=1&pageSize=10)
     this.filterType = FilterTypes.ByDesc;
 
-    this.getArticoli();
+    this.getArticles();
   }
 
   // Ritorna un booleano per mostrare o meno il 'pageNr' su uno dei bottoni-pagina

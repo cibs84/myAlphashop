@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient} from '@angular/common/http';
 import { Pagination } from 'src/app/models/Pagination';
-import { ArticoloResponse } from 'src/app/models/ArticoloResponse';
+import { ArticleResponse } from 'src/app/models/ArticleResponse';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ArticoliService {
+export class ArticleService {
 
   // articoli: Articolo[] = [
   //   {codart : '014600301', descrizione : 'BARILLA FARINA 1 KG', um : 'PZ', pzcart : 24, peso : 1, prezzo : 1.09, active : true, data : new Date(), urlImage : "assets/img/articles/farina_barilla_1kg.png"},
@@ -26,21 +26,21 @@ export class ArticoliService {
     this.setPagination(pagination);
     filter = filter ? filter : ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/article/findByCodart/${filter}`)
+    return this.httpClient.get<ArticleResponse>(`http://${this.server}:${this.port}/api/article/findByCodart/${filter}`)
   };
 
-  getArticlesByDesc = (/*descrizione*/ filter: string, pagination?: Pagination) => {
+  getArticlesByDesc = (/*description*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/articles/findByDescription/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`);
+    return this.httpClient.get<ArticleResponse>(`http://${this.server}:${this.port}/api/articles/findByDescription/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`);
   }
 
   getArticleByBarcode = (/*barcode(=ean)*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get<ArticoloResponse>(`http://${this.server}:${this.port}/api/article/findByBarcode/${filter}`);
+    return this.httpClient.get<ArticleResponse>(`http://${this.server}:${this.port}/api/article/findByBarcode/${filter}`);
   };
 
   deleteArticleByCodart = (codArt: string) => {
