@@ -1,19 +1,25 @@
 package com.alphashop.ControllerTests;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.alphashop.repositories.ArticleRepository;
 import com.alphashop.test.BaseSpringIT;
 
 public class ArticleRestControllerReadIT extends BaseSpringIT {
+	
+	@Autowired
+	ArticleRepository articleRepository;
 	
 	String JsonData = """
 			{
@@ -44,10 +50,12 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 			}""";
 
 	@Test
-	@Order(1)
 	public void listArtByEan() throws Exception {
+		
+		String existentBarcode = "8008490000021";
+		
 		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/article/findByBarcode/8008490000021").accept(MediaType.APPLICATION_JSON))
+				MockMvcRequestBuilders.get("/api/article/findByBarcode/" + existentBarcode).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				// articolo
 				.andExpect(jsonPath("$.codArt").exists()).andExpect(jsonPath("$.codArt").value("002000301"))
@@ -78,32 +86,34 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 				.andDo(print());
 	}
 
-	private String Barcode = "8008490002138";
-
 	@Test
-	@Order(2)
-	public void ErrlistArtByEan() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/article/findByBarcode/" + Barcode)
+	public void errListArtByEan() throws Exception {
+		
+		String inexistentBarcode = "inexistent_barcode";
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/article/findByBarcode/" + inexistentBarcode)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
-				.andExpect(jsonPath("$.message").value("The article with barcode \'" + Barcode + "\' was not found!"))
+				.andExpect(jsonPath("$.message").value("The article with barcode \'" + inexistentBarcode + "\' was not found!"))
 				.andDo(print());
 	}
 
 	@Test
-	@Order(3)
 	public void listArtByCodArt() throws Exception {
+		
+		String existentCodart = "002000301";
+		
 		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/article/findByCodart/002000301").accept(MediaType.APPLICATION_JSON))
+				MockMvcRequestBuilders.get("/api/article/findByCodart/" + existentCodart).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(content().json(JsonData)).andReturn();
 	}
 
-	private String CodArt = "002000301b";
-
 	@Test
-	@Order(4)
-	public void errlistArtByCodArt() throws Exception {
+	public void errListArtByCodArt() throws Exception {
+		
+		String CodArt = "inexistent_codart";
+		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/article/findByCodart/" + CodArt)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
@@ -151,13 +161,57 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 			    }
 			  ]
 			}""";
+	
+	@Test
+	public void listArtByDesc() throws Exception {
+		
+		String existentDescription = "ACQUA ULIVETO 15 LT";
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription/" + existentDescription)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.itemList", hasSize(1)))
+		.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+		.andExpect(content().json(JsonData2)).andReturn();
+	}
+	
+	@Test
+	public void listArtByDescWithoutDescription1() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription/")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andDo(print());
+	}
 
 	@Test
-	@Order(5)
-	public void listArtByDesc() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription/ACQUA ULIVETO 15 LT")
-				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.itemList", hasSize(1)))
-				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(content().json(JsonData2)).andReturn();
+	public void errorListArtByDescWithoutDescription2() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andDo(print());
+	}
+	
+	@Test
+	public void listArtByDescWithDescriptionEmpty() throws Exception {
+
+		String emptyDescription = " ";
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription/" + emptyDescription)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.pagination.totalPages", equalTo(597)))
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andReturn();
+	}
+	
+	@Test
+	@Transactional // At the end of the method, undo all changes made on the db
+	public void errorListArtByDescWithDescriptionAndDbEmpties() throws Exception {
+		
+		articleRepository.deleteAll();
+		
+		String CodArt = " ";
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription/" + CodArt)
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(jsonPath("$.message").value("No articles were found"))
+				.andDo(print());
 	}
 }

@@ -15,12 +15,12 @@ import com.alphashop.entities.Barcode;
 @Configuration
 public class ModelMapperConfig {
 
-    @Bean
-    ModelMapper modelMapper() {
-		
+	@Bean
+	ModelMapper modelMapper() {
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setSkipNullEnabled(true);
-		modelMapper.addMappings(toArticoliDtoMapping);
+		modelMapper.addMappings(toArticleDtoMapping);
 
 		modelMapper.addMappings(new PropertyMap<Barcode, BarcodeDto>() {
 			@Override
@@ -28,19 +28,19 @@ public class ModelMapperConfig {
 				map().setType(source.getIdTypeArt());
 			}
 		});
-		
-		modelMapper.addConverter(articoliConverter);
-		
+
+		modelMapper.addConverter(articleConverter);
+
 		return modelMapper;
 	}
-	
-	PropertyMap<Article, ArticleDto> toArticoliDtoMapping = new PropertyMap<Article, ArticleDto>() {
+
+	PropertyMap<Article, ArticleDto> toArticleDtoMapping = new PropertyMap<Article, ArticleDto>() {
 		protected void configure() {
 			map().setCreationDate(source.getCreationDate());
 		}
 	};
 
-	Converter<String, String> articoliConverter = new Converter<String, String>() {
+	Converter<String, String> articleConverter = new Converter<String, String>() {
 		@Override
 		public String convert(MappingContext<String, String> context) {
 			return context.getSource() == null ? "" : context.getSource().trim();

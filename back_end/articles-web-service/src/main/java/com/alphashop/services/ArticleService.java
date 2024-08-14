@@ -66,7 +66,8 @@ public class ArticleService {
 		Page<Article> article = articleRepository.findByDescriptionLikeOrderByCodArtAsc(descriptionMod, articlesPagination);
 		
 		if (article.isEmpty()) {
-			String errMessage = "No item with description '%s' was found".formatted(description);
+			String errMessage = description.trim() == "" ? "No articles were found" 
+					: "No article with description '%s' was found".formatted(description);
 			
 			logger.warn(errMessage);
 			

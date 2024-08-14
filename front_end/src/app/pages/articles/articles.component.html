@@ -104,7 +104,10 @@
       </div>
 
       <!-- *** PAGINATION *** -->
-      <ul *ngIf="error$.code !== 0" class="pagination justify-content-end">
+      <ul *ngIf="error$.code !== statusCodes.UnavailableServer
+                  &&
+                 error$.code !== statusCodes.NotFound"
+          class="pagination justify-content-end">
 
         <!-- Previous Page -->
         <li class="page-item" [ngClass]="{'disabled pe-none': pagination$.currentPage==1}">

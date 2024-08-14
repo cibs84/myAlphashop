@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/api")
@@ -96,7 +97,9 @@ public class ArticleController {
 		return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
 	}
 	
-	@GetMapping(path = "/articles/findByDescription/{description}")
+	@GetMapping(path = {
+			"/articles/findByDescription/{description}"
+	})
 	public ResponseEntity<PaginatedResponseList<ArticleDto>> listArtByDesc(@PathVariable("description") String description,
 			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {

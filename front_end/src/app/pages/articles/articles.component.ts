@@ -47,6 +47,7 @@ export class ArticlesComponent implements OnInit {
 
   artStatus: typeof ArtStatus = ArtStatus;
   errorMessages: typeof ErrorMessages = ErrorMessages;
+  statusCodes: typeof StatusCodes = StatusCodes;
 
   // PAGINATION
   readonly MAX_PAG_BTNS_NR = 7;
@@ -196,8 +197,6 @@ export class ArticlesComponent implements OnInit {
       return this.articleService.getArticlesByDesc(this.filter, this.pagination$);
     } else if (this.filterType === FilterTypes.ByBarcode) {
       if (this.filter === '') {
-        console.log("ALOHA!!!");
-
         return this.articleService.getArticlesByDesc(this.filter, this.pagination$);;
       } else {
         return this.articleService.getArticleByBarcode(this.filter, this.pagination$);
@@ -230,6 +229,8 @@ export class ArticlesComponent implements OnInit {
   private handleError = (error: any): void => {
     console.log("handleError()");
     console.log(error);
+
+    this.articles$ = []; // Clean article list
 
     if (error.status === StatusCodes.UnavailableServer) {
         console.log("filter: "+this.filter);

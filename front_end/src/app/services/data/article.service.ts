@@ -44,7 +44,7 @@ export class ArticleService {
   };
 
   deleteArticleByCodart = (codArt: string) => {
-    return this.httpClient.delete(`http://${this.server}:${this.port}/api/article/update/${codArt}`);
+    return this.httpClient.delete(`http://${this.server}:${this.port}/api/article/delete/${codArt}`);
   }
 
   private setPagination = (pagination: Pagination|undefined) => {
