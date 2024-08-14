@@ -41,8 +41,8 @@ public class Article implements Serializable {
 	@Column(name = "codstat")
 	private String codStat;
 
-	@Column(name = "pzcart")
-	private Integer pzCart;
+	@Column(name = "pcscart")
+	private Integer pcsCart;
 
 	@Column(name = "netweight")
 	private double netWeight;

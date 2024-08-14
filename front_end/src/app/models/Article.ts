@@ -3,7 +3,7 @@ export interface Article {
   description: string,
   um: string,
   codStat: string,
-  pzCart: number,
+  pcsCart: number,
   netWeight: number,
   idArtStatus: string,
   price: number,

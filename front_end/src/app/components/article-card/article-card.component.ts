@@ -14,7 +14,7 @@ export class ArticleCardComponent implements OnInit {
     description: "",
     um: "",
     codStat: "",
-    pzCart: 0,
+    pcsCart: 0,
     netWeight: 0,
     idArtStatus: "",
     price: 0,

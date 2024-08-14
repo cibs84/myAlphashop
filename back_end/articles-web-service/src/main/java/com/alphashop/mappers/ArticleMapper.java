@@ -49,7 +49,7 @@ public class ArticleMapper extends BaseAlphaMapper<Article, ArticleDto> {
 			articleDto.setIngredients(ingredientsMapper.toModel(entity.getIngredients()));
 			articleDto.setVat(vatMapper.toModel(entity.getVat()));
 			articleDto.setNetWeight(entity.getNetWeight());
-			articleDto.setPzCart(entity.getPzCart());
+			articleDto.setPcsCart(entity.getPcsCart());
 			articleDto.setUm(entity.getUm());
 		}
 
@@ -72,7 +72,7 @@ public class ArticleMapper extends BaseAlphaMapper<Article, ArticleDto> {
 			article.setIngredients(ingredientsMapper.toEntity(model.getIngredients()));
 			article.setVat(vatMapper.toEntity(model.getVat()));
 			article.setNetWeight(model.getNetWeight());
-			article.setPzCart(model.getPzCart());
+			article.setPcsCart(model.getPcsCart());
 			article.setUm(model.getUm());
 
 			// ---------------------- SET-BARCODE ----------------------

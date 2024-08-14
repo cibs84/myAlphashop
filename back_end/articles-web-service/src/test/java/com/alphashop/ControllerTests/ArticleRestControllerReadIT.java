@@ -27,7 +27,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 			    "description": "ACQUA ULIVETO 15 LT",
 			    "um": "PZ",
 			    "codStat": "",
-			    "pzCart": 6,
+			    "pcsCart": 6,
 			    "netWeight": 1.5,
 			    "idArtStatus": "1",
 			    "creationDate": "2010-06-14",
@@ -62,8 +62,8 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 				.andExpect(jsonPath("$.description").exists())
 				.andExpect(jsonPath("$.description").value("ACQUA ULIVETO 15 LT")).andExpect(jsonPath("$.um").exists())
 				.andExpect(jsonPath("$.um").value("PZ")).andExpect(jsonPath("$.codStat").exists())
-				.andExpect(jsonPath("$.codStat").value("")).andExpect(jsonPath("$.pzCart").exists())
-				.andExpect(jsonPath("$.pzCart").value("6")).andExpect(jsonPath("$.netWeight").exists())
+				.andExpect(jsonPath("$.codStat").value("")).andExpect(jsonPath("$.pcsCart").exists())
+				.andExpect(jsonPath("$.pcsCart").value("6")).andExpect(jsonPath("$.netWeight").exists())
 				.andExpect(jsonPath("$.netWeight").value("1.5")).andExpect(jsonPath("$.idArtStatus").exists())
 				.andExpect(jsonPath("$.idArtStatus").value("1")).andExpect(jsonPath("$.creationDate").exists())
 				.andExpect(jsonPath("$.creationDate").value("2010-06-14"))
@@ -137,7 +137,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 			      "description": "ACQUA ULIVETO 15 LT",
 			      "um": "PZ",
 			      "codStat": "",
-			      "pzCart": 6,
+			      "pcsCart": 6,
 			      "netWeight": 1.5,
 			      "idArtStatus": "1",
 			      "creationDate": "2010-06-14",

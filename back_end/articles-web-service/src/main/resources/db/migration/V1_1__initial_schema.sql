@@ -5,7 +5,7 @@
 -- Dumped from database version 16.3 (Debian 16.3-1.pgdg120+1)
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-08-10 19:22:09 UTC
+-- Started on 2024-08-14 19:35:04 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,15 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 2 (class 3079 OID 16831)
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
-
-
---
--- TOC entry 250 (class 1255 OID 16842)
+-- TOC entry 239 (class 1255 OID 19844)
 -- Name: sp_insarticolo(text, text, text, text, text, numeric, numeric, text, numeric); Type: PROCEDURE; Schema: public; Owner: -
 --
 
@@ -58,7 +50,7 @@ $$;
 
 
 --
--- TOC entry 251 (class 1255 OID 16843)
+-- TOC entry 240 (class 1255 OID 19845)
 -- Name: sp_inscoupon(text, text); Type: PROCEDURE; Schema: public; Owner: -
 --
 
@@ -82,7 +74,7 @@ $$;
 
 
 --
--- TOC entry 252 (class 1255 OID 16844)
+-- TOC entry 241 (class 1255 OID 19846)
 -- Name: sp_inscoupon(text, text, numeric); Type: PROCEDURE; Schema: public; Owner: -
 --
 
@@ -106,7 +98,7 @@ $$;
 
 
 --
--- TOC entry 253 (class 1255 OID 16845)
+-- TOC entry 242 (class 1255 OID 19847)
 -- Name: tr_inserisci_coupon(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -134,7 +126,7 @@ $$;
 
 
 --
--- TOC entry 254 (class 1255 OID 16846)
+-- TOC entry 243 (class 1255 OID 19848)
 -- Name: tr_modifica_coupons(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -158,7 +150,7 @@ $$;
 
 
 --
--- TOC entry 255 (class 1255 OID 16847)
+-- TOC entry 244 (class 1255 OID 19849)
 -- Name: uf_getqtamag(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -188,7 +180,7 @@ $$;
 
 
 --
--- TOC entry 216 (class 1259 OID 16848)
+-- TOC entry 215 (class 1259 OID 19850)
 -- Name: articles; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -197,7 +189,7 @@ CREATE TABLE public.articles (
     description character varying(60) DEFAULT NULL::character varying,
     um character(2) DEFAULT NULL::bpchar,
     codstat character varying(20) DEFAULT NULL::character varying,
-    pzcart smallint,
+    pcscart smallint,
     netweight double precision,
     idvat integer,
     idartstatus character(1) DEFAULT NULL::bpchar,
@@ -207,7 +199,7 @@ CREATE TABLE public.articles (
 
 
 --
--- TOC entry 256 (class 1255 OID 16855)
+-- TOC entry 245 (class 1255 OID 19857)
 -- Name: uf_selarticolo(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -227,7 +219,7 @@ $$;
 
 
 --
--- TOC entry 257 (class 1255 OID 16856)
+-- TOC entry 246 (class 1255 OID 19858)
 -- Name: uf_selarticolo2(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -256,7 +248,7 @@ $$;
 
 
 --
--- TOC entry 217 (class 1259 OID 16857)
+-- TOC entry 216 (class 1259 OID 19859)
 -- Name: barcode; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -268,7 +260,7 @@ CREATE TABLE public.barcode (
 
 
 --
--- TOC entry 218 (class 1259 OID 16860)
+-- TOC entry 217 (class 1259 OID 19862)
 -- Name: cards; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -281,7 +273,7 @@ CREATE TABLE public.cards (
 
 
 --
--- TOC entry 219 (class 1259 OID 16864)
+-- TOC entry 218 (class 1259 OID 19866)
 -- Name: classcr; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -294,7 +286,7 @@ CREATE TABLE public.classcr (
 
 
 --
--- TOC entry 220 (class 1259 OID 16868)
+-- TOC entry 219 (class 1259 OID 19870)
 -- Name: coupons; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -309,7 +301,7 @@ CREATE TABLE public.coupons (
 
 
 --
--- TOC entry 221 (class 1259 OID 16871)
+-- TOC entry 220 (class 1259 OID 19873)
 -- Name: customers; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -329,7 +321,7 @@ CREATE TABLE public.customers (
 
 
 --
--- TOC entry 222 (class 1259 OID 16883)
+-- TOC entry 221 (class 1259 OID 19885)
 -- Name: deposits; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -346,7 +338,7 @@ CREATE TABLE public.deposits (
 
 
 --
--- TOC entry 223 (class 1259 OID 16891)
+-- TOC entry 222 (class 1259 OID 19893)
 -- Name: deprifpromo; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -358,7 +350,7 @@ CREATE TABLE public.deprifpromo (
 
 
 --
--- TOC entry 224 (class 1259 OID 16894)
+-- TOC entry 223 (class 1259 OID 19896)
 -- Name: detlists; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -371,7 +363,7 @@ CREATE TABLE public.detlists (
 
 
 --
--- TOC entry 225 (class 1259 OID 16897)
+-- TOC entry 224 (class 1259 OID 19899)
 -- Name: detorders; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -385,7 +377,7 @@ CREATE TABLE public.detorders (
 
 
 --
--- TOC entry 226 (class 1259 OID 16900)
+-- TOC entry 225 (class 1259 OID 19902)
 -- Name: detpromo; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -404,7 +396,7 @@ CREATE TABLE public.detpromo (
 
 
 --
--- TOC entry 227 (class 1259 OID 16905)
+-- TOC entry 226 (class 1259 OID 19907)
 -- Name: detreceipts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -424,7 +416,7 @@ CREATE TABLE public.detreceipts (
 
 
 --
--- TOC entry 228 (class 1259 OID 16911)
+-- TOC entry 227 (class 1259 OID 19913)
 -- Name: ecrliv1; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -435,7 +427,7 @@ CREATE TABLE public.ecrliv1 (
 
 
 --
--- TOC entry 229 (class 1259 OID 16914)
+-- TOC entry 228 (class 1259 OID 19916)
 -- Name: ecrliv2; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -447,7 +439,7 @@ CREATE TABLE public.ecrliv2 (
 
 
 --
--- TOC entry 230 (class 1259 OID 16917)
+-- TOC entry 229 (class 1259 OID 19919)
 -- Name: famassort; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -458,7 +450,7 @@ CREATE TABLE public.famassort (
 
 
 --
--- TOC entry 231 (class 1259 OID 16920)
+-- TOC entry 230 (class 1259 OID 19922)
 -- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -471,7 +463,7 @@ CREATE SEQUENCE public.hibernate_sequence
 
 
 --
--- TOC entry 232 (class 1259 OID 16921)
+-- TOC entry 231 (class 1259 OID 19923)
 -- Name: ingredients; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -482,7 +474,7 @@ CREATE TABLE public.ingredients (
 
 
 --
--- TOC entry 233 (class 1259 OID 16924)
+-- TOC entry 232 (class 1259 OID 19926)
 -- Name: lists; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -494,7 +486,7 @@ CREATE TABLE public.lists (
 
 
 --
--- TOC entry 234 (class 1259 OID 16927)
+-- TOC entry 233 (class 1259 OID 19929)
 -- Name: movements; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -511,7 +503,7 @@ CREATE TABLE public.movements (
 
 
 --
--- TOC entry 235 (class 1259 OID 16930)
+-- TOC entry 234 (class 1259 OID 19932)
 -- Name: orders; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -525,7 +517,7 @@ CREATE TABLE public.orders (
 
 
 --
--- TOC entry 236 (class 1259 OID 16933)
+-- TOC entry 235 (class 1259 OID 19935)
 -- Name: promo; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -538,7 +530,7 @@ CREATE TABLE public.promo (
 
 
 --
--- TOC entry 237 (class 1259 OID 16937)
+-- TOC entry 236 (class 1259 OID 19939)
 -- Name: receipts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -556,7 +548,7 @@ CREATE TABLE public.receipts (
 
 
 --
--- TOC entry 238 (class 1259 OID 16941)
+-- TOC entry 237 (class 1259 OID 19943)
 -- Name: typepromo; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -567,7 +559,7 @@ CREATE TABLE public.typepromo (
 
 
 --
--- TOC entry 239 (class 1259 OID 16945)
+-- TOC entry 238 (class 1259 OID 19947)
 -- Name: vat; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -579,7 +571,7 @@ CREATE TABLE public.vat (
 
 
 --
--- TOC entry 3348 (class 2606 OID 16949)
+-- TOC entry 3337 (class 2606 OID 19951)
 -- Name: coupons Coupons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -588,7 +580,7 @@ ALTER TABLE ONLY public.coupons
 
 
 --
--- TOC entry 3339 (class 2606 OID 16951)
+-- TOC entry 3328 (class 2606 OID 19953)
 -- Name: articles articoli_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -597,7 +589,7 @@ ALTER TABLE ONLY public.articles
 
 
 --
--- TOC entry 3342 (class 2606 OID 16953)
+-- TOC entry 3331 (class 2606 OID 19955)
 -- Name: barcode barcode_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -606,7 +598,7 @@ ALTER TABLE ONLY public.barcode
 
 
 --
--- TOC entry 3344 (class 2606 OID 16955)
+-- TOC entry 3333 (class 2606 OID 19957)
 -- Name: cards cards_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -615,7 +607,7 @@ ALTER TABLE ONLY public.cards
 
 
 --
--- TOC entry 3346 (class 2606 OID 16957)
+-- TOC entry 3335 (class 2606 OID 19959)
 -- Name: classcr classecr_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -624,7 +616,7 @@ ALTER TABLE ONLY public.classcr
 
 
 --
--- TOC entry 3350 (class 2606 OID 16959)
+-- TOC entry 3339 (class 2606 OID 19961)
 -- Name: customers clienti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -633,7 +625,7 @@ ALTER TABLE ONLY public.customers
 
 
 --
--- TOC entry 3353 (class 2606 OID 16961)
+-- TOC entry 3342 (class 2606 OID 19963)
 -- Name: deposits depositi_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -642,7 +634,7 @@ ALTER TABLE ONLY public.deposits
 
 
 --
--- TOC entry 3355 (class 2606 OID 16963)
+-- TOC entry 3344 (class 2606 OID 19965)
 -- Name: deprifpromo deprifpromo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -651,7 +643,7 @@ ALTER TABLE ONLY public.deprifpromo
 
 
 --
--- TOC entry 3357 (class 2606 OID 16965)
+-- TOC entry 3346 (class 2606 OID 19967)
 -- Name: detlists dettlistini_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -660,7 +652,7 @@ ALTER TABLE ONLY public.detlists
 
 
 --
--- TOC entry 3359 (class 2606 OID 16967)
+-- TOC entry 3348 (class 2606 OID 19969)
 -- Name: detorders dettordini_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -669,7 +661,7 @@ ALTER TABLE ONLY public.detorders
 
 
 --
--- TOC entry 3361 (class 2606 OID 16969)
+-- TOC entry 3350 (class 2606 OID 19971)
 -- Name: detpromo dettpromo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -678,7 +670,7 @@ ALTER TABLE ONLY public.detpromo
 
 
 --
--- TOC entry 3363 (class 2606 OID 16971)
+-- TOC entry 3352 (class 2606 OID 19973)
 -- Name: detreceipts dettscontrini_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -687,7 +679,7 @@ ALTER TABLE ONLY public.detreceipts
 
 
 --
--- TOC entry 3365 (class 2606 OID 16973)
+-- TOC entry 3354 (class 2606 OID 19975)
 -- Name: ecrliv1 ecrliv1_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -696,7 +688,7 @@ ALTER TABLE ONLY public.ecrliv1
 
 
 --
--- TOC entry 3367 (class 2606 OID 16975)
+-- TOC entry 3356 (class 2606 OID 19977)
 -- Name: ecrliv2 ecrliv2_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -705,7 +697,7 @@ ALTER TABLE ONLY public.ecrliv2
 
 
 --
--- TOC entry 3369 (class 2606 OID 16977)
+-- TOC entry 3358 (class 2606 OID 19979)
 -- Name: famassort famassort_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -714,7 +706,7 @@ ALTER TABLE ONLY public.famassort
 
 
 --
--- TOC entry 3371 (class 2606 OID 16979)
+-- TOC entry 3360 (class 2606 OID 19981)
 -- Name: ingredients ingredienti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -723,7 +715,7 @@ ALTER TABLE ONLY public.ingredients
 
 
 --
--- TOC entry 3385 (class 2606 OID 16981)
+-- TOC entry 3374 (class 2606 OID 19983)
 -- Name: vat iva_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -732,7 +724,7 @@ ALTER TABLE ONLY public.vat
 
 
 --
--- TOC entry 3373 (class 2606 OID 16983)
+-- TOC entry 3362 (class 2606 OID 19985)
 -- Name: lists listini_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -741,7 +733,7 @@ ALTER TABLE ONLY public.lists
 
 
 --
--- TOC entry 3375 (class 2606 OID 16985)
+-- TOC entry 3364 (class 2606 OID 19987)
 -- Name: movements movimenti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -750,7 +742,7 @@ ALTER TABLE ONLY public.movements
 
 
 --
--- TOC entry 3377 (class 2606 OID 16987)
+-- TOC entry 3366 (class 2606 OID 19989)
 -- Name: orders ordini_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -759,7 +751,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- TOC entry 3379 (class 2606 OID 16989)
+-- TOC entry 3368 (class 2606 OID 19991)
 -- Name: promo promo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -768,7 +760,7 @@ ALTER TABLE ONLY public.promo
 
 
 --
--- TOC entry 3381 (class 2606 OID 16991)
+-- TOC entry 3370 (class 2606 OID 19993)
 -- Name: receipts scontrini_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -777,7 +769,7 @@ ALTER TABLE ONLY public.receipts
 
 
 --
--- TOC entry 3383 (class 2606 OID 16993)
+-- TOC entry 3372 (class 2606 OID 19995)
 -- Name: typepromo tipopromo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -786,7 +778,7 @@ ALTER TABLE ONLY public.typepromo
 
 
 --
--- TOC entry 3351 (class 1259 OID 16994)
+-- TOC entry 3340 (class 1259 OID 19996)
 -- Name: idx_cognome; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -794,7 +786,7 @@ CREATE INDEX idx_cognome ON public.customers USING btree (surname);
 
 
 --
--- TOC entry 3340 (class 1259 OID 16995)
+-- TOC entry 3329 (class 1259 OID 19997)
 -- Name: idx_descrizione; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -802,7 +794,7 @@ CREATE INDEX idx_descrizione ON public.articles USING btree (description);
 
 
 --
--- TOC entry 3395 (class 2620 OID 16996)
+-- TOC entry 3384 (class 2620 OID 19998)
 -- Name: coupons tr_inserisci_coupon; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -810,7 +802,7 @@ CREATE TRIGGER tr_inserisci_coupon BEFORE INSERT ON public.coupons FOR EACH ROW 
 
 
 --
--- TOC entry 3396 (class 2620 OID 16997)
+-- TOC entry 3385 (class 2620 OID 19999)
 -- Name: coupons tr_modifica_coupons; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -818,7 +810,7 @@ CREATE TRIGGER tr_modifica_coupons BEFORE UPDATE ON public.coupons FOR EACH ROW 
 
 
 --
--- TOC entry 3388 (class 2606 OID 16998)
+-- TOC entry 3377 (class 2606 OID 20000)
 -- Name: barcode articoli_fk_barcode; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -827,7 +819,7 @@ ALTER TABLE ONLY public.barcode
 
 
 --
--- TOC entry 3390 (class 2606 OID 17003)
+-- TOC entry 3379 (class 2606 OID 20005)
 -- Name: classcr articoli_fk_classecr; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -836,7 +828,7 @@ ALTER TABLE ONLY public.classcr
 
 
 --
--- TOC entry 3392 (class 2606 OID 17008)
+-- TOC entry 3381 (class 2606 OID 20010)
 -- Name: detlists articoli_fk_dettlistini; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -845,7 +837,7 @@ ALTER TABLE ONLY public.detlists
 
 
 --
--- TOC entry 3389 (class 2606 OID 17013)
+-- TOC entry 3378 (class 2606 OID 20015)
 -- Name: cards clienti_fk_cards; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -854,7 +846,7 @@ ALTER TABLE ONLY public.cards
 
 
 --
--- TOC entry 3386 (class 2606 OID 17018)
+-- TOC entry 3375 (class 2606 OID 20020)
 -- Name: articles famassort_fk_articoli; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -863,7 +855,7 @@ ALTER TABLE ONLY public.articles
 
 
 --
--- TOC entry 3391 (class 2606 OID 17023)
+-- TOC entry 3380 (class 2606 OID 20025)
 -- Name: deprifpromo fk_deprifpromo_promo; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -872,7 +864,7 @@ ALTER TABLE ONLY public.deprifpromo
 
 
 --
--- TOC entry 3393 (class 2606 OID 17028)
+-- TOC entry 3382 (class 2606 OID 20030)
 -- Name: detlists fk_dettlistini_listini; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -881,7 +873,7 @@ ALTER TABLE ONLY public.detlists
 
 
 --
--- TOC entry 3394 (class 2606 OID 17033)
+-- TOC entry 3383 (class 2606 OID 20035)
 -- Name: detpromo fk_dettpromo_promo; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -890,7 +882,7 @@ ALTER TABLE ONLY public.detpromo
 
 
 --
--- TOC entry 3387 (class 2606 OID 17038)
+-- TOC entry 3376 (class 2606 OID 20040)
 -- Name: articles iva_fk_articoli; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -898,7 +890,7 @@ ALTER TABLE ONLY public.articles
     ADD CONSTRAINT iva_fk_articoli FOREIGN KEY (idvat) REFERENCES public.vat(idvat);
 
 
--- Completed on 2024-08-10 19:22:09 UTC
+-- Completed on 2024-08-14 19:35:04 UTC
 
 --
 -- PostgreSQL database dump complete

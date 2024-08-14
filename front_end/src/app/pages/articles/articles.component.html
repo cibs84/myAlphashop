@@ -62,7 +62,7 @@
             <td>{{ article.description }}</td>
             <td>{{ article.um }}</td>
             <td>{{ article.codStat }}</td>
-            <td>{{ article.pzCart }}</td>
+            <td>{{ article.pcsCart }}</td>
             <td>{{ article.netWeight }}</td>
             <td class="text-center">
               <span class="badge rounded-pill"
@@ -86,6 +86,7 @@
               <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="#">Dettaglio</a></li>
                 <li><a class="dropdown-item" href="#">Info</a></li>
+                <li><a class="dropdown-item" routerLink="/article-manager/{{article.codArt}}">Modifica</a></li>
                 <!-- <li><a class="dropdown-item" (click)="updateArt(article.codArt)">Modifica</a></li> -->
               </ul>
             </td>

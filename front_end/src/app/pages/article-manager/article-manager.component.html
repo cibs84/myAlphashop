@@ -1,1 +1,149 @@
-<h1>article-manager works!</h1>
+
+<!-- SECTION: Article-Manager -->
+<section id="article-manager" class="py-4 container">
+  <div class="row g-5 justify-content-md-center">
+    <div class="col-md-7 col-lg-8">
+      <h4 class="mb-3">Edit Article</h4>
+
+      <!-- FORM -->
+      <form class="needs-validation" novalidate>
+        <div class="row g-3">
+
+          <!-- Codart -->
+          <div class="col-sm-6">
+            <label for="codart" class="form-label">Codart</label>
+            <input type="text" class="form-control" id="codart" placeholder="" value="" required>
+            <div class="invalid-feedback">
+              Valid codart is required.
+            </div>
+          </div>
+
+          <!-- Barcode -->
+          <div class="col-sm-6">
+            <label for="barcode" class="form-label">Barcode</label>
+            <input type="text" class="form-control" id="barcode" placeholder="" value="" required>
+            <div class="invalid-feedback">
+              Valid barcode is required.
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="col-12">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" for="description" aria-label="Description"></textarea>
+          </div>
+
+          <!-- Unit of Measurement -->
+          <div class="col-md-6">
+            <label for="um" class="form-label">Unit of measurement</label>
+            <select class="form-select" id="um" required>
+              <option value="PCS">Pieces</option>
+              <option value="LT">Liters</option>
+              <option value="KG">Kilograms</option>
+            </select>
+            <div class="invalid-feedback">
+              Please select a valid unit of measurement.
+            </div>
+          </div>
+
+          <!-- Vat -->
+          <div class="col-md-6">
+            <label for="taxrate" class="form-label">Vat</label>
+            <select class="form-select" id="taxrate" required>
+              <option>22%</option>
+              <option>10%</option>
+              <option>4%</option>
+              <option>Exempt</option>
+            </select>
+            <div class="invalid-feedback">
+              Please provide a valid tax-rate.
+            </div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="col-sm-3">
+            <label for="pcscart" class="form-label">Quantity</label>
+            <input type="text" class="form-control" id="pcscart" placeholder="" value="" required>
+            <div class="invalid-feedback">
+              Valid quantity is required.
+            </div>
+          </div>
+
+          <!-- Net Weight -->
+          <div class="col-sm-3">
+            <label for="netweight" class="form-label">Net Weight</label>
+            <input type="text" class="form-control" id="netweight" placeholder="" value="" required>
+            <div class="invalid-feedback">
+              Valid weight is required.
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="col-sm-3">
+            <label for="price" class="form-label invisible">Price</label>
+            <input type="text" class="form-control" id="price" placeholder="Price" value="" required>
+            <div class="invalid-feedback">
+              Valid price is required.
+            </div>
+          </div>
+
+          <!-- Currency -->
+          <div class="col-md-3">
+            <label for="currency" class="form-label invisible">Currency</label>
+            <select class="form-select" id="currency" required>
+              <option value="">EUR</option>
+              <option value="">USD</option>
+              <option value="">GBP</option>
+            </select>
+            <div class="invalid-feedback">
+              Please provide a valid currency.
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="col-md-6">
+            <label for="famAssort" class="form-label">Category</label>
+            <select class="form-select" id="famAssort" required>
+              <option>Alimentare</option>
+              <option>Banco</option>
+              <option>Chimico</option>
+            </select>
+            <div class="invalid-feedback">
+              Please select a valid category.
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-6">
+            <label for="artStatus" class="form-label">Status</label>
+            <select class="form-select" id="artStatus" required>
+              <option>Active</option>
+              <option>Suspend</option>
+              <option>Deleted</option>
+            </select>
+            <div class="invalid-feedback">
+              Please provide a valid state.
+            </div>
+          </div>
+
+          <!-- Image -->
+          <div class="col-12">
+            <label for="artImage" class="form-label">Image</label>
+            <div class="input-group has-validation">
+              <span class="input-group-text">Select File</span>
+              <input type="text" class="form-control" id="artImage" placeholder="No file selected" required>
+            <div class="invalid-feedback">
+                Your article image is required.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMIT - Save Article -->
+        <button class="btn btn-primary mt-5" type="submit">Save Article</button>
+
+      </form>
+
+    </div>
+  </div>
+</section>

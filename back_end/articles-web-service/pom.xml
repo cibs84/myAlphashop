@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.alphashop</groupId>
-	<artifactId>articoli-web-service</artifactId>
+	<artifactId>articles-web-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>articoli-web-service</name>
+	<name>articles-web-service</name>
 	<description>Microservice Gestione Articoli</description>
 	<properties>
 		<java.version>17</java.version>

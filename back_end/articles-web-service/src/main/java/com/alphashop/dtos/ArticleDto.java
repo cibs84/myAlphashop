@@ -22,8 +22,8 @@ public class ArticleDto {
 	private String um;
 	private String codStat;
 	
-	@Max(value = 99, message = "{Max.ArticleDto.pzCart.Validation}")
-	private Integer pzCart;
+	@Max(value = 99, message = "{Max.ArticleDto.pcsCart.Validation}")
+	private Integer pcsCart;
 	
 	@Min(value = (long) 0.01, message = "{Min.ArticleDto.netWeight.Validation}")
 	private double netWeight;
