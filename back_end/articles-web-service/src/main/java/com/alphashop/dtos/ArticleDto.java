@@ -33,7 +33,7 @@ public class ArticleDto {
 
 	private Set<BarcodeDto> barcode = new HashSet<>();
 	private IngredientsDto ingredients;
-	private CategoryDto famAssort;
+	private CategoryDto category;
 	private VatDto vat;
 	
 	public void setDescription(String description) {

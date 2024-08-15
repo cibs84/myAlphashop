@@ -17,15 +17,15 @@ import com.alphashop.repositories.ArticleRepository;
 public class ArticleMapper extends BaseAlphaMapper<Article, ArticleDto> {
 
 	private final BarcodeMapper barcodeMapper;
-	private final FamAssortMapper famAssortMapper;
+	private final CategoryMapper categoryMapper;
 	private final IngredientsMapper ingredientsMapper;
 	private final VatMapper vatMapper;
 	private Article article;
 
-	public ArticleMapper(BarcodeMapper barcodeMapper, FamAssortMapper famAssortMapper,
+	public ArticleMapper(BarcodeMapper barcodeMapper, CategoryMapper categoryMapper,
 			IngredientsMapper ingredientsMapper, VatMapper vatMapper, ArticleRepository articleRepository) {
 		this.barcodeMapper = barcodeMapper;
-		this.famAssortMapper = famAssortMapper;
+		this.categoryMapper = categoryMapper;
 		this.ingredientsMapper = ingredientsMapper;
 		this.vatMapper = vatMapper;
 	}
@@ -44,7 +44,7 @@ public class ArticleMapper extends BaseAlphaMapper<Article, ArticleDto> {
 			articleDto.setCodStat(entity.getCodStat());
 			articleDto.setCreationDate(entity.getCreationDate());
 			articleDto.setDescription(entity.getDescription());
-			articleDto.setFamAssort(famAssortMapper.toModel(entity.getFamAssort()));
+			articleDto.setCategory(categoryMapper.toModel(entity.getCategory()));
 			articleDto.setIdArtStatus(entity.getIdArtStatus());
 			articleDto.setIngredients(ingredientsMapper.toModel(entity.getIngredients()));
 			articleDto.setVat(vatMapper.toModel(entity.getVat()));
@@ -67,7 +67,7 @@ public class ArticleMapper extends BaseAlphaMapper<Article, ArticleDto> {
 			article.setCodStat(model.getCodStat());
 			article.setCreationDate(model.getCreationDate());
 			article.setDescription(model.getDescription());
-			article.setFamAssort(famAssortMapper.toEntity(model.getFamAssort()));
+			article.setCategory(categoryMapper.toEntity(model.getCategory()));
 			article.setIdArtStatus(model.getIdArtStatus());
 			article.setIngredients(ingredientsMapper.toEntity(model.getIngredients()));
 			article.setVat(vatMapper.toEntity(model.getVat()));

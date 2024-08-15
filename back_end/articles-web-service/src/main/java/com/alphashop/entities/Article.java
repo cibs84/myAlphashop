@@ -64,7 +64,7 @@ public class Article implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "idfamass", referencedColumnName = "id")
-	private FamAssort famAssort;
+	private Category category;
 
 	@ManyToOne
 	@JoinColumn(name = "idvat", referencedColumnName = "idVat")

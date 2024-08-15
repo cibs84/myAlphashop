@@ -37,7 +37,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 			            "type": "CP"
 			        }
 			    ],
-			    "famAssort": {
+			    "category": {
 			        "id": 1,
 			        "description": "DROGHERIA ALIMENTARE"
 			    },
@@ -72,9 +72,9 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 				.andExpect(jsonPath("$.barcode[0].barcode").value("8008490000021"))
 				.andExpect(jsonPath("$.barcode[0].type").exists()).andExpect(jsonPath("$.barcode[0].type").value("CP"))
 				// famAssort
-				.andExpect(jsonPath("$.famAssort.id").exists()).andExpect(jsonPath("$.famAssort.id").value("1"))
-				.andExpect(jsonPath("$.famAssort.description").exists())
-				.andExpect(jsonPath("$.famAssort.description").value("DROGHERIA ALIMENTARE"))
+				.andExpect(jsonPath("$.category.id").exists()).andExpect(jsonPath("$.category.id").value("1"))
+				.andExpect(jsonPath("$.category.description").exists())
+				.andExpect(jsonPath("$.category.description").value("DROGHERIA ALIMENTARE"))
 				// ingredienti
 				.andExpect(jsonPath("$.ingredients").isEmpty())
 				// Vat
@@ -149,7 +149,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 			        }
 			      ],
 			      "ingredients": null,
-			      "famAssort": {
+			      "category": {
 			        "id": 1,
 			        "description": "DROGHERIA ALIMENTARE"
 			      },
