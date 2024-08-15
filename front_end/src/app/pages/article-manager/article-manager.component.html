@@ -3,16 +3,17 @@
 <section id="article-manager" class="py-4 container">
   <div class="row g-5 justify-content-md-center">
     <div class="col-md-7 col-lg-8">
-      <h4 class="mb-3">Edit Article</h4>
+      <h4 class="mb-3">{{ title }}</h4>
 
       <!-- FORM -->
-      <form class="needs-validation" novalidate>
+      <!-- <form class="needs-validation" novalidate> -->
         <div class="row g-3">
 
           <!-- Codart -->
           <div class="col-sm-6">
             <label for="codart" class="form-label">Codart</label>
-            <input type="text" class="form-control" id="codart" placeholder="" value="" required>
+            <input type="text" class="form-control" id="codart"
+                   [(ngModel)]="article.codArt" required>
             <div class="invalid-feedback">
               Valid codart is required.
             </div>
@@ -21,7 +22,7 @@
           <!-- Barcode -->
           <div class="col-sm-6">
             <label for="barcode" class="form-label">Barcode</label>
-            <input type="text" class="form-control" id="barcode" placeholder="" value="" required>
+            <input type="text" class="form-control" id="barcode" required>
             <div class="invalid-feedback">
               Valid barcode is required.
             </div>
@@ -30,13 +31,15 @@
           <!-- Description -->
           <div class="col-12">
             <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" for="description" aria-label="Description"></textarea>
+            <textarea class="form-control" for="description" aria-label="Description"
+                      [(ngModel)]="article.description" ></textarea>
           </div>
 
           <!-- Unit of Measurement -->
           <div class="col-md-6">
             <label for="um" class="form-label">Unit of measurement</label>
-            <select class="form-select" id="um" required>
+            <select class="form-select" id="um"
+                    [(ngModel)]="article.um" required>
               <option value="PCS">Pieces</option>
               <option value="LT">Liters</option>
               <option value="KG">Kilograms</option>
@@ -60,10 +63,11 @@
             </div>
           </div>
 
-          <!-- Quantity -->
+          <!-- Quantity (PcsCart) -->
           <div class="col-sm-3">
             <label for="pcscart" class="form-label">Quantity</label>
-            <input type="text" class="form-control" id="pcscart" placeholder="" value="" required>
+            <input type="text" class="form-control" id="pcscart"
+                   [(ngModel)]="article.pcsCart" required>
             <div class="invalid-feedback">
               Valid quantity is required.
             </div>
@@ -72,7 +76,8 @@
           <!-- Net Weight -->
           <div class="col-sm-3">
             <label for="netweight" class="form-label">Net Weight</label>
-            <input type="text" class="form-control" id="netweight" placeholder="" value="" required>
+            <input type="text" class="form-control" id="netweight"
+                   [(ngModel)]="article.netWeight" required>
             <div class="invalid-feedback">
               Valid weight is required.
             </div>
@@ -81,7 +86,7 @@
           <!-- Price -->
           <div class="col-sm-3">
             <label for="price" class="form-label invisible">Price</label>
-            <input type="text" class="form-control" id="price" placeholder="Price" value="" required>
+            <input type="text" class="form-control" id="price" placeholder="Price" required>
             <div class="invalid-feedback">
               Valid price is required.
             </div>
@@ -102,8 +107,8 @@
 
           <!-- Category -->
           <div class="col-md-6">
-            <label for="famAssort" class="form-label">Category</label>
-            <select class="form-select" id="famAssort" required>
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" id="category" required>
               <option>Alimentare</option>
               <option>Banco</option>
               <option>Chimico</option>
@@ -116,10 +121,11 @@
           <!-- Status -->
           <div class="col-md-6">
             <label for="artStatus" class="form-label">Status</label>
-            <select class="form-select" id="artStatus" required>
-              <option>Active</option>
-              <option>Suspend</option>
-              <option>Deleted</option>
+            <select class="form-select" id="artStatus"
+                    [(ngModel)]="article.idArtStatus" required>
+              <option value="1">Active</option>
+              <option value="2">Suspended</option>
+              <option value="3">Deleted</option>
             </select>
             <div class="invalid-feedback">
               Please provide a valid state.
@@ -140,9 +146,9 @@
         </div>
 
         <!-- SUBMIT - Save Article -->
-        <button class="btn btn-primary mt-5" type="submit">Save Article</button>
+        <button class="btn btn-primary mt-5">Save Article</button>
 
-      </form>
+      <!-- </form> -->
 
     </div>
   </div>

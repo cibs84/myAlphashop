@@ -5,6 +5,7 @@ import { Article } from 'src/app/models/Article';
 import { ArticleResponse } from 'src/app/models/ArticleResponse';
 import { Pagination } from 'src/app/models/Pagination';
 import { ArticleService } from 'src/app/services/data/article.service';
+import { Router } from '@angular/router';
 
 enum FilterTypes {
   ByCodart = 1,
@@ -79,7 +80,8 @@ export class ArticlesComponent implements OnInit {
   filterType: number = FilterTypes.ByDesc; // start with getArticlesByDesc
 
   constructor(private articleService: ArticleService,
-              private scroller: ViewportScroller
+              private scroller: ViewportScroller,
+              private router: Router
   ) {
     console.log("constructor()");
 
@@ -277,15 +279,19 @@ export class ArticlesComponent implements OnInit {
   }
 
   // UPDATE
-  // updateArt(codArt: string) {
-  //   this.resetResponses();
+  updateArt(codArt: string) {
 
-  //   this.codArt = codArt;
-  //   this.articleService.updateArticle(codArt).subscribe({
-  //     next: this.handleSuccessResp,
-  //     error: this.handleErrorResp
-  //   });
-  // }
+    this.router.navigate(['article-manager', codArt]);
+
+
+    // this.resetResponses();
+
+    // this.codArt = codArt;
+    // this.articleService.updateArticle(codArt).subscribe({
+    //   next: this.handleSuccessResp,
+    //   error: this.handleErrorResp
+    // });
+  }
 
   private handleSuccessResp = (resp: any): void => {
     console.log("handleSuccessResp()");

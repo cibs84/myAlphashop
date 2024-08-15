@@ -18,7 +18,7 @@ const routes: Routes = [
   {path:'welcome/:username', component:WelcomeComponent, canActivate:[RouteGuardService]},
   {path:'articles', component:ArticlesComponent, canActivate:[RouteGuardService]},
   {path:'articles/grid', component:ArticlesGridComponent, canActivate:[RouteGuardService]},
-  {path:'article-manager/:codart', component:ArticleManagerComponent, canActivate:[RouteGuardService]},
+  {path:'article-manager/:codArt', component:ArticleManagerComponent, canActivate:[RouteGuardService]},
   {path:'**', component:ErrorComponent, canActivate:[RouteGuardService]},
   {path:'**', component:ErrorComponent}
 ];
