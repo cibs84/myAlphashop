@@ -5,8 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ArticlesComponent } from './pages/articles/articles.component';
-import { ArticlesGridComponent } from './pages/articles-grid/articles-grid.component';
-import { ArticleCardComponent } from './components/article-card/article-card.component';
 import { ArticleManagerComponent } from './pages/article-manager/article-manager.component';
 import { FormsModule } from '@angular/forms';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
@@ -25,8 +23,6 @@ import { HttpClientModule } from '@angular/common/http';
     ErrorComponent,
     ArticlesComponent,
     LogoutComponent,
-    ArticlesGridComponent,
-    ArticleCardComponent,
     ArticleManagerComponent
   ],
   imports: [

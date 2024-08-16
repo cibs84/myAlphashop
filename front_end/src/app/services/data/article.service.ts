@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient} from '@angular/common/http';
 import { Pagination } from 'src/app/models/Pagination';
 import { ArticleResponse } from 'src/app/models/ArticleResponse';
+import { Category, Vat } from 'src/app/models/Article';
 
 @Injectable({
   providedIn: 'root'
@@ -56,4 +57,12 @@ export class ArticleService {
   // updateArticle = (codArt: string) => {
   //   return this.httpClient.put(`http://${this.server}:${this.port}/api/article/update/${codArt}`);
   // }
+
+  getCategories = () => {
+    return this.httpClient.get<Category[]>(`http://${this.server}:${this.port}/api/categories`);
+  }
+
+  getVatList = () => {
+    return this.httpClient.get<Vat[]>(`http://${this.server}:${this.port}/api/vat-list`);
+  }
 }

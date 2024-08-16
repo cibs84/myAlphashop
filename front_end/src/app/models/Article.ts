@@ -7,7 +7,20 @@ export interface Article {
   netWeight: number,
   idArtStatus: string,
   price: number,
+  category: Category,
+  vat: Vat,
   active: boolean,
   creationDate: Date,
   urlImage: string
 }
+
+export interface Category {
+  id: number;
+  description: string;
+ }
+
+ export interface Vat {
+  idVat: number;
+  description: string;
+  taxRate: number;
+ }

@@ -51,12 +51,9 @@
 
           <!-- Vat -->
           <div class="col-md-6">
-            <label for="taxrate" class="form-label">Vat</label>
-            <select class="form-select" id="taxrate" required>
-              <option>22%</option>
-              <option>10%</option>
-              <option>4%</option>
-              <option>Exempt</option>
+            <label for="vat" class="form-label">Vat</label>
+            <select class="form-select" id="vat" [(ngModel)]="article.vat.idVat" required>
+              <option [ngValue]="vat.idVat" *ngFor="let vat of vatList">{{ vat.description }}</option>
             </select>
             <div class="invalid-feedback">
               Please provide a valid tax-rate.
@@ -108,10 +105,8 @@
           <!-- Category -->
           <div class="col-md-6">
             <label for="category" class="form-label">Category</label>
-            <select class="form-select" id="category" required>
-              <option>Alimentare</option>
-              <option>Banco</option>
-              <option>Chimico</option>
+            <select class="form-select" [(ngModel)]="article.category.id" id="category" required>
+              <option [ngValue]="category.id" *ngFor="let category of categories">{{ category.id }} - {{ category.description }}</option>
             </select>
             <div class="invalid-feedback">
               Please select a valid category.

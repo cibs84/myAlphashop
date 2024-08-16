@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Article } from 'src/app/models/Article';
+import { Article, Category, Vat } from 'src/app/models/Article';
 import { ArticleService } from 'src/app/services/data/article.service';
 
 @Component({
@@ -16,6 +16,10 @@ export class ArticleManagerComponent implements OnInit {
 
   article!: Article;
 
+  categories: Category[] = [];
+  vatList: Vat[] = [];
+
+
   constructor(private route: ActivatedRoute,
               private articleService: ArticleService
   ) { }
@@ -28,6 +32,18 @@ export class ArticleManagerComponent implements OnInit {
       next: this.handleResponse.bind(this),
       error: this.handleError.bind(this)
     });
+
+    this.articleService.getCategories().subscribe(
+      response => {
+        this.categories = response;
+      }
+    );
+
+    this.articleService.getVatList().subscribe(
+      response => {
+        this.vatList = response;
+      }
+    );
   }
 
   handleResponse(response: any){
