@@ -13,9 +13,6 @@ import com.alphashop.repositories.ArticleRepository;
 @Component
 public class BarcodeMapper extends BaseAlphaMapper<Barcode, BarcodeDto> {
 
-	@Autowired
-	ArticleRepository articleRepository;
-	
 	@Override
 	public BarcodeDto toModel(Barcode entity, BarcodeDto model) {
 		BarcodeDto barcodeDto = null;

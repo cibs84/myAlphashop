@@ -54,13 +54,15 @@ public class Article implements Serializable {
 	@Column(name = "creationdate")
 	private Date creationDate;
 
-	@OneToOne(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne(mappedBy = "article", cascade = CascadeType.ALL, 
+			  orphanRemoval = true)
 	private Ingredients ingredients;
 
 	
 	@JsonManagedReference
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "article", orphanRemoval = true)
-	private Set<Barcode> barcode = new HashSet<>();
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, 
+			   mappedBy = "article", orphanRemoval = true)
+	private Set<Barcode> barcodes = new HashSet<>();
 
 	@ManyToOne
 	@JoinColumn(name = "idfamass", referencedColumnName = "id")

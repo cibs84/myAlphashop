@@ -36,7 +36,7 @@ public class ArticleMapper extends BaseAlphaMapper<Article, ArticleDto> {
 
 		if (entity != null) {
 			articleDto = Optional.ofNullable(model).orElseGet(ArticleDto::new);
-			articleDto.setBarcode(Optional.ofNullable(entity.getBarcode()).orElseGet(HashSet::new)
+			articleDto.setBarcodes(Optional.ofNullable(entity.getBarcodes()).orElseGet(HashSet::new)
 					.stream()
 					.map(barcodeMapper::toModel)
 					.collect(Collectors.toSet()));
@@ -76,11 +76,11 @@ public class ArticleMapper extends BaseAlphaMapper<Article, ArticleDto> {
 			article.setUm(model.getUm());
 
 			// ---------------------- SET-BARCODE ----------------------
-			Set<Barcode> barcodes = Optional.ofNullable(model.getBarcode()).orElseGet(HashSet::new)
+			Set<Barcode> barcodes = Optional.ofNullable(model.getBarcodes()).orElseGet(HashSet::new)
 					.stream().map(barcodeDto -> barcodeMapper.toEntity(barcodeDto))
 					.collect(Collectors.toSet());
 			barcodes.forEach(barcode -> barcode.setArticle(article));
-			article.setBarcode(barcodes);
+			article.setBarcodes(barcodes);
 			// ---------------------------------------------------------
 		}
 		article = Optional.ofNullable(article).orElseGet(() -> new Article());

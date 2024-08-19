@@ -27,6 +27,6 @@ public interface ArticleRepository extends JpaRepository<Article, String> {
 
 	boolean existsByCodArt(String codArt);
 	
-	@Query(value="SELECT a FROM Article a JOIN a.barcode b WHERE b.barcode IN (:ean)")
+	@Query(value="SELECT a FROM Article a JOIN a.barcodes b WHERE b.barcode IN (:ean)")
 	Optional<Article> selByEan(@Param("ean") String ean);
 }

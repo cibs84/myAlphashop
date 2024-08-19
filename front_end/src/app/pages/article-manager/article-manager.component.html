@@ -22,7 +22,8 @@
           <!-- Barcode -->
           <div class="col-sm-6">
             <label for="barcode" class="form-label">Barcode</label>
-            <input type="text" class="form-control" id="barcode" required>
+            <input type="text" class="form-control" id="barcode"
+                   [(ngModel)]="article.barcodes[0].barcode" disabled required>
             <div class="invalid-feedback">
               Valid barcode is required.
             </div>
@@ -40,7 +41,7 @@
             <label for="um" class="form-label">Unit of measurement</label>
             <select class="form-select" id="um"
                     [(ngModel)]="article.um" required>
-              <option value="PCS">Pieces</option>
+              <option value="PZ">Pieces</option>
               <option value="LT">Liters</option>
               <option value="KG">Kilograms</option>
             </select>
@@ -63,8 +64,8 @@
           <!-- Quantity (PcsCart) -->
           <div class="col-sm-3">
             <label for="pcscart" class="form-label">Quantity</label>
-            <input type="text" class="form-control" id="pcscart"
-                   [(ngModel)]="article.pcsCart" required>
+            <input type="number" class="form-control" id="pcscart"
+                   [(ngModel)]="article.pcsCart" min=1 max=99 required>
             <div class="invalid-feedback">
               Valid quantity is required.
             </div>
@@ -73,7 +74,7 @@
           <!-- Net Weight -->
           <div class="col-sm-3">
             <label for="netweight" class="form-label">Net Weight</label>
-            <input type="text" class="form-control" id="netweight"
+            <input type="number" step="0.01" class="form-control" id="netweight"
                    [(ngModel)]="article.netWeight" required>
             <div class="invalid-feedback">
               Valid weight is required.

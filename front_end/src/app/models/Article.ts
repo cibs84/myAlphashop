@@ -9,6 +9,7 @@ export interface Article {
   price: number,
   category: Category,
   vat: Vat,
+  barcodes: Barcode[],
   active: boolean,
   creationDate: Date,
   urlImage: string
@@ -23,4 +24,9 @@ export interface Category {
   idVat: number;
   description: string;
   taxRate: number;
+ }
+
+ export interface Barcode {
+  barcode: string;
+  type: string;
  }

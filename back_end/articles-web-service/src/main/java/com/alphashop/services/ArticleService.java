@@ -58,6 +58,8 @@ public class ArticleService {
 	public PaginatedResponseList<ArticleDto> getByDescription(String description, Optional<Integer> currentPage,
 			Optional<Integer> pageSize) throws NotFoundException {
 
+		description = description == "" ? " " : description;
+		
 		String descriptionMod = "%" + description.toUpperCase() + "%";
 
 		Pageable articlesPagination = PageRequest.of(currentPage.map(n -> n-1).filter(n -> n > -1).orElse(0),

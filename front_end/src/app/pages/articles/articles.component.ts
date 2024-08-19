@@ -303,7 +303,7 @@ export class ArticlesComponent implements OnInit {
     this.filterType = FilterTypes.ByDesc;
     this.getArticles();
 
-    //  Scrolla la pagina all'elemento di alert con il messaggio di risposta
+    //  Scroll down the page to the alert element with the response message
     this.scrollToSuccessAlert();
   }
   private handleErrorResp = (error: any): void => {
@@ -327,17 +327,17 @@ export class ArticlesComponent implements OnInit {
       console.error(ErrorMessages.GenericError);
       console.error(error); // Registra l'errore nella console
     }
-    //  Scrolla la pagina all'elemento di alert con il messaggio di errore
+    //  Scroll down the page to the alert element with the error message
     this.scrollToErrorAlert();
   }
   // ******** End - CRUD Articles ********
 
 
   // ----- PAGINATION -----
-  // pageNr -> numeroPagina passato dalla pagina HTML al metodo
-  // this.pagination.pagButtonsNr -> Attuale numero di bottoni-pagina visualizzato
-  // this.pagination$.currentPage -> numeroPagina corrente
-  // this.pagination$.totalPages -> totale delle pagine messe a disposizione dal server
+  // pageNr: numeroPagina passato dalla pagina HTML al metodo
+  // this.pagination.pagButtonsNr: Attuale numero di bottoni-pagina visualizzato
+  // this.pagination$.currentPage: numeroPagina corrente
+  // this.pagination$.totalPages: totale delle pagine messe a disposizione dal server
 
   // Invocato al click del singolo bottone-pagina
   pageChange = (currentPage: string|number): void => {

@@ -31,12 +31,16 @@ public class ArticleDto {
 	private Date creationDate;
 	private double price = 0;
 
-	private Set<BarcodeDto> barcode = new HashSet<>();
+	private Set<BarcodeDto> barcodes = new HashSet<>();
 	private IngredientsDto ingredients;
 	private CategoryDto category;
 	private VatDto vat;
 	
 	public void setDescription(String description) {
 		this.description = description.trim(); 
+	}
+	
+	public void setUm(String um) {
+		this.description = description.toUpperCase(); 
 	}
 }
