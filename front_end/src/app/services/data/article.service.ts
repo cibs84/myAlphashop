@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient} from '@angular/common/http';
+import { HttpClient, HttpResponse} from '@angular/common/http';
 import { Pagination } from 'src/app/models/Pagination';
 import { ArticleResponse } from 'src/app/models/ArticleResponse';
-import { Category, Vat } from 'src/app/models/Article';
+import { Article, Category, Vat } from 'src/app/models/Article';
 
 @Injectable({
   providedIn: 'root'
@@ -27,42 +27,56 @@ export class ArticleService {
     this.setPagination(pagination);
     filter = filter ? filter : ' ';
 
-    return this.httpClient.get<ArticleResponse>(`http://${this.server}:${this.port}/api/article/findByCodart/${filter}`)
+    return this.httpClient.get(`http://${this.server}:${this.port}/api/article/findByCodart/${filter}`,
+      {observe: "response"}
+    );
   };
 
   getArticlesByDesc = (/*description*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
-    filter = filter || ' ';
+    filter = filter.trim() || ' ';
 
-    return this.httpClient.get<ArticleResponse>(`http://${this.server}:${this.port}/api/articles/findByDescription/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`);
-  }
+    return this.httpClient.get(`http://${this.server}:${this.port}/api/articles/findByDescription/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`,
+      {observe: "response"}
+    );
+  };
 
   getArticleByBarcode = (/*barcode(=ean)*/ filter: string, pagination?: Pagination) => {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get<ArticleResponse>(`http://${this.server}:${this.port}/api/article/findByBarcode/${filter}`);
+    return this.httpClient.get(`http://${this.server}:${this.port}/api/article/findByBarcode/${filter}`,
+      {observe: "response"}
+    );
   };
 
   deleteArticleByCodart = (codArt: string) => {
-    return this.httpClient.delete(`http://${this.server}:${this.port}/api/article/delete/${codArt}`);
+    return this.httpClient.delete(`http://${this.server}:${this.port}/api/article/delete/${codArt}`,
+      {observe: "response"}
+    );
   }
 
   private setPagination = (pagination: Pagination|undefined) => {
     if (typeof(pagination)!=='undefined') {
       this.pagination = pagination;
-    }
+    };
   }
 
-  // updateArticle = (codArt: string) => {
-  //   return this.httpClient.put(`http://${this.server}:${this.port}/api/article/update/${codArt}`);
-  // }
+  artUpdate = (article: Article) => {
+    return this.httpClient.put<HttpResponse<any>>(`http://${this.server}:${this.port}/api/article/update`, article,
+      {observe: "response"}
+    );
+  }
 
   getCategories = () => {
-    return this.httpClient.get<Category[]>(`http://${this.server}:${this.port}/api/categories`);
+    return this.httpClient.get<Category[]>(`http://${this.server}:${this.port}/api/categories`,
+    {observe: "response"}
+    );
   }
 
   getVatList = () => {
-    return this.httpClient.get<Vat[]>(`http://${this.server}:${this.port}/api/vat-list`);
+    return this.httpClient.get<Vat[]>(`http://${this.server}:${this.port}/api/vat-list`,
+    {observe: "response"}
+    );
   }
 }

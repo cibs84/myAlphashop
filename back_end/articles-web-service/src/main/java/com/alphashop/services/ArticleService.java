@@ -119,10 +119,10 @@ public class ArticleService {
 	}
 
 	@Transactional
-	public void create(ArticleDto articleDto) throws ItemAlreadyExistsException {
+	public Article create(ArticleDto articleDto) throws ItemAlreadyExistsException {
 		Article article = articleMapper.toEntity(articleDto);
 		article.setDescription(article.getDescription().toUpperCase());
-		articleRepository.save(article);
+		return articleRepository.save(article);
 	}
 
 	@Transactional

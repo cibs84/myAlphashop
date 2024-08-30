@@ -2,6 +2,8 @@ package com.alphashop.ControllerTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -28,7 +30,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	  "netWeight": 1.75,
 	  "idArtStatus": "1",
 	  "creationDate": "2019-05-14",
-	  "barcode": [{
+	  "barcodes": [{
 	      "barcode": "12345678",
 	      "type": "CP"
 	    }],
@@ -39,7 +41,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	  "vat": {
 	    "idVat": 22
 	  },
-	  "famAssort": {
+	  "category": {
 	    "id": 1
 	  }
 	}""";
@@ -47,14 +49,14 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	private String JsonDataMod = """
 	{
 		"codArt": "123Test",
-		"description": "Articolo Unit Test Modifica",
+		"description": "ARTICOLO UNIT TEST MODIFICA",
 		"um": "PZ",
 		"codStat": "TESTART",
 		"pcsCart": 6,
 		"netWeight": 1.75,
 		"idArtStatus": "1",
 		"creationDate": "2019-05-14",
-		"barcode": [
+		"barcodes": [
 		  {
 			"barcode": "12345678",
 			"type": "CP"
@@ -67,7 +69,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 		"vat": {
 		  "idVat": 22
 		},
-		"famAssort": {
+		"category": {
 		  "id": 1
 		}
 	}""";
@@ -89,10 +91,23 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/article/update")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonDataMod).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andDo(print());
+				.andExpect(status().isOk())
+				.andExpect(content().json(JsonDataMod))
+				.andReturn();
 		
 		Article article = articleRepository.findByCodArt("123Test").get();
 		assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST MODIFICA");
+	}
+	
+	@Test
+	public void testErrUpdArticleNotFound() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/article/update")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(JsonDataMod).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.code").value(404))
+				.andExpect(jsonPath("$.message")
+						.value("Article '123Test' doesn't exist"))
+				.andDo(print());
 	}
 }

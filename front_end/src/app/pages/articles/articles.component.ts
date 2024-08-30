@@ -2,41 +2,16 @@ import { Component, OnInit} from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { Observable } from 'rxjs';
 import { Article } from 'src/app/models/Article';
-import { ArticleResponse } from 'src/app/models/ArticleResponse';
 import { Pagination } from 'src/app/models/Pagination';
 import { ArticleService } from 'src/app/services/data/article.service';
 import { Router } from '@angular/router';
+import { HttpResponse } from '@angular/common/http';
+import { ArtStatus, ErrorMessages, StatusCodes } from 'src/app/enums/Enums';
 
 enum FilterTypes {
   ByCodart = 1,
   ByDesc = 2,
   ByBarcode = 3
-}
-
-enum StatusCodes {
-  UnavailableServer = 0, // e.g. server disconnected
-  BadRequest = 400, // e.g. malformed request syntax
-  NotFound = 404, // item not found (read)
-  Conflict = 409, // e.g. item already exists (create)
-  UnprocessableEntity = 422, // e.g validation error (create, update)
-  Forbidden = 403, // e.g. not erasable item (delete)
-  Success = 200,
-  Accepted = 202,
-  NoContent = 204
-}
-
-enum ErrorMessages {
-  UnavailableServer = 'The server is temporarily unavailable',
-  OperationNotAllowed = "Operation not allowed",
-  GenericError = 'An error occurred',
-  ElementNotFound = 'Element not found'
-}
-
-enum ArtStatus {
-  Active = 'Active',
-  Suspended = 'Suspended',
-  Deleted = 'Deleted',
-  Error = 'Error'
 }
 
 @Component({
@@ -181,14 +156,14 @@ export class ArticlesComponent implements OnInit {
     console.log("articles.components.ts -> getArticles()");
     console.log("filterType -> " + this.filterType);
 
-    const observable: Observable<ArticleResponse> = this.getObservableByFilterType();
+    const observable: Observable<HttpResponse<any>> = this.getObservableByFilterType();
     observable.subscribe({
       next: this.handleResponse,
       error: this.handleError
     });
   }
 
-  private getObservableByFilterType(): Observable<ArticleResponse> {
+  private getObservableByFilterType(): Observable<HttpResponse<any>> {
     console.log("filter -> " + this.filter);
     console.log(this.pagination$);
     console.log("filterType -> " + this.filterType);
@@ -213,15 +188,15 @@ export class ArticlesComponent implements OnInit {
     console.log(response);
 
     // In base alla risposta, assegna ad articles$ la lista di articles OR il singolo article
-    this.articles$ = response.itemList || [response];
+    this.articles$ = response.body.itemList || [response.body];
 
     // Converte lo stato id numerico di ogni article in letterale (es. 1 -> 'Attivo')
     this.articles$.map(art => {
       art.idArtStatus = this.getLiteralArtStatus(art.idArtStatus);
     });
 
-    if (response.pagination) {
-      this.pagination$ = response.pagination;
+    if (response.body.pagination) {
+      this.pagination$ = response.body.pagination;
       this.setPagination();
     }
 
@@ -298,7 +273,7 @@ export class ArticlesComponent implements OnInit {
     console.log(resp);
     console.log("this.codArt -> " + this.codArt);
 
-    this.respObj$ = resp;
+    this.respObj$ = resp.body;
 
     this.filterType = FilterTypes.ByDesc;
     this.getArticles();

@@ -2,12 +2,14 @@ package com.alphashop.ControllerTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.alphashop.entities.Article;
@@ -29,7 +31,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 			  "netWeight": 1.75,
 			  "idArtStatus": "1",
 			  "creationDate": "2019-05-14",
-			  "barcode": [{
+			  "barcodes": [{
 			      "barcode": "12345678",
 			      "type": "CP"
 			    }],
@@ -40,7 +42,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 			  "vat": {
 			    "idVat": 22
 			  },
-			  "famAssort": {
+			  "category": {
 			    "id": 1
 			  }
 			}""";
@@ -50,16 +52,16 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonData)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andDo(print());
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
+				.andExpect(content().json(JsonData))
+				.andReturn();
 		
 		Article article = articleRepository.findByCodArt("123Test").get();
 		assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST INSERIMENTO");
 	}
 
 	@Test
-	public void testErrCreateArticle1() throws Exception {
+	public void testErrCreateExistingArticle() throws Exception {
 		{
 			mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
 					.contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +95,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 			"netWeight": 1.75,
 			"idArtStatus": "1",
 			"creationDate": "2019-05-14",
-			"barcode": [
+			"barcodes": [
 			  {
 				"barcode": "12345678",
 				"type": "CP"
@@ -106,13 +108,13 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 			"vat": {
 			  "idVat": 22
 			},
-			"famAssort": {
+			"category": {
 			  "id": 1
 			}
 		}""";
 
 	@Test
-	public void testErrCreateArticle2() throws Exception {
+	public void testErrCreateArticleWithInvalidDescription() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(ErrJsonData)

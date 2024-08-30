@@ -7,12 +7,12 @@ export interface Article {
   netWeight: number,
   idArtStatus: string,
   price: number,
-  category: Category,
-  vat: Vat,
-  barcodes: Barcode[],
   active: boolean,
   creationDate: Date,
-  urlImage: string
+  urlImage: string,
+  category: Category,
+  vat: Vat,
+  barcodes: Barcode[]
 }
 
 export interface Category {

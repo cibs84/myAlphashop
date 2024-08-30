@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Article, Barcode, Category, Vat } from 'src/app/models/Article';
+import { Article, Category, Vat } from 'src/app/models/Article';
 import { ArticleService } from 'src/app/services/data/article.service';
+import { ErrorMessages } from 'src/app/enums/Enums';
 
 @Component({
   selector: 'app-article-manager',
@@ -14,6 +15,10 @@ export class ArticleManagerComponent implements OnInit {
 
   codArt: string = "";
 
+  errorMessage: string = "";
+  successMessage: string = "";
+  respStatusCode: number = -1;
+
   article: Article = {
     codArt: "",
     description: "",
@@ -23,18 +28,18 @@ export class ArticleManagerComponent implements OnInit {
     netWeight: 0,
     idArtStatus: "",
     price: 0,
-    category: {id: 0, description: ""},
-    vat: {idVat: 0, description: "", taxRate: 0},
-    barcodes: [],
     active: true,
     creationDate: new Date(),
-    urlImage: ""
+    urlImage: "",
+    category: {id: 0, description: ""},
+    vat: {idVat: 0, description: "", taxRate: 0},
+    barcodes: [{barcode: "", type: ""}],
   }
 
   categories: Category[] = [];
   vatList: Vat[] = [];
 
-
+  isOnInit: boolean = true;
 
   constructor(private route: ActivatedRoute,
               private articleService: ArticleService) {
@@ -52,24 +57,48 @@ export class ArticleManagerComponent implements OnInit {
 
     this.articleService.getCategories().subscribe(
       response => {
-        this.categories = response;
+        this.categories = response.body  as Category[];
       }
     );
 
     this.articleService.getVatList().subscribe(
       response => {
-        this.vatList = response;
+        this.vatList = response.body as Vat[];
       }
     );
   }
 
   handleResponse(response: any){
-    this.article = response;
+    console.log("handleResponse()");
+    console.log(response);
 
-    console.log(this.article);
+    this.respStatusCode = response.status;
+    this.article = response.body;
+
+    if (this.article.barcodes.length == 0) {
+      this.article.barcodes = [{barcode: "", type: ""}];
+    }
   };
 
   handleError(error: any){
+    console.log("handleError()");
     console.log(error);
+
+    this.errorMessage = error.error.message || ErrorMessages.UnavailableServer;
+    this.respStatusCode = error.status;
+  }
+
+  saveArt = () => {
+    console.log("saveArt()");
+
+    this.errorMessage = "";
+    this.successMessage = "";
+
+    this.articleService.artUpdate(this.article).subscribe({
+      next: this.handleResponse.bind(this),
+      error: this.handleError.bind(this)
+    });
+
+    this.successMessage = "Edit article successfully executed!";
   }
 }

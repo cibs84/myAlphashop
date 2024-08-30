@@ -27,7 +27,7 @@ public class MessageConfig
 	LocaleResolver localeResolver() // Allows you to specify the language to be used for error messages
 	{
 		SessionLocaleResolver sessionLocaleResolver = new SessionLocaleResolver();
-		//sessionLocaleResolver.setDefaultLocale(LocaleContextHolder.getLocale()); // Use the language set by default by the system
+//		sessionLocaleResolver.setDefaultLocale(LocaleContextHolder.getLocale()); // Use the language set by default by the system
 		sessionLocaleResolver.setDefaultLocale(new Locale("en")); // Force to use the English language
 			
 		return sessionLocaleResolver;

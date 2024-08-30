@@ -1,6 +1,5 @@
 package com.alphashop.controllers;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alphashop.common.PaginatedResponseList;
 import com.alphashop.dtos.ArticleDto;
-import com.alphashop.dtos.InfoMsg;
 import com.alphashop.entities.Article;
 import com.alphashop.exceptions.BindingException;
 import com.alphashop.exceptions.ItemAlreadyExistsException;
@@ -37,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/api")
@@ -69,9 +68,14 @@ public class ArticleController {
 		return new ResponseEntity<PaginatedResponseList<ArticleDto>>(article, HttpStatus.OK);
 	}
 
-	@GetMapping("/article/findByBarcode/{ean}")
-	public ResponseEntity<ArticleDto> listArtByEan(@PathVariable("ean") String ean) throws NotFoundException {
+	@GetMapping(path = {"/article/findByBarcode/{ean}",
+						"/article/findByBarcode/**"})
+	public ResponseEntity<ArticleDto> listArtByEan(@PathVariable(name = "ean", required = false) String ean) throws NotFoundException {
 
+		if (ean == null) {
+			throw new NotFoundException("Insert a valid barcode!");
+		}
+		
 		logger.info("******** Get article with barcode %s ********".formatted(ean));
 
 		ArticleDto articleDto = articleService.getByBarcode(ean);
@@ -79,9 +83,14 @@ public class ArticleController {
 		return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
 	}
 
-	@GetMapping("/article/findByCodart/{codart}")
-	public ResponseEntity<ArticleDto> listArtByCodArt(@PathVariable("codart") String codArt) throws NotFoundException {
+	@GetMapping(path = {"/article/findByCodart/{codart}", 
+						"/article/findByCodart/**"})
+	public ResponseEntity<ArticleDto> listArtByCodArt(@PathVariable(name = "codart", required = false) String codArt) throws NotFoundException {
 
+		if (codArt == null) {
+			throw new NotFoundException("Insert a valid codArt!");
+		}
+		
 		logger.info("******** Get article with codart %s ********".formatted(codArt));
 
 		ArticleDto articleDto = articleService.getByCodArt(codArt);
@@ -96,12 +105,15 @@ public class ArticleController {
 		return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
 	}
 	
-	@GetMapping(path = {
-			"/articles/findByDescription/{description}"
-	})
-	public ResponseEntity<PaginatedResponseList<ArticleDto>> listArtByDesc(@PathVariable("description") String description,
+	@GetMapping(path = {"/articles/findByDescription/{description}",
+						"/articles/findByDescription/**"})
+	public ResponseEntity<PaginatedResponseList<ArticleDto>> listArtByDesc(@PathVariable(name = "description", required = false) String description,
 			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
+		
+		if (description == null) {
+			throw new NotFoundException("Insert a valid description!");
+		}
 		
 		logger.info("******** Get articles by description %s ********".formatted(description));
 		
@@ -110,7 +122,7 @@ public class ArticleController {
 	}
 
 	@PostMapping("/article/create")
-	public ResponseEntity<InfoMsg> insArt(@Valid @RequestBody ArticleDto articleDto,
+	public ResponseEntity<ArticleDto> insArt(@Valid @RequestBody ArticleDto articleDto,
 											BindingResult bindingResult)
 			throws ItemAlreadyExistsException, NotFoundException, BindingException {
 
@@ -136,13 +148,13 @@ public class ArticleController {
 			throw new ItemAlreadyExistsException(errorMessage);
 		}
 		
-		articleService.create(articleDto);
-		return new ResponseEntity<InfoMsg>(new InfoMsg(LocalDate.now(), 
-				String.format("Article creation '%s' performed successfully", articleDto.getCodArt())), HttpStatus.CREATED);
+		Article articleCreated = articleService.create(articleDto);
+		ArticleDto articleDtoCreated = articleMapper.toModel(articleCreated);
+		return new ResponseEntity<ArticleDto>(articleDtoCreated, HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/article/update")
-	public ResponseEntity<InfoMsg> updArticle(@Valid @RequestBody ArticleDto articleDto,
+	public ResponseEntity<ArticleDto> updArticle(@Valid @RequestBody ArticleDto articleDto,
 												BindingResult bindingResult) throws BindingException, NotFoundException, ItemAlreadyExistsException {
 		
 		logger.info("******** Update of article %s ********".formatted(articleDto.getCodArt()));
@@ -159,17 +171,17 @@ public class ArticleController {
 		ArticleDto articleCheck = articleService.getByCodArt(articleDto.getCodArt());
 		
 		if (articleCheck == null) {
-			String errMsg = String.format("Article '%s' already exists", articleDto.getCodArt());
+			String errMsg = String.format("Article '%s' doesn't exist", articleDto.getCodArt());
 
 			logger.warn(errMsg);
 	
 			throw new NotFoundException(errMsg);
 		}
 		
-		articleService.create(articleDto);
+		Article updatedArt = articleService.create(articleDto);
+		ArticleDto updatedArtDto = articleMapper.toModel(updatedArt);
 		
-		return new ResponseEntity<InfoMsg>(new InfoMsg(LocalDate.now(),
-				String.format("Update article '%s' performed successfully", articleDto.getCodArt())), HttpStatus.CREATED);
+		return new ResponseEntity<ArticleDto>(updatedArtDto, HttpStatus.OK);
 	}
 	
 	

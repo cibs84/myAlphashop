@@ -1,6 +1,6 @@
 package com.alphashop.dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,13 +22,13 @@ public class ArticleDto {
 	private String um;
 	private String codStat;
 	
-	@Max(value = 99, message = "{Max.ArticleDto.pcsCart.Validation}")
+	@Max(value = 100, message = "{Size.ArticleDto.pcsCart.Validation}")
 	private Integer pcsCart;
 	
 	@Min(value = (long) 0.01, message = "{Min.ArticleDto.netWeight.Validation}")
 	private double netWeight;
 	private String idArtStatus;
-	private Date creationDate;
+	private LocalDate creationDate;
 	private double price = 0;
 
 	private Set<BarcodeDto> barcodes = new HashSet<>();
@@ -41,6 +41,12 @@ public class ArticleDto {
 	}
 	
 	public void setUm(String um) {
-		this.description = description.toUpperCase(); 
+		this.um = um.toUpperCase(); 
+	}
+	
+	public void setCodStat(String codStat){
+		if (codStat != null) {
+			this.codStat = codStat.trim();
+		}
 	}
 }

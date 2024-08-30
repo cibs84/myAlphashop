@@ -1,7 +1,7 @@
 package com.alphashop.entities;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +52,7 @@ public class Article implements Serializable {
 
 	@Temporal(TemporalType.DATE)
 	@Column(name = "creationdate")
-	private Date creationDate;
+	private LocalDate creationDate;
 
 	@OneToOne(mappedBy = "article", cascade = CascadeType.ALL, 
 			  orphanRemoval = true)

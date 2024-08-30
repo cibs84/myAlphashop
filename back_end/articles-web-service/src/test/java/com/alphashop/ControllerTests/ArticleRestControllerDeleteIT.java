@@ -34,7 +34,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 			  "netWeight": 1.75,
 			  "idArtStatus": "1",
 			  "creationDate": "2019-05-14",
-			  "barcode": [{
+			  "barcodes": [{
 			      "barcode": "12345678",
 			      "type": "CP"
 			    }],
@@ -45,7 +45,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 			  "vat": {
 			    "idVat": 22
 			  },
-			  "famAssort": {
+			  "category": {
 			    "id": 1
 			  }
 			}""";
@@ -60,7 +60,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 			  "netWeight": 1.75,
 			  "idArtStatus": "1",
 			  "creationDate": "2019-05-14",
-			  "barcode": [{
+			  "barcodes": [{
 			      "barcode": "12345678",
 			      "type": "CP"
 			    }],
@@ -71,7 +71,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 			  "vat": {
 			    "idVat": 22
 			  },
-			  "famAssort": {
+			  "category": {
 			    "id": 1
 			  }
 			}""";

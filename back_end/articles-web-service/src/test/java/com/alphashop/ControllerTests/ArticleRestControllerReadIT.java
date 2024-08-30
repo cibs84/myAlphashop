@@ -31,7 +31,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 			    "netWeight": 1.5,
 			    "idArtStatus": "1",
 			    "creationDate": "2010-06-14",
-			    "barcode": [
+			    "barcodes": [
 			        {
 			            "barcode": "8008490000021",
 			            "type": "CP"
@@ -68,9 +68,10 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 				.andExpect(jsonPath("$.idArtStatus").value("1")).andExpect(jsonPath("$.creationDate").exists())
 				.andExpect(jsonPath("$.creationDate").value("2010-06-14"))
 				// barcode
-				.andExpect(jsonPath("$.barcode[0].barcode").exists())
-				.andExpect(jsonPath("$.barcode[0].barcode").value("8008490000021"))
-				.andExpect(jsonPath("$.barcode[0].type").exists()).andExpect(jsonPath("$.barcode[0].type").value("CP"))
+				.andExpect(jsonPath("$.barcodes[0].barcode").exists())
+				.andExpect(jsonPath("$.barcodes[0].barcode").value("8008490000021"))
+				.andExpect(jsonPath("$.barcodes[0].type").exists())
+				.andExpect(jsonPath("$.barcodes[0].type").value("CP"))
 				// famAssort
 				.andExpect(jsonPath("$.category.id").exists()).andExpect(jsonPath("$.category.id").value("1"))
 				.andExpect(jsonPath("$.category.description").exists())
@@ -85,19 +86,29 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 
 				.andDo(print());
 	}
-
+	
 	@Test
-	public void errListArtByEan() throws Exception {
+	public void errListArtByEanWithInexistentBarcode() throws Exception {
 		
 		String inexistentBarcode = "inexistent_barcode";
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/article/findByBarcode/" + inexistentBarcode)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
-				.andExpect(jsonPath("$.message").value("The article with barcode \'" + inexistentBarcode + "\' was not found!"))
-				.andDo(print());
+		.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+		.andExpect(jsonPath("$.message").value("The article with barcode \'" + inexistentBarcode + "\' was not found!"))
+		.andDo(print());
 	}
 
+	@Test
+	public void errListArtByEanWithoutBarcode() throws Exception {
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/article/findByBarcode")
+				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(jsonPath("$.message").value("Insert a valid barcode!"))
+				.andDo(print());
+	}
+	
 	@Test
 	public void listArtByCodArt() throws Exception {
 		
@@ -110,74 +121,125 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	}
 
 	@Test
-	public void errListArtByCodArt() throws Exception {
+	public void errListArtByCodArtWithInexistentCodArt() throws Exception {
 		
-		String CodArt = "inexistent_codart";
+		String inexistentCodArt = "inexistent_codart";
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/article/findByCodart/" + CodArt)
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/article/findByCodart/" + inexistentCodArt)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
-				.andExpect(jsonPath("$.message").value("The article with codart " + CodArt + " was not found!"))
+				.andExpect(jsonPath("$.message").value("The article with codart " + inexistentCodArt + " was not found!"))
 				.andDo(print());
 	}
 
+	@Test
+	public void errListArtByCodArtWithoutCodArt() throws Exception {
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/article/findByCodart")
+				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(jsonPath("$.message").value("Insert a valid codArt!"))
+				.andDo(print());
+	}
+	
 	private String JsonData2 = """
 			{
-			  "pagination": {
-			        "currentPage": 1,
-			        "totalPages": 1,
-			        "nextPage": 1,
-			        "previousPage": 1,
-			        "pageSize": 10,
-			        "totalElements": 1
-			    },
-			  "itemList": [
-			    {
-			      "codArt": "002000301",
-			      "description": "ACQUA ULIVETO 15 LT",
-			      "um": "PZ",
-			      "codStat": "",
-			      "pcsCart": 6,
-			      "netWeight": 1.5,
-			      "idArtStatus": "1",
-			      "creationDate": "2010-06-14",
-			      "price": 0.0,
-			      "barcode": [
-			        {
-			          "barcode": "8008490000021",
-			          "type": "CP"
-			        }
-			      ],
-			      "ingredients": null,
-			      "category": {
-			        "id": 1,
-			        "description": "DROGHERIA ALIMENTARE"
-			      },
-			      "vat": {
-			        "idVat": 22,
-			        "description": "IVA RIVENDITA 22%",
-			        "taxRate": 22
-			      }
-			    }
-			  ]
-			}""";
+    "pagination": {
+        "currentPage": 1,
+        "totalPages": 1,
+        "nextPage": 1,
+        "previousPage": 1,
+        "pageSize": 10,
+        "totalElements": 2,
+        "totalPagesArray": [
+            1
+        ]
+    },
+    "itemList": [
+        {
+            "codArt": "002000301",
+            "description": "ACQUA ULIVETO 15 LT",
+            "um": "PZ",
+            "codStat": "",
+            "pcsCart": 6,
+            "netWeight": 1.5,
+            "idArtStatus": "1",
+            "creationDate": "2010-06-14",
+            "price": 0.0,
+            "barcodes": [
+                {
+                    "barcode": "8008490000021",
+                    "type": "CP"
+                }
+            ],
+            "ingredients": null,
+            "category": {
+                "id": 1,
+                "description": "DROGHERIA ALIMENTARE"
+            },
+            "vat": {
+                "idVat": 22,
+                "description": "IVA RIVENDITA 22%",
+                "taxRate": 22
+            }
+        },
+        {
+            "codArt": "058578901",
+            "description": "ACQUA ULIVETO NATUR.ML.500",
+            "um": "PZ",
+            "codStat": "",
+            "pcsCart": 24,
+            "netWeight": 0.5,
+            "idArtStatus": "2",
+            "creationDate": "2011-01-12",
+            "price": 0.0,
+            "barcodes": [
+                {
+                    "barcode": "8008490991046",
+                    "type": "CP"
+                }
+            ],
+            "ingredients": null,
+            "category": {
+                "id": 1,
+                "description": "DROGHERIA ALIMENTARE"
+            },
+            "vat": {
+                "idVat": 22,
+                "description": "IVA RIVENDITA 22%",
+                "taxRate": 22
+            }
+        }
+    ]
+}""";
+	
+	@Test
+	public void listAllArticles() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.pagination.totalPages").value(598))
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andReturn();
+	}
 	
 	@Test
 	public void listArtByDesc() throws Exception {
 		
-		String existentDescription = "ACQUA ULIVETO 15 LT";
+		String existentDescription = "ACQUA ULIVETO";
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription/" + existentDescription)
-				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.itemList", hasSize(1)))
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.itemList", hasSize(2)))
 		.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 		.andExpect(content().json(JsonData2)).andReturn();
 	}
 	
 	@Test
-	public void listArtByDescWithoutDescription1() throws Exception {
+	public void errListArtByDescWithoutDescription1() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription/")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound())
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(jsonPath("$.message").value("Insert a valid description!"))
 				.andDo(print());
 	}
 
@@ -185,7 +247,8 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	public void errorListArtByDescWithoutDescription2() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/findByDescription")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound())
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(jsonPath("$.message").value("Insert a valid description!"))
 				.andDo(print());
 	}
 	
