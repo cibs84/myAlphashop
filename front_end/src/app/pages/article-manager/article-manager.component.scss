@@ -8,6 +8,22 @@
   -moz-user-select: none;
   user-select: none;
 }
+.invalid-feedback {
+  ul {
+    li {
+      &.pointed-list {  // li.pointed-list
+        position: relative;
+        margin-left: 10px;
+
+        &:before {  // li.pointed-list::before
+          content: "\2022";
+          position: absolute;
+          left: -10px;
+        }
+      }
+    }
+  }
+}
 
 @media (min-width: 768px) {
   .bd-placeholder-img-lg {

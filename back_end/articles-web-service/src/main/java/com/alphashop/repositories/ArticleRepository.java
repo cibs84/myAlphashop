@@ -17,10 +17,11 @@ public interface ArticleRepository extends JpaRepository<Article, String> {
 	
 	// selByDescrizioneLike e findByDescrizioneLike sono alternativi.
 	// Usare findByDescriptionLike.. se si vogliono i risultati con paginazione
-	@Query(value = "SELECT * FROM ARTICLES WHERE DESCRIPTION LIKE :desArt", nativeQuery = true)
+	@Query(value = "SELECT * FROM articles a WHERE UPPER(a.description) LIKE UPPER(:desArt) ORDER BY a.codart ASC", nativeQuery = true)
 	List<Article> selByDescriptionLike(@Param("desArt") String description);
 
-	Page<Article> findByDescriptionLikeOrderByCodArtAsc(String description, Pageable pageRequest);
+	@Query(value = "SELECT * FROM articles a WHERE UPPER(a.description) LIKE UPPER(:desArt) ORDER BY a.codart ASC", nativeQuery = true)
+	Page<Article> findByDescriptionLikeOrderByCodArtAsc(@Param("desArt") String description, Pageable pageRequest);
 	// ------------------------------------------------------------------------------------------
 
 	Optional<Article> findByCodArt(String codArt);

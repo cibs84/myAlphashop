@@ -6,7 +6,8 @@ import { Pagination } from 'src/app/models/Pagination';
 import { ArticleService } from 'src/app/services/data/article.service';
 import { Router } from '@angular/router';
 import { HttpResponse } from '@angular/common/http';
-import { ArtStatus, ErrorMessages, StatusCodes } from 'src/app/enums/Enums';
+import { ArtStatus, ErrorMessages, StatusCodes } from 'src/app/shared/Enums';
+import { scrollToErrorAlert, scrollToSuccessAlert } from 'src/app/shared/scroll-helpers';
 
 enum FilterTypes {
   ByCodart = 1,
@@ -73,23 +74,23 @@ export class ArticlesComponent implements OnInit {
     this.getArticles();
   }
 
-  scrollToSuccessAlert = (): void => {
-    console.log("scrollToSuccessAlert()");
+  // scrollToSuccessAlert = (): void => {
+  //   console.log("scrollToSuccessAlert()");
 
-    // This delay ensures the element is ready for interaction before scrolling.
-    setTimeout(() => {
-      this.scroller.scrollToAnchor('successAlert');
-    }, 100);
-  }
+  //   // This delay ensures the element is ready for interaction before scrolling.
+  //   setTimeout(() => {
+  //     this. .scrollToAnchor('successAlert');
+  //   }, 100);
+  // }
 
-  scrollToErrorAlert = (): void => {
-    console.log("scrollToErrorAlert()");
+  // scrollToErrorAlert = (): void => {
+  //   console.log("scrollToErrorAlert()");
 
-    // This delay ensures the element is ready for interaction before scrolling.
-    setTimeout(() => {
-      this.scroller.scrollToAnchor('errorAlert');
-    }, 100);
-  }
+  //   // This delay ensures the element is ready for interaction before scrolling.
+  //   setTimeout(() => {
+  //     this.scroller.scrollToAnchor('errorAlert');
+  //   }, 100);
+  // }
 
   setPagination = (): void => {
     console.log("setPagination()")
@@ -239,7 +240,7 @@ export class ArticlesComponent implements OnInit {
       console.error(error); // Registra l'errore nella console
     }
     //  Scrolla la pagina all'elemento di alert con il messaggio d'errore
-    this.scrollToErrorAlert();
+    scrollToErrorAlert(this.scroller);
   }
 
   // DELETE
@@ -279,7 +280,7 @@ export class ArticlesComponent implements OnInit {
     this.getArticles();
 
     //  Scroll down the page to the alert element with the response message
-    this.scrollToSuccessAlert();
+    scrollToSuccessAlert(this.scroller);
   }
   private handleErrorResp = (error: any): void => {
     console.log("handleErrorResp()");
@@ -303,7 +304,7 @@ export class ArticlesComponent implements OnInit {
       console.error(error); // Registra l'errore nella console
     }
     //  Scroll down the page to the alert element with the error message
-    this.scrollToErrorAlert();
+    scrollToErrorAlert(this.scroller);
   }
   // ******** End - CRUD Articles ********
 

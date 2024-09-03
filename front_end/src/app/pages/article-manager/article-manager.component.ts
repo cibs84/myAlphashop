@@ -1,8 +1,11 @@
+import { ViewportScroller } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Article, Category, Vat } from 'src/app/models/Article';
 import { ArticleService } from 'src/app/services/data/article.service';
-import { ErrorMessages } from 'src/app/enums/Enums';
+import { ErrorMessages } from 'src/app/shared/Enums';
+import { ErrorValidationMap } from 'src/app/shared/Types';
+import { scrollToErrorAlert, scrollToSuccessAlert } from 'src/app/shared/scroll-helpers';
 
 @Component({
   selector: 'app-article-manager',
@@ -18,6 +21,10 @@ export class ArticleManagerComponent implements OnInit {
   errorMessage: string = "";
   successMessage: string = "";
   respStatusCode: number = -1;
+
+  errorValidationMap!: ErrorValidationMap;
+
+  readonly REQUIRED_FIELD_MSG = "Required field";
 
   article: Article = {
     codArt: "",
@@ -39,10 +46,9 @@ export class ArticleManagerComponent implements OnInit {
   categories: Category[] = [];
   vatList: Vat[] = [];
 
-  isOnInit: boolean = true;
-
   constructor(private route: ActivatedRoute,
-              private articleService: ArticleService) {
+              private articleService: ArticleService,
+              private scroller: ViewportScroller) {
 
   }
 
@@ -50,21 +56,19 @@ export class ArticleManagerComponent implements OnInit {
     this.codArt = this.route.snapshot.params['codArt'];
     console.log("Selected article " + this.codArt);
 
+    this.errorValidationMap = this.createErrorValidationMap<Article>(this.article);
+
     this.articleService.getArticleByCodart(this.codArt).subscribe({
       next: this.handleResponse.bind(this),
       error: this.handleError.bind(this)
     });
 
     this.articleService.getCategories().subscribe(
-      response => {
-        this.categories = response.body  as Category[];
-      }
+      response => this.categories = response.body as Category[]
     );
 
     this.articleService.getVatList().subscribe(
-      response => {
-        this.vatList = response.body as Vat[];
-      }
+      response => this.vatList = response.body as Vat[]
     );
   }
 
@@ -78,14 +82,25 @@ export class ArticleManagerComponent implements OnInit {
     if (this.article.barcodes.length == 0) {
       this.article.barcodes = [{barcode: "", type: ""}];
     }
+
+    //  Scroll down the page to the alert element with the response message
+    scrollToSuccessAlert(this.scroller);
   };
 
   handleError(error: any){
     console.log("handleError()");
     console.log(error);
 
-    this.errorMessage = error.error.message || ErrorMessages.UnavailableServer;
     this.respStatusCode = error.status;
+    this.errorMessage = error.error.message || ErrorMessages.UnavailableServer;
+    this.errorValidationMap = error.error.errorValidationMap;
+
+    console.log(this.respStatusCode);
+    console.log(this.errorValidationMap);
+
+
+    //  Scroll down the page to the alert element with the error message
+    scrollToErrorAlert(this.scroller);
   }
 
   saveArt = () => {
@@ -93,12 +108,26 @@ export class ArticleManagerComponent implements OnInit {
 
     this.errorMessage = "";
     this.successMessage = "";
+    this.errorValidationMap = this.createErrorValidationMap<Article>(this.article);
 
     this.articleService.artUpdate(this.article).subscribe({
-      next: this.handleResponse.bind(this),
-      error: this.handleError.bind(this)
+      next: response => {
+        this.handleResponse(response);
+        this.successMessage = "Edit article successfully executed!";
+      },
+      error: error => this.handleError(error)
     });
+  }
 
-    this.successMessage = "Edit article successfully executed!";
+  // Creates a map object to initialize error messages for each item (=article) property
+  // Used to set an empty initial value for each possible validation error
+  createErrorValidationMap<T>(item: T): ErrorValidationMap {
+    const map: ErrorValidationMap = {};
+    for (const key in item) {
+      if (Object.prototype.hasOwnProperty.call(item, key)) {
+        map[key] = [''];
+      }
+    }
+    return map;
   }
 }

@@ -1,5 +1,6 @@
 package com.alphashop.controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/api")
@@ -131,11 +132,13 @@ public class ArticleController {
 		// Check article data validity
 		if (bindingResult.hasErrors())
 		{
-			String MsgErr = errMessageSource.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+			String msgErr = errMessageSource.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
 			
-			logger.warn(MsgErr);
+			logger.warn(msgErr);
 			
-			throw new BindingException(MsgErr);
+			List<ObjectError> errorValidationList = bindingResult.getAllErrors();
+			
+			throw new BindingException(msgErr, errorValidationList);
 		}
 		
 		// Check if the article to be created already exists
@@ -165,7 +168,9 @@ public class ArticleController {
 			
 			logger.warn(msgErr);
 			
-			throw new BindingException(msgErr);
+			List<ObjectError> errorValidationList = bindingResult.getAllErrors();
+			
+			throw new BindingException(msgErr, errorValidationList);
 		}
 		
 		ArticleDto articleCheck = articleService.getByCodArt(articleDto.getCodArt());

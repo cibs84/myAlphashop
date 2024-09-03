@@ -4,28 +4,31 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class ArticleDto {
 
+	@NotBlank(message = "{NotBlank.ArticleDto.codArt.Validation}")
 	@Size(min = 5, max = 20, message = "{Size.ArticleDto.codArt.Validation}")
-	@NotNull(message = "{NotNull.ArticleDto.codArt.Validation}")
 	private String codArt;
 	
+	@NotBlank(message = "{NotBlank.ArticleDto.description.Validation}")
 	@Size(min = 6, max = 80, message = "{Size.ArticleDto.description.Validation}")
 	private String description;
 	private String um;
 	private String codStat;
 	
+	@Nullable
+	@Positive(message = "{Positive.Validation}")
 	@Max(value = 100, message = "{Size.ArticleDto.pcsCart.Validation}")
 	private Integer pcsCart;
 	
-	@Min(value = (long) 0.01, message = "{Min.ArticleDto.netWeight.Validation}")
 	private double netWeight;
 	private String idArtStatus;
 	private LocalDate creationDate;

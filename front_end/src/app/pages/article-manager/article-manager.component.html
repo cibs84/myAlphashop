@@ -6,24 +6,39 @@
       <h4 class="mb-3">{{ title }}</h4>
 
       <!-- FORM -->
-      <!-- <form class="needs-validation" novalidate> -->
+      <form class="needs-validation" (ngSubmit)="saveArt()" #artForm="ngForm">
         <div class="row g-3">
+
+        <!-- *** ALERT MESSAGE *** -->
+        <!-- Operation Success -  -->
+        <div *ngIf="successMessage" id="successAlert" class="alert alert-success mt-4" role="alert">
+          {{ successMessage }}
+        </div>
+        <!-- Operation Error -->
+        <div *ngIf="errorMessage" id="errorAlert" class="alert alert-danger mt-4" role="alert">
+          {{ errorMessage }}
+        </div>
 
           <!-- Codart -->
           <div class="col-sm-6">
             <label for="codart" class="form-label">Codart</label>
-            <input type="text" class="form-control" id="codart"
-                   [(ngModel)]="article.codArt" required>
-            <div class="invalid-feedback">
-              Valid codart is required.
+            <input type="text" class="form-control" id="codart" name="codart" #codart="ngModel"
+                   [class]="codart.valid ? 'is-valid' : 'is-invalid'"
+                   [(ngModel)]="article.codArt" minlength="5" maxlength="20" required>
+            <div class="valid-feedback" *ngIf="codart.valid && (codart.dirty || codart.touched)">Looks good!</div>
+            <div class="invalid-feedback" *ngIf="codart.invalid && (codart.dirty || codart.touched)">
+              <ul>
+                <li [class]="errorValidationMap['codArt'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorValidationMap['codArt']">{{ error }}</li>
+                <li *ngIf="!errorValidationMap['codArt'] || errorValidationMap['codArt'][0] === ''">{{ REQUIRED_FIELD_MSG }}</li>
+              </ul>
             </div>
           </div>
 
           <!-- Barcode -->
           <div class="col-sm-6">
             <label for="barcode" class="form-label">Barcode</label>
-            <input type="text" class="form-control" id="barcode"
-                   [(ngModel)]="article.barcodes[0].barcode" disabled required>
+            <input type="text" class="form-control" id="barcode" name="barcode"
+                   [(ngModel)]="article.barcodes[0].barcode" disabled>
             <div class="invalid-feedback">
               Valid barcode is required.
             </div>
@@ -32,17 +47,22 @@
           <!-- Description -->
           <div class="col-12">
             <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description"
-            [(ngModel)]="article.description" required></textarea>
-            <div class="invalid-feedback">
-              Valid description is required.
+            <textarea class="form-control" id="description" name="description"
+                      [(ngModel)]="article.description" #description="ngModel" required
+                      minlength="3" maxlength="80" [class]="description.valid ? 'is-valid' : 'is-invalid'"></textarea>
+            <div class="valid-feedback" *ngIf="description.valid && (description.dirty || description.touched)">Looks good!</div>
+            <div class="invalid-feedback" *ngIf="description.invalid && (description.dirty || description.touched)">
+              <ul>
+                <li [class]="errorValidationMap['description'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorValidationMap['description']">{{ error }}</li>
+                <li *ngIf="!errorValidationMap['description'] || errorValidationMap['description'][0] === ''">{{ REQUIRED_FIELD_MSG }}</li>
+              </ul>
             </div>
           </div>
 
           <!-- Unit of Measurement -->
           <div class="col-md-6">
             <label for="um" class="form-label">Unit of measurement</label>
-            <select class="form-select" id="um"
+            <select class="form-select" id="um" name="um"
                     [(ngModel)]="article.um" required>
               <option value="PZ">Pieces</option>
               <option value="LT">Liters</option>
@@ -56,7 +76,8 @@
           <!-- Vat -->
           <div class="col-md-6">
             <label for="vat" class="form-label">Vat</label>
-            <select class="form-select" id="vat" [(ngModel)]="article.vat.idVat" required>
+            <select class="form-select" id="vat" name="vat"
+                    [(ngModel)]="article.vat.idVat" required>
               <option [ngValue]="vat.idVat" *ngFor="let vat of vatList">{{ vat.description }}</option>
             </select>
             <div class="invalid-feedback">
@@ -67,10 +88,14 @@
           <!-- Quantity (PcsCart) -->
           <div class="col-sm-3">
             <label for="pcscart" class="form-label">Quantity</label>
-            <input type="number" class="form-control" id="pcscart"
-                   [(ngModel)]="article.pcsCart" min=1 max=99 required>
-            <div class="invalid-feedback">
-              Valid quantity is required.
+            <input type="number" class="form-control" id="pcscart" name="pcscart"
+                   #pcscart="ngModel" [(ngModel)]="article.pcsCart" pattern="[0-9]*" max="100"
+                   [class]="pcscart.invalid ? 'is-invalid' : 'is-valid'">
+            <div class="valid-feedback" *ngIf="pcscart.valid && (pcscart.dirty || pcscart.touched)">
+              Looks good!
+            </div>
+            <div class="invalid-feedback" *ngIf="pcscart.invalid && (pcscart.dirty || pcscart.touched)">
+              {{ errorMessage }}
             </div>
           </div>
 
@@ -78,7 +103,7 @@
           <div class="col-sm-3">
             <label for="netweight" class="form-label">Net Weight</label>
             <input type="number" step="0.01" class="form-control" id="netweight"
-                   [(ngModel)]="article.netWeight" required>
+                   [(ngModel)]="article.netWeight" name="netweight">
             <div class="invalid-feedback">
               Valid weight is required.
             </div>
@@ -87,7 +112,7 @@
           <!-- Price -->
           <div class="col-sm-3">
             <label for="price" class="form-label invisible">Price</label>
-            <input type="text" class="form-control" id="price" placeholder="Price" required>
+            <input type="text" class="form-control" id="price" placeholder="Price">
             <div class="invalid-feedback">
               Valid price is required.
             </div>
@@ -96,7 +121,7 @@
           <!-- Currency -->
           <div class="col-md-3">
             <label for="currency" class="form-label invisible">Currency</label>
-            <select class="form-select" id="currency" required>
+            <select class="form-select" id="currency">
               <option value="">EUR</option>
               <option value="">USD</option>
               <option value="">GBP</option>
@@ -109,7 +134,8 @@
           <!-- Category -->
           <div class="col-md-6">
             <label for="category" class="form-label">Category</label>
-            <select class="form-select" [(ngModel)]="article.category.id" id="category" required>
+            <select class="form-select" id="category" name="category"
+                    [(ngModel)]="article.category.id">
               <option [ngValue]="category.id" *ngFor="let category of categories">{{ category.id }} - {{ category.description }}</option>
             </select>
             <div class="invalid-feedback">
@@ -120,8 +146,8 @@
           <!-- Status -->
           <div class="col-md-6">
             <label for="artStatus" class="form-label">Status</label>
-            <select class="form-select" id="artStatus"
-                    [(ngModel)]="article.idArtStatus" required>
+            <select class="form-select" id="artStatus" name="artStatus"
+                    [(ngModel)]="article.idArtStatus">
               <option value="1">Active</option>
               <option value="2">Suspended</option>
               <option value="3">Deleted</option>
@@ -136,7 +162,7 @@
             <label for="artImage" class="form-label">Image</label>
             <div class="input-group has-validation">
               <span class="input-group-text">Select File</span>
-              <input type="text" class="form-control" id="artImage" placeholder="No file selected" required>
+              <input type="text" class="form-control" id="artImage" placeholder="No file selected">
             <div class="invalid-feedback">
                 Your article image is required.
               </div>
@@ -144,20 +170,10 @@
           </div>
         </div>
 
-        <!-- *** ALERT MESSAGE *** -->
-        <!-- Operation Success -  -->
-        <div *ngIf="respStatusCode == 200 && successMessage" id="successAlert" class="alert alert-success mt-4" role="alert">
-          {{ successMessage }}
-        </div>
-        <!-- Operation Error -->
-        <div *ngIf="respStatusCode != 200 && respStatusCode != -1" id="errorAlert" class="alert alert-danger mt-4" role="alert">
-          {{ errorMessage }}
-        </div>
-
         <!-- SUBMIT - Save Article -->
-        <button class="btn btn-primary mt-4" (click)="saveArt()">Save Article</button>
+        <button type="submit" class="btn btn-primary mt-4">Save Article</button>
 
-      <!-- </form> -->
+      </form>
 
     </div>
   </div>

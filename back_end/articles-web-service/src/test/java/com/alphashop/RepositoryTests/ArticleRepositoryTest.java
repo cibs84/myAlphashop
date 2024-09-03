@@ -27,7 +27,7 @@ public class ArticleRepositoryTest extends BaseSpringIT {
 
 	@Test
 	public void testFindByDescriptionLikePage() {
-		Page<Article> items = articleRepository.findByDescriptionLikeOrderByCodArtAsc("%ACQUA%", PageRequest.of(0, 10));
+		Page<Article> items = articleRepository.findByDescriptionLikeOrderByCodArtAsc("%ACquA%", PageRequest.of(0, 10));
 		assertEquals(10, items.getNumberOfElements());
 	}
 
