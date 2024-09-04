@@ -1,13 +1,14 @@
 package com.alphashop.dtos;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class BarcodeDto {
 
-	@NotNull(message = "{NotNull.BarcodeDto.barcode.Validation}")
+	@NotBlank(message = "{NotBlank.BarcodeDto.barcode.Validation}")
 	private String barcode;
-	@NotNull(message = "{NotNull.BarcodeDto.type.Validation}")
+	
+	@NotBlank(message = "{NotBlank.BarcodeDto.type.Validation}")
 	private String type;
 }

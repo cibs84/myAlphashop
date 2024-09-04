@@ -22,30 +22,35 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 	private ArticleRepository articleRepository;
 	
 	private String JsonData = """
-			{
-			  "codArt": "123Test",
-			  "description": "ARTICOLO UNIT TEST INSERIMENTO",
-			  "um": "PZ",
-			  "codStat": "TESTART",
-			  "pcsCart": 6,
-			  "netWeight": 1.75,
-			  "idArtStatus": "1",
-			  "creationDate": "2019-05-14",
-			  "barcodes": [{
-			      "barcode": "12345678",
-			      "type": "CP"
-			    }],
-			  "ingredients": {
-			    "codArt": "123Test",
-			    "info": "TEST INGREDIENTI"
-			  },
-			  "vat": {
-			    "idVat": 22
-			  },
-			  "category": {
-			    "id": 1
-			  }
-			}""";
+	{
+	    "codArt": "123Test",
+	    "description": "ARTICOLO UNIT TEST INSERIMENTO",
+	    "um": "PZ",
+	    "codStat": "TESTART",
+	    "pcsCart": 6,
+	    "netWeight": 1.75,
+	    "idArtStatus": "1",
+	    "creationDate": "2019-05-14",
+	    "barcodes": [
+	        {
+	            "barcode": "12345678",
+	            "type": "CP"
+	        }
+	    ],
+	    "ingredients": {
+	        "codArt": "123Test",
+	        "info": "TEST INGREDIENTI"
+	    },
+	    "category": {
+	        "id": 1,
+	        "description": "DROGHERIA ALIMENTARE"
+	    },
+	    "vat": {
+	        "idVat": 22,
+	        "description": "IVA RIVENDITA 22%",
+	        "taxRate": 22
+	    }
+	}""";
 
 	@Test
 	public void testCreateArticle() throws Exception {
@@ -86,32 +91,35 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 	}
 
 	String ErrJsonData = """
-		{
-			"codArt": "321Test",
-			"description": "asd",
-			"um": "PZ",
-			"codStat": "TESTART",
-			"pcsCart": 6,
-			"netWeight": 1.75,
-			"idArtStatus": "1",
-			"creationDate": "2019-05-14",
-			"barcodes": [
-			  {
-				"barcode": "12345678",
-				"type": "CP"
-			  }
-			],
-			"ingredients": {
-			  "codArt": "321Test",
-			  "info": "TEST INGREDIENTI"
-			},
-			"vat": {
-			  "idVat": 22
-			},
-			"category": {
-			  "id": 1
-			}
-		}""";
+	{
+	    "codArt": "123Test",
+	    "description": "asd",
+	    "um": "PZ",
+	    "codStat": "TESTART",
+	    "pcsCart": 6,
+	    "netWeight": 1.75,
+	    "idArtStatus": "1",
+	    "creationDate": "2019-05-14",
+	    "barcodes": [
+	        {
+	            "barcode": "12345678",
+	            "type": "CP"
+	        }
+	    ],
+	    "ingredients": {
+	        "codArt": "123Test",
+	        "info": "TEST INGREDIENTI"
+	    },
+	    "category": {
+	        "id": 1,
+	        "description": "DROGHERIA ALIMENTARE"
+	    },
+	    "vat": {
+	        "idVat": 22,
+	        "description": "IVA RIVENDITA 22%",
+	        "taxRate": 22
+	    }
+	}""";
 
 	@Test
 	public void testErrCreateArticleWithInvalidDescription() throws Exception {
@@ -122,7 +130,9 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 				.andExpect(status().isUnprocessableEntity())
 				.andExpect(jsonPath("$.code").value(422))
 				.andExpect(jsonPath("$.message")
-						.value("The Description field must have a number of characters between 6 and 80"))
+						.value("Validation error"))
+				.andExpect(jsonPath("$.errorValidationMap.description[0]")
+						.value("The description field must have a number of characters between 6 and 80"))
 				.andDo(print());
 	}
 }

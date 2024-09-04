@@ -39,39 +39,43 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	    "info": "TEST INGREDIENTI"
 	  },
 	  "vat": {
-	    "idVat": 22
+		"idVat": 22,
+		"description": "IVA RIVENDITA 22%",
+		"taxRate": 22
 	  },
 	  "category": {
-	    "id": 1
+		"id": 1,
+		"description": "DROGHERIA ALIMENTARE"
 	  }
 	}""";
 	
 	private String JsonDataMod = """
 	{
-		"codArt": "123Test",
-		"description": "ARTICOLO UNIT TEST MODIFICA",
-		"um": "PZ",
-		"codStat": "TESTART",
-		"pcsCart": 6,
-		"netWeight": 1.75,
-		"idArtStatus": "1",
-		"creationDate": "2019-05-14",
-		"barcodes": [
-		  {
-			"barcode": "12345678",
-			"type": "CP"
-		  }
-		],
-		"ingredients": {
-		  "codArt": "123Test",
-		  "info": "TEST INGREDIENTI"
-		},
-		"vat": {
-		  "idVat": 22
-		},
-		"category": {
-		  "id": 1
-		}
+	  "codArt": "123Test",
+	  "description": "ARTICOLO UNIT TEST MODIFICA",
+	  "um": "PZ",
+	  "codStat": "TESTART",
+	  "pcsCart": 6,
+	  "netWeight": 1.75,
+	  "idArtStatus": "1",
+	  "creationDate": "2019-05-14",
+	  "barcodes": [{
+	      "barcode": "12345678",
+	      "type": "CP"
+	    }],
+	  "ingredients": {
+	    "codArt": "123Test",
+	    "info": "TEST INGREDIENTI"
+	  },
+	  "vat": {
+		"idVat": 22,
+		"description": "IVA RIVENDITA 22%",
+		"taxRate": 22
+	  },
+	  "category": {
+		"id": 1,
+		"description": "DROGHERIA ALIMENTARE"
+	  }
 	}""";
 
 	@Test

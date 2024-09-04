@@ -11,7 +11,7 @@ public class BindingException extends Exception
 	private static final long serialVersionUID = -1646083143194195402L;
 	
 	private String message;
-	private List<ObjectError> errorValidationList = new ArrayList<ObjectError>();
+	private List<ObjectError> errorValidationList;
 	
 	public BindingException()
 	{
@@ -22,6 +22,7 @@ public class BindingException extends Exception
 	{
 		super(message);
 		this.message = message;
+		this.errorValidationList = new ArrayList<ObjectError>();
 	}
 	
 	public BindingException(String message, List<ObjectError> errorValidationList)

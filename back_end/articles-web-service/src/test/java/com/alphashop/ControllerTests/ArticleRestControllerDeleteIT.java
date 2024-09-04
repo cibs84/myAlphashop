@@ -42,12 +42,15 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 			    "codArt": "123Test",
 			    "info": "TEST INGREDIENTI"
 			  },
-			  "vat": {
-			    "idVat": 22
-			  },
 			  "category": {
-			    "id": 1
-			  }
+			    "id": 1,
+		        "description": "DROGHERIA ALIMENTARE"
+			  },
+		      "vat": {
+		        "idVat": 22,
+		        "description": "IVA RIVENDITA 22%",
+		        "taxRate": 22
+		      }
 			}""";
 	
 	private String JsonData02 = """
@@ -68,12 +71,15 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 			    "codArt": "abcTest",
 			    "info": "TEST INGREDIENTI"
 			  },
-			  "vat": {
-			    "idVat": 22
-			  },
 			  "category": {
-			    "id": 1
-			  }
+			    "id": 1,
+		        "description": "DROGHERIA ALIMENTARE"
+			  },
+		      "vat": {
+		        "idVat": 22,
+		        "description": "IVA RIVENDITA 22%",
+		        "taxRate": 22
+		      }
 			}""";
 
 	

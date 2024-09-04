@@ -4,39 +4,52 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class ArticleDto {
 
-	@NotBlank(message = "{NotBlank.ArticleDto.codArt.Validation}")
-	@Size(min = 5, max = 20, message = "{Size.ArticleDto.codArt.Validation}")
+	@NotBlank(message = "{NotBlank.ArticlesDto.codArt.Validation}")
+	@Size(min = 5, max = 20, message = "{Size.ArticlesDto.codArt.Validation}")
 	private String codArt;
 	
-	@NotBlank(message = "{NotBlank.ArticleDto.description.Validation}")
-	@Size(min = 6, max = 80, message = "{Size.ArticleDto.description.Validation}")
+	@NotBlank(message = "{NotBlank.ArticlesDto.description.Validation}")
+	@Size(min = 6, max = 80, message = "{Size.ArticlesDto.description.Validation}")
 	private String description;
+	
+	@NotBlank(message = "{NotBlank.ArticlesDto.um.Validation}")
 	private String um;
 	private String codStat;
 	
-	@Nullable
-	@Positive(message = "{Positive.Validation}")
-	@Max(value = 100, message = "{Size.ArticleDto.pcsCart.Validation}")
+	@PositiveOrZero(message = "{PositiveOrZero.Validation}")
+	@Max(value = 100, message = "{Max.ArticlesDto.pcsCart.Validation}")
 	private Integer pcsCart;
 	
-	private double netWeight;
+	@PositiveOrZero(message = "{PositiveOrZero.Validation}")
+	private Double netWeight;
+	
+	@PositiveOrZero(message = "{PositiveOrZero.Validation}")
 	private String idArtStatus;
 	private LocalDate creationDate;
-	private double price = 0;
+	
+	@PositiveOrZero(message = "{PositiveOrZero.Validation}")
+	private Double price;
 
+	@Valid
 	private Set<BarcodeDto> barcodes = new HashSet<>();
+	
+	@Valid
 	private IngredientsDto ingredients;
+	
+	@Valid
 	private CategoryDto category;
+	
+	@Valid
 	private VatDto vat;
 	
 	public void setDescription(String description) {

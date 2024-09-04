@@ -22,32 +22,33 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	ArticleRepository articleRepository;
 	
 	String JsonData = """
-			{
-			    "codArt": "002000301",
-			    "description": "ACQUA ULIVETO 15 LT",
-			    "um": "PZ",
-			    "codStat": "",
-			    "pcsCart": 6,
-			    "netWeight": 1.5,
-			    "idArtStatus": "1",
-			    "creationDate": "2010-06-14",
-			    "barcodes": [
-			        {
-			            "barcode": "8008490000021",
-			            "type": "CP"
-			        }
-			    ],
-			    "category": {
-			        "id": 1,
-			        "description": "DROGHERIA ALIMENTARE"
-			    },
-			    "ingredients": null,
-			    "vat": {
-			        "idVat": 22,
-			        "description": "IVA RIVENDITA 22%",
-			        "taxRate": 22
-			    }
-			}""";
+	{
+	    "codArt": "002000301",
+	    "description": "ACQUA ULIVETO 15 LT",
+	    "um": "PZ",
+	    "codStat": "",
+	    "pcsCart": 6,
+	    "netWeight": 1.5,
+	    "idArtStatus": "1",
+	    "creationDate": "2010-06-14",
+	    "price": null,
+	    "barcodes": [
+	        {
+	            "barcode": "8008490000021",
+	            "type": "CP"
+	        }
+	    ],
+	    "category": {
+	        "id": 1,
+	        "description": "DROGHERIA ALIMENTARE"
+	    },
+	    "ingredients": null,
+	    "vat": {
+	        "idVat": 22,
+	        "description": "IVA RIVENDITA 22%",
+	        "taxRate": 22
+	    }
+	}""";
 
 	@Test
 	public void listArtByEan() throws Exception {
@@ -143,75 +144,75 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	}
 	
 	private String JsonData2 = """
-			{
-    "pagination": {
-        "currentPage": 1,
-        "totalPages": 1,
-        "nextPage": 1,
-        "previousPage": 1,
-        "pageSize": 10,
-        "totalElements": 2,
-        "totalPagesArray": [
-            1
-        ]
-    },
-    "itemList": [
-        {
-            "codArt": "002000301",
-            "description": "ACQUA ULIVETO 15 LT",
-            "um": "PZ",
-            "codStat": "",
-            "pcsCart": 6,
-            "netWeight": 1.5,
-            "idArtStatus": "1",
-            "creationDate": "2010-06-14",
-            "price": 0.0,
-            "barcodes": [
-                {
-                    "barcode": "8008490000021",
-                    "type": "CP"
-                }
-            ],
-            "ingredients": null,
-            "category": {
-                "id": 1,
-                "description": "DROGHERIA ALIMENTARE"
-            },
-            "vat": {
-                "idVat": 22,
-                "description": "IVA RIVENDITA 22%",
-                "taxRate": 22
-            }
-        },
-        {
-            "codArt": "058578901",
-            "description": "ACQUA ULIVETO NATUR.ML.500",
-            "um": "PZ",
-            "codStat": "",
-            "pcsCart": 24,
-            "netWeight": 0.5,
-            "idArtStatus": "2",
-            "creationDate": "2011-01-12",
-            "price": 0.0,
-            "barcodes": [
-                {
-                    "barcode": "8008490991046",
-                    "type": "CP"
-                }
-            ],
-            "ingredients": null,
-            "category": {
-                "id": 1,
-                "description": "DROGHERIA ALIMENTARE"
-            },
-            "vat": {
-                "idVat": 22,
-                "description": "IVA RIVENDITA 22%",
-                "taxRate": 22
-            }
-        }
-    ]
-}""";
+	{
+	    "pagination": {
+	        "currentPage": 1,
+	        "totalPages": 1,
+	        "nextPage": 1,
+	        "previousPage": 1,
+	        "pageSize": 10,
+	        "totalElements": 2,
+	        "totalPagesArray": [
+	            1
+	        ]
+	    },
+	    "itemList": [
+	        {
+	            "codArt": "002000301",
+	            "description": "ACQUA ULIVETO 15 LT",
+	            "um": "PZ",
+	            "codStat": "",
+	            "pcsCart": 6,
+	            "netWeight": 1.5,
+	            "idArtStatus": "1",
+	            "creationDate": "2010-06-14",
+	            "price": null,
+	            "barcodes": [
+	                {
+	                    "barcode": "8008490000021",
+	                    "type": "CP"
+	                }
+	            ],
+	            "ingredients": null,
+	            "category": {
+	                "id": 1,
+	                "description": "DROGHERIA ALIMENTARE"
+	            },
+	            "vat": {
+	                "idVat": 22,
+	                "description": "IVA RIVENDITA 22%",
+	                "taxRate": 22
+	            }
+	        },
+	        {
+	            "codArt": "058578901",
+	            "description": "ACQUA ULIVETO NATUR.ML.500",
+	            "um": "PZ",
+	            "codStat": "",
+	            "pcsCart": 24,
+	            "netWeight": 0.5,
+	            "idArtStatus": "2",
+	            "creationDate": "2011-01-12",
+	            "price": null,
+	            "barcodes": [
+	                {
+	                    "barcode": "8008490991046",
+	                    "type": "CP"
+	                }
+	            ],
+	            "ingredients": null,
+	            "category": {
+	                "id": 1,
+	                "description": "DROGHERIA ALIMENTARE"
+	            },
+	            "vat": {
+	                "idVat": 22,
+	                "description": "IVA RIVENDITA 22%",
+	                "taxRate": 22
+	            }
+	        }
+	    ]
+	}""";
 	
 	@Test
 	public void listAllArticles() throws Exception {
