@@ -1,6 +1,7 @@
 import { ViewportScroller } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { log } from 'console';
 import { Article, Category, Vat } from 'src/app/models/Article';
 import { ArticleService } from 'src/app/services/data/article.service';
 import { ErrorMessages } from 'src/app/shared/Enums';
@@ -24,7 +25,11 @@ export class ArticleManagerComponent implements OnInit {
 
   errorValidationMap!: ErrorValidationMap;
 
-  readonly REQUIRED_FIELD_MSG = "Required field";
+  readonly REQ_FIELD_MSG = "Required field";
+  readonly MIN_MAX_NR_FIELD_MSG = "Min 0 - Max 100";
+  readonly NO_NEG_NR_FIELD_MSG = "No negative numbers";
+  readonly NO_NEG_NR_OR_ZERO_FIELD_MSG = "No negative numbers or 0";
+  readonly SUCC_OPERATION_MSG = "Edit article successfully executed!";
 
   article: Article = {
     codArt: "",
@@ -70,6 +75,8 @@ export class ArticleManagerComponent implements OnInit {
     this.articleService.getVatList().subscribe(
       response => this.vatList = response.body as Vat[]
     );
+
+    console.log(this.errorValidationMap);
   }
 
   handleResponse(response: any){
@@ -98,7 +105,6 @@ export class ArticleManagerComponent implements OnInit {
     console.log(this.respStatusCode);
     console.log(this.errorValidationMap);
 
-
     //  Scroll down the page to the alert element with the error message
     scrollToErrorAlert(this.scroller);
   }
@@ -113,7 +119,7 @@ export class ArticleManagerComponent implements OnInit {
     this.articleService.artUpdate(this.article).subscribe({
       next: response => {
         this.handleResponse(response);
-        this.successMessage = "Edit article successfully executed!";
+        this.successMessage = this.SUCC_OPERATION_MSG;
       },
       error: error => this.handleError(error)
     });

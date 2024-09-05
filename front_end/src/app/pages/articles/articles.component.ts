@@ -74,24 +74,6 @@ export class ArticlesComponent implements OnInit {
     this.getArticles();
   }
 
-  // scrollToSuccessAlert = (): void => {
-  //   console.log("scrollToSuccessAlert()");
-
-  //   // This delay ensures the element is ready for interaction before scrolling.
-  //   setTimeout(() => {
-  //     this. .scrollToAnchor('successAlert');
-  //   }, 100);
-  // }
-
-  // scrollToErrorAlert = (): void => {
-  //   console.log("scrollToErrorAlert()");
-
-  //   // This delay ensures the element is ready for interaction before scrolling.
-  //   setTimeout(() => {
-  //     this.scroller.scrollToAnchor('errorAlert');
-  //   }, 100);
-  // }
-
   setPagination = (): void => {
     console.log("setPagination()")
     // I bottoni-pagina (pagButtons) mostrano le pagine (pages)

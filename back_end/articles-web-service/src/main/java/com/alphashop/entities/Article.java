@@ -45,7 +45,7 @@ public class Article implements Serializable {
 	private Integer pcsCart;
 
 	@Column(name = "netweight")
-	private double netWeight;
+	private Double netWeight;
 
 	@Column(name = "idartstatus")
 	private String idArtStatus;

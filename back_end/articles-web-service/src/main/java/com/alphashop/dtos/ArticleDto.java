@@ -4,9 +4,15 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -14,27 +20,32 @@ import lombok.Data;
 @Data
 public class ArticleDto {
 
-	@NotBlank(message = "{NotBlank.ArticlesDto.codArt.Validation}")
-	@Size(min = 5, max = 20, message = "{Size.ArticlesDto.codArt.Validation}")
+	@NotBlank(message = "{NotBlank.ArticleDto.codArt.Validation}")
+	@Size(min = 5, max = 20, message = "{Size.ArticleDto.codArt.Validation}")
 	private String codArt;
 	
-	@NotBlank(message = "{NotBlank.ArticlesDto.description.Validation}")
-	@Size(min = 6, max = 80, message = "{Size.ArticlesDto.description.Validation}")
+	@NotBlank(message = "{NotBlank.ArticleDto.description.Validation}")
+	@Size(min = 6, max = 80, message = "{Size.ArticleDto.description.Validation}")
 	private String description;
 	
-	@NotBlank(message = "{NotBlank.ArticlesDto.um.Validation}")
 	private String um;
+	
 	private String codStat;
 	
-	@PositiveOrZero(message = "{PositiveOrZero.Validation}")
-	@Max(value = 100, message = "{Max.ArticlesDto.pcsCart.Validation}")
+	@Nullable
+	@Min(value = 0, message = "{MinMax.ArticleDto.pcsCart.Validation}")
+	@Max(value = 100, message = "{MinMax.ArticleDto.pcsCart.Validation}")
 	private Integer pcsCart;
 	
-	@PositiveOrZero(message = "{PositiveOrZero.Validation}")
+	@Nullable
+	@Positive(message = "{Positive.Validation}")
+	@Min(value = (long) 0.01, message = "{Min.ArticleDto.netWeight.Validation}")
 	private Double netWeight;
 	
 	@PositiveOrZero(message = "{PositiveOrZero.Validation}")
 	private String idArtStatus;
+	
+	@Temporal(TemporalType.DATE)
 	private LocalDate creationDate;
 	
 	@PositiveOrZero(message = "{PositiveOrZero.Validation}")
@@ -50,6 +61,7 @@ public class ArticleDto {
 	private CategoryDto category;
 	
 	@Valid
+	@NotNull
 	private VatDto vat;
 	
 	public void setDescription(String description) {
