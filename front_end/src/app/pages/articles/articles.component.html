@@ -7,7 +7,7 @@
       <div class="col-3">
         <button class="btn btn-outline-secondary ms-2">Export</button>
         <button class="btn btn-outline-secondary ms-2">Import</button>
-        <button class="btn btn-primary ms-2">Create</button>
+        <button class="btn btn-primary ms-2" (click)="createArt()">Create</button>
       </div>
     </div>
   </div>
@@ -51,7 +51,6 @@
             <th scope="col">Weight(KG/LT)</th>
             <th scope="col">IdArtStatus</th>
             <th scope="col">Price</th>
-            <th scope="col">Active</th>
             <th scope="col">Date</th>
             <th scope="col">Actions</th>
           </tr>
@@ -73,7 +72,6 @@
               </span>
             </td>
             <td>{{ article.price | currency:"EUR" }}</td>
-            <td>{{ article.active }}</td>
             <td>{{ article.creationDate | date:"dd-MM-yyyy" }}</td>
 
             <!-- Buttons Group: DELETE, MODIFY, INFO, DETAIL -->

@@ -62,7 +62,13 @@ export class ArticleService {
     };
   }
 
-  artUpdate = (article: Article) => {
+  createArt = (article: Article) => {
+    return this.httpClient.post<HttpResponse<any>>(`http://${this.server}:${this.port}/api/article/create`, article,
+      {observe: "response"}
+    );
+  }
+
+  updateArt = (article: Article) => {
     return this.httpClient.put<HttpResponse<any>>(`http://${this.server}:${this.port}/api/article/update`, article,
       {observe: "response"}
     );

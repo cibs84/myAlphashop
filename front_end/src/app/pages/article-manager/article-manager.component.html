@@ -37,11 +37,10 @@
           <!-- Barcode -->
           <div class="col-sm-6">
             <label for="barcode" class="form-label">Barcode</label>
-            <input type="text" class="form-control" id="barcode" name="barcode"
+            <input *ngIf="article.barcodes[0]" type="text" class="form-control" id="barcode" name="barcode"
                    [(ngModel)]="article.barcodes[0].barcode" disabled>
-            <div class="invalid-feedback">
-              Valid barcode is required.
-            </div>
+            <input *ngIf="!article.barcodes[0]" type="text" class="form-control" id="barcode" name="barcode"
+            disabled>
           </div>
 
           <!-- Description -->
@@ -84,13 +83,10 @@
           <div class="col-md-6">
             <label for="vat" class="form-label">Vat</label>
             <select class="form-select" id="vat" name="vat"
-                    #vat="ngModel" [(ngModel)]="article.vat.idVat"
+                    #vat="ngModel" [(ngModel)]="!article.vat || article.vat.idVat"
                     [class]="vat.dirty || vat.touched || errorMessage || successMessage !== '' ? (vat.valid ? 'is-valid' : 'is-invalid') : ''">
-              <option [ngValue]="vat.idVat && vat.taxRate" *ngFor="let vat of vatList">{{ vat.description }}</option>
+              <option [ngValue]="vat.idVat" *ngFor="let vat of vatList">{{ vat.description }}</option>
             </select>
-            <div class="invalid-feedback">
-              Please provide a valid tax-rate.
-            </div>
           </div>
 
           <!-- Quantity (PcsCart) -->
@@ -146,22 +142,16 @@
               <option value="">USD</option>
               <option value="">GBP</option>
             </select>
-            <div class="invalid-feedback">
-              Please provide a valid currency.
-            </div>
           </div>
 
           <!-- Category -->
           <div class="col-md-6">
             <label for="category" class="form-label">Category</label>
             <select class="form-select" id="category" name="category"
-                    #category="ngModel" [(ngModel)]="article.category.id"
+                    #category="ngModel" [(ngModel)]="!article.category || article.category.id"
                     [class]="category.dirty || category.touched || errorMessage || successMessage !== '' ? (category.valid ? 'is-valid' : 'is-invalid') : ''">
               <option [ngValue]="category.id" *ngFor="let category of categories">{{ category.id }} - {{ category.description }}</option>
             </select>
-            <div class="invalid-feedback">
-              Please select a valid category.
-            </div>
           </div>
 
           <!-- Status -->
@@ -174,9 +164,6 @@
               <option value="2">Suspended</option>
               <option value="3">Deleted</option>
             </select>
-            <div class="invalid-feedback">
-              Please provide a valid state.
-            </div>
           </div>
 
           <!-- Image -->
@@ -185,9 +172,6 @@
             <div class="input-group has-validation">
               <span class="input-group-text">Select File</span>
               <input type="text" class="form-control" id="artimage" placeholder="No file selected">
-            <div class="invalid-feedback">
-                Your article image is required.
-              </div>
             </div>
           </div>
         </div>

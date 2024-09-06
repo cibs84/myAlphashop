@@ -15,9 +15,9 @@ import { scrollToErrorAlert, scrollToSuccessAlert } from 'src/app/shared/scroll-
 })
 export class ArticleManagerComponent implements OnInit {
 
-  title: string = "Edit Article";
-
+  title: string = "";
   codArt: string = "";
+  isEditMode: boolean = true;
 
   errorMessage: string = "";
   successMessage: string = "";
@@ -29,27 +29,19 @@ export class ArticleManagerComponent implements OnInit {
   readonly MIN_MAX_NR_FIELD_MSG = "Min 0 - Max 100";
   readonly NO_NEG_NR_FIELD_MSG = "No negative numbers";
   readonly NO_NEG_NR_OR_ZERO_FIELD_MSG = "No negative numbers or 0";
-  readonly SUCC_OPERATION_MSG = "Edit article successfully executed!";
+  operationType: string = this.isEditMode ? "edit" : "creation";
+  succOperationMsg = "Article " + this.operationType + " successfully executed!";
 
   article: Article = {
     codArt: "",
     description: "",
-    um: "",
-    codStat: "",
-    pcsCart: 0,
-    netWeight: 0,
-    idArtStatus: "",
-    price: 0,
-    active: true,
-    creationDate: new Date(),
-    urlImage: "",
-    category: {id: 0, description: ""},
-    vat: {idVat: 0, description: "", taxRate: 0},
-    barcodes: [{barcode: "", type: ""}],
+    barcodes: [],
+    creationDate: new Date()
   }
 
   categories: Category[] = [];
   vatList: Vat[] = [];
+
 
   constructor(private route: ActivatedRoute,
               private articleService: ArticleService,
@@ -58,15 +50,23 @@ export class ArticleManagerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.codArt = this.route.snapshot.params['codArt'];
-    console.log("Selected article " + this.codArt);
-
     this.errorValidationMap = this.createErrorValidationMap<Article>(this.article);
 
-    this.articleService.getArticleByCodart(this.codArt).subscribe({
-      next: this.handleResponse.bind(this),
-      error: this.handleError.bind(this)
-    });
+    if (this.route.snapshot.params['codArt']) {
+      this.title = "Edit Article";
+      this.isEditMode = true;
+
+      this.codArt = this.route.snapshot.params['codArt'];
+      console.log("Selected article " + this.codArt);
+
+      this.articleService.getArticleByCodart(this.codArt).subscribe({
+        next: this.handleResponse.bind(this),
+        error: this.handleError.bind(this)
+      });
+    } else {
+      this.title = "Create Article";
+      this.isEditMode = false;
+    }
 
     this.articleService.getCategories().subscribe(
       response => this.categories = response.body as Category[]
@@ -77,18 +77,19 @@ export class ArticleManagerComponent implements OnInit {
     );
 
     console.log(this.errorValidationMap);
+    console.log("isEditMode: " + this.isEditMode);
+
   }
 
   handleResponse(response: any){
     console.log("handleResponse()");
+    console.log("isEditMode : " + this.isEditMode);
+    console.log("this.succOperationMsg : " + this.succOperationMsg);
+
     console.log(response);
 
     this.respStatusCode = response.status;
     this.article = response.body;
-
-    if (this.article.barcodes.length == 0) {
-      this.article.barcodes = [{barcode: "", type: ""}];
-    }
 
     //  Scroll down the page to the alert element with the response message
     scrollToSuccessAlert(this.scroller);
@@ -116,13 +117,31 @@ export class ArticleManagerComponent implements OnInit {
     this.successMessage = "";
     this.errorValidationMap = this.createErrorValidationMap<Article>(this.article);
 
-    this.articleService.artUpdate(this.article).subscribe({
-      next: response => {
-        this.handleResponse(response);
-        this.successMessage = this.SUCC_OPERATION_MSG;
-      },
-      error: error => this.handleError(error)
-    });
+    console.log(this.article);
+
+    if (this.article.barcodes.length == 0) {
+      this.article.barcodes = [];
+    }
+
+    if (this.isEditMode) {
+      this.articleService.updateArt(this.article).subscribe({
+        next: response => {
+          this.handleResponse(response);
+          console.log(this.succOperationMsg);
+
+          this.successMessage = this.succOperationMsg;
+        },
+        error: error => this.handleError(error)
+      });
+    } else {
+      this.articleService.createArt(this.article).subscribe({
+        next: response => {
+          this.handleResponse(response);
+          this.successMessage = this.succOperationMsg;
+        },
+        error: error => this.handleError(error)
+      });
+    }
   }
 
   // Creates a map object to initialize error messages for each item (=article) property

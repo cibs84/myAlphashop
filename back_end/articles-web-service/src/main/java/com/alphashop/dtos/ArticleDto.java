@@ -1,7 +1,6 @@
 package com.alphashop.dtos;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.annotation.Nullable;
@@ -11,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -52,7 +50,7 @@ public class ArticleDto {
 	private Double price;
 
 	@Valid
-	private Set<BarcodeDto> barcodes = new HashSet<>();
+	private Set<BarcodeDto> barcodes;
 	
 	@Valid
 	private IngredientsDto ingredients;
@@ -61,7 +59,6 @@ public class ArticleDto {
 	private CategoryDto category;
 	
 	@Valid
-	@NotNull
 	private VatDto vat;
 	
 	public void setDescription(String description) {
@@ -69,7 +66,9 @@ public class ArticleDto {
 	}
 	
 	public void setUm(String um) {
-		this.um = um.toUpperCase(); 
+		if (um != null) {
+			this.um = um.toUpperCase();
+		}
 	}
 	
 	public void setCodStat(String codStat){

@@ -175,7 +175,9 @@ export class ArticlesComponent implements OnInit {
 
     // Converte lo stato id numerico di ogni article in letterale (es. 1 -> 'Attivo')
     this.articles$.map(art => {
-      art.idArtStatus = this.getLiteralArtStatus(art.idArtStatus);
+      if (art.idArtStatus) {
+        art.idArtStatus = this.getLiteralArtStatus(art.idArtStatus);
+      }
     });
 
     if (response.body.pagination) {
@@ -236,19 +238,14 @@ export class ArticlesComponent implements OnInit {
     });
   }
 
+  // CREATE
+  createArt() {
+    this.router.navigate(['article-manager']);
+  }
+
   // UPDATE
   updateArt(codArt: string) {
-
     this.router.navigate(['article-manager', codArt]);
-
-
-    // this.resetResponses();
-
-    // this.codArt = codArt;
-    // this.articleService.updateArticle(codArt).subscribe({
-    //   next: this.handleSuccessResp,
-    //   error: this.handleErrorResp
-    // });
   }
 
   private handleSuccessResp = (resp: any): void => {
