@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse} from '@angular/common/http';
 import { Pagination } from 'src/app/models/Pagination';
-import { ArticleResponse } from 'src/app/models/ArticleResponse';
 import { Article, Category, Vat } from 'src/app/models/Article';
+import { PaginatedResponseList } from 'src/app/models/PaginatedResponseList';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class ArticleService {
     this.setPagination(pagination);
     filter = filter ? filter : ' ';
 
-    return this.httpClient.get(`http://${this.server}:${this.port}/api/article/findByCodart/${filter}`,
+    return this.httpClient.get<HttpResponse<Article>>(`http://${this.server}:${this.port}/api/article/findByCodart/${filter}`,
       {observe: "response"}
     );
   };
@@ -36,7 +36,7 @@ export class ArticleService {
     this.setPagination(pagination);
     filter = filter.trim() || ' ';
 
-    return this.httpClient.get(`http://${this.server}:${this.port}/api/articles/findByDescription/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`,
+    return this.httpClient.get<HttpResponse<PaginatedResponseList<Article>>>(`http://${this.server}:${this.port}/api/articles/findByDescription/${filter}?currentPage=${this.pagination.currentPage}&pageSize=${this.pagination.pageSize}`,
       {observe: "response"}
     );
   };
@@ -45,13 +45,13 @@ export class ArticleService {
     this.setPagination(pagination);
     filter = filter || ' ';
 
-    return this.httpClient.get(`http://${this.server}:${this.port}/api/article/findByBarcode/${filter}`,
+    return this.httpClient.get<HttpResponse<Article>>(`http://${this.server}:${this.port}/api/article/findByBarcode/${filter}`,
       {observe: "response"}
     );
   };
 
   deleteArticleByCodart = (codArt: string) => {
-    return this.httpClient.delete(`http://${this.server}:${this.port}/api/article/delete/${codArt}`,
+    return this.httpClient.delete<HttpResponse<Object>>(`http://${this.server}:${this.port}/api/article/delete/${codArt}`,
       {observe: "response"}
     );
   }
@@ -63,26 +63,26 @@ export class ArticleService {
   }
 
   createArt = (article: Article) => {
-    return this.httpClient.post<HttpResponse<any>>(`http://${this.server}:${this.port}/api/article/create`, article,
+    return this.httpClient.post<HttpResponse<Article>>(`http://${this.server}:${this.port}/api/article/create`, article,
       {observe: "response"}
     );
   }
 
   updateArt = (article: Article) => {
-    return this.httpClient.put<HttpResponse<any>>(`http://${this.server}:${this.port}/api/article/update`, article,
+    return this.httpClient.put<HttpResponse<Article>>(`http://${this.server}:${this.port}/api/article/update`, article,
       {observe: "response"}
     );
   }
 
   getCategories = () => {
     return this.httpClient.get<Category[]>(`http://${this.server}:${this.port}/api/categories`,
-    {observe: "response"}
+      {observe: "response"}
     );
   }
 
   getVatList = () => {
     return this.httpClient.get<Vat[]>(`http://${this.server}:${this.port}/api/vat-list`,
-    {observe: "response"}
+      {observe: "response"}
     );
   }
 }

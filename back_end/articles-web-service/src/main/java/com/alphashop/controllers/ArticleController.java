@@ -58,15 +58,15 @@ public class ArticleController {
 	private String codartArtNotDeletable;
 
 	@GetMapping("/articles")
-	public ResponseEntity<PaginatedResponseList<ArticleDto>> listAll(
+	public ResponseEntity<PaginatedResponseList<Article, ArticleDto>> listAll(
 			@RequestParam(name = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
 		
 		logger.info("******** Get all articles ********");
 
-		PaginatedResponseList<ArticleDto> article = articleService.getAll(currentPage, pageSize);
+		PaginatedResponseList<Article, ArticleDto> article = articleService.getAll(currentPage, pageSize);
 		
-		return new ResponseEntity<PaginatedResponseList<ArticleDto>>(article, HttpStatus.OK);
+		return new ResponseEntity<PaginatedResponseList<Article, ArticleDto>>(article, HttpStatus.OK);
 	}
 
 	@GetMapping(path = {"/article/findByBarcode/{ean}",
@@ -108,7 +108,7 @@ public class ArticleController {
 	
 	@GetMapping(path = {"/articles/findByDescription/{description}",
 						"/articles/findByDescription/**"})
-	public ResponseEntity<PaginatedResponseList<ArticleDto>> listArtByDesc(@PathVariable(name = "description", required = false) String description,
+	public ResponseEntity<PaginatedResponseList<Article, ArticleDto>> listArtByDesc(@PathVariable(name = "description", required = false) String description,
 			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
 		
@@ -118,8 +118,8 @@ public class ArticleController {
 		
 		logger.info("******** Get articles by description %s ********".formatted(description));
 		
-		PaginatedResponseList<ArticleDto> article = articleService.getByDescription(description, currentPage, pageSize);
-		return new ResponseEntity<PaginatedResponseList<ArticleDto>>(article, HttpStatus.OK);
+		PaginatedResponseList<Article, ArticleDto> article = articleService.getByDescription(description, currentPage, pageSize);
+		return new ResponseEntity<PaginatedResponseList<Article, ArticleDto>>(article, HttpStatus.OK);
 	}
 
 	@PostMapping("/article/create")

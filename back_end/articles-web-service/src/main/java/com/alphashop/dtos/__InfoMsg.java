@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class InfoMsg {
+public class __InfoMsg {
 
 	private LocalDate date;
 	

@@ -5,31 +5,31 @@
     <div class="col-md-7 col-lg-8">
       <h4 class="mb-3">{{ title }}</h4>
 
-      <!-- FORM -->
-      <form class="needs-validation" (ngSubmit)="saveArt()" #artForm="ngForm">
-        <div class="row g-3">
+      <!-- *** ALERT MESSAGE *** -->
+      <!-- Operation Success -  -->
+      <div *ngIf="successMsg" id="successAlert" class="alert alert-success mt-4" role="alert">
+        {{ successMsg }}
+      </div>
+      <!-- Operation Error -->
+      <div *ngIf="errorResp$.message" id="errorAlert" class="alert alert-danger mt-4" role="alert">
+        {{ errorResp$.message }}
+      </div>
 
-        <!-- *** ALERT MESSAGE *** -->
-        <!-- Operation Success -  -->
-        <div *ngIf="successMessage" id="successAlert" class="alert alert-success mt-4" role="alert">
-          {{ successMessage }}
-        </div>
-        <!-- Operation Error -->
-        <div *ngIf="errorMessage" id="errorAlert" class="alert alert-danger mt-4" role="alert">
-          {{ errorMessage }}
-        </div>
+      <!-- FORM -->
+      <form class="needs-validation" (ngSubmit)="saveArt(artForm)" #artForm="ngForm">
+        <div class="row g-3">
 
           <!-- Codart -->
           <div class="col-sm-6">
             <label for="codart" class="form-label">Codart*</label>
-            <input type="text" class="form-control" id="codart" name="codart" required
+            <input type="text" class="form-control" id="codart" name="codArt" required
                    #codart="ngModel" [(ngModel)]="article.codArt" minlength="5" maxlength="20"
-                   [class]="codart.dirty || codart.touched || errorMessage ? (codart.valid ? 'is-valid' : 'is-invalid') : ''">
+                   [class]="codart.dirty || codart.touched || errorResp$.message || successMsg !== '' ? (codart.valid ? 'is-valid' : 'is-invalid') : ''">
             <div class="valid-feedback" *ngIf="codart.valid && (codart.dirty || codart.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="codart.invalid && (codart.dirty || codart.touched)">
+            <div class="invalid-feedback" *ngIf="codart.invalid && (codart.dirty || codart.touched) || errorResp$.errorValidationMap?.['codArt']">
               <ul>
-                <li [class]="errorValidationMap['codArt'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorValidationMap['codArt']">{{ error }}</li>
-                <li *ngIf="!errorValidationMap['codArt'] || errorValidationMap['codArt'][0] === ''">{{ REQ_FIELD_MSG }}</li>
+                <li [class]="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['codArt'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp$.errorValidationMap?.['codArt']">{{ error }}</li>
+                <li *ngIf="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['codArt'][0] === ''">{{ REQ_FIELD_MSG }}</li>
               </ul>
             </div>
           </div>
@@ -38,7 +38,7 @@
           <div class="col-sm-6">
             <label for="barcode" class="form-label">Barcode</label>
             <input *ngIf="article.barcodes[0]" type="text" class="form-control" id="barcode" name="barcode"
-                   [(ngModel)]="article.barcodes[0].barcode" disabled>
+                   #barcodes="ngModel" [(ngModel)]="article.barcodes[0].barcode" disabled>
             <input *ngIf="!article.barcodes[0]" type="text" class="form-control" id="barcode" name="barcode"
             disabled>
           </div>
@@ -47,14 +47,14 @@
           <div class="col-12">
             <label for="description" class="form-label">Description*</label>
             <textarea class="form-control" id="description" name="description"
-                      minlength="3" maxlength="80" required
+                      minlength="6" maxlength="80" required
                       [(ngModel)]="article.description" #description="ngModel"
-                      [class]="description.dirty || description.touched || errorMessage || successMessage !== '' ? (description.valid ? 'is-valid' : 'is-invalid') : ''"></textarea>
+                      [class]="description.dirty || description.touched || errorResp$.message || successMsg !== '' ? (description.valid ? 'is-valid' : 'is-invalid') : ''"></textarea>
             <div class="valid-feedback" *ngIf="description.valid && (description.dirty || description.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="description.invalid && (description.dirty || description.touched)">
+            <div class="invalid-feedback" *ngIf="description.invalid && (description.dirty || description.touched) || errorResp$.errorValidationMap?.['description']">
               <ul>
-                <li [class]="errorValidationMap['description'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorValidationMap['description']">{{ error }}</li>
-                <li *ngIf="!errorValidationMap['description'] || errorValidationMap['description'][0] === ''">{{ REQ_FIELD_MSG }}</li>
+                <li [class]="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['description'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp$.errorValidationMap?.['description']">{{ error }}</li>
+                <li *ngIf="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['description'][0] === ''">{{ REQ_FIELD_MSG }}</li>
               </ul>
             </div>
           </div>
@@ -64,17 +64,17 @@
             <label for="um" class="form-label">Unit of measurement</label>
             <select class="form-select" id="um" name="um"
                     #um="ngModel" [(ngModel)]="article.um"
-                    [class]="um.dirty || um.touched || errorMessage || successMessage !== '' ? (um.valid ? 'is-valid' : 'is-invalid') : ''">
-              <option value="">Please select</option>
-              <option value="PZ">Pieces</option>
-              <option value="LT">Liters</option>
-              <option value="KG">Kilograms</option>
+                    [class]="um.dirty || um.touched || errorResp$.message || successMsg !== '' ? (um.valid ? 'is-valid' : 'is-invalid') : ''">
+              <option [ngValue]="null">Please select</option>
+              <option [ngValue]="'PZ'">Pieces</option>
+              <option [ngValue]="'LT'">Liters</option>
+              <option [ngValue]="'KG'">Kilograms</option>
             </select>
             <div class="valid-feedback" *ngIf="um.valid && (um.dirty || um.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="um.invalid && (um.dirty || um.touched)">
+            <div class="invalid-feedback" *ngIf="um.invalid && (um.dirty || um.touched) || errorResp$.errorValidationMap?.['um']">
               <ul>
-                <li [class]="errorValidationMap['um'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorValidationMap['um']">{{ error }}</li>
-                <li *ngIf="!errorValidationMap['um'] || errorValidationMap['um'][0] === ''">{{ REQ_FIELD_MSG }}</li>
+                <li [class]="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['um'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp$.errorValidationMap?.['um']">{{ error }}</li>
+                <li *ngIf="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['um'][0] === ''">{{ REQ_FIELD_MSG }}</li>
               </ul>
             </div>
           </div>
@@ -83,38 +83,39 @@
           <div class="col-md-6">
             <label for="vat" class="form-label">Vat</label>
             <select class="form-select" id="vat" name="vat"
-                    #vat="ngModel" [(ngModel)]="!article.vat || article.vat.idVat"
-                    [class]="vat.dirty || vat.touched || errorMessage || successMessage !== '' ? (vat.valid ? 'is-valid' : 'is-invalid') : ''">
-              <option [ngValue]="vat.idVat" *ngFor="let vat of vatList">{{ vat.description }}</option>
+                    #vat="ngModel" [(ngModel)]="selectedVat"
+                    [class]="vat.dirty || vat.touched || errorResp$.message || successMsg !== '' ? (vat.valid ? 'is-valid' : 'is-invalid') : ''">
+              <option [ngValue]="null">---SELECT VAT---</option>
+              <option [ngValue]="vat.idVat" *ngFor="let vat of vatList">{{ vat.description }} - {{ vat === article.vat }}</option>
             </select>
           </div>
 
           <!-- Quantity (PcsCart) -->
           <div class="col-sm-3">
-            <label for="pcscart" class="form-label">Quantity</label>
-            <input type="number" class="form-control" id="pcscart" name="pcscart"
-                   #pcscart="ngModel" [(ngModel)]="article.pcsCart" pattern="[0-9]*" min="0" max="100"
-                   [class]="pcscart.dirty || pcscart.touched || errorMessage || successMessage !== '' ? (pcscart.valid ? 'is-valid' : 'is-invalid') : ''">
-            <div class="valid-feedback" *ngIf="pcscart.valid && (pcscart.dirty || pcscart.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="pcscart.invalid && (pcscart.dirty || pcscart.touched)">
+            <label for="pcsCart" class="form-label">Quantity</label>
+            <input type="number" class="form-control" id="pcsCart" name="pcsCart"
+                   #pcsCart="ngModel" [(ngModel)]="article.pcsCart" pattern="[0-9]*" min="0" max="100"
+                   [class]="pcsCart.dirty || pcsCart.touched || errorResp$.message || successMsg !== '' ? (pcsCart.valid ? 'is-valid' : 'is-invalid') : ''">
+            <div class="valid-feedback" *ngIf="pcsCart.valid && (pcsCart.dirty || pcsCart.touched)">Looks good!</div>
+            <div class="invalid-feedback" *ngIf="pcsCart.invalid && (pcsCart.dirty || pcsCart.touched) || errorResp$.errorValidationMap?.['pcsCart']">
               <ul>
-                <li [class]="errorValidationMap['pcsCart'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorValidationMap['pcsCart']">{{ error }}</li>
-                <li *ngIf="!errorValidationMap['pcsCart'] || errorValidationMap['pcsCart'][0] === ''">{{ MIN_MAX_NR_FIELD_MSG }}</li>
+                <li [class]="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['pcsCart'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp$.errorValidationMap?.['pcsCart']">{{ error }}</li>
+                <li *ngIf="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['pcsCart'][0] === ''">{{ MIN_MAX_NR_FIELD_MSG }}</li>
               </ul>
             </div>
           </div>
 
           <!-- Net Weight -->
           <div class="col-sm-3">
-            <label for="netweight" class="form-label">Net Weight</label>
-            <input type="number" step="0.01" class="form-control" id="netweight" step="0.01" min="0.01"
-                   #netweight="ngModel" [(ngModel)]="article.netWeight" name="netweight"
-                   [class]="netweight.dirty || netweight.touched || errorMessage || successMessage !== '' ? (netweight.valid ? 'is-valid' : 'is-invalid') : ''">
-            <div class="valid-feedback" *ngIf="netweight.valid && (netweight.dirty || netweight.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="netweight.invalid && (netweight.dirty || netweight.touched)">
+            <label for="netWeight" class="form-label">Net Weight</label>
+            <input type="number" step="0.01" class="form-control" id="netWeight" step="0.01" min="0.01"
+                   #netWeight="ngModel" [(ngModel)]="article.netWeight" name="netWeight"
+                   [class]="netWeight.dirty || netWeight.touched || errorResp$.message || successMsg !== '' ? (netWeight.valid ? 'is-valid' : 'is-invalid') : ''">
+            <div class="valid-feedback" *ngIf="netWeight.valid && (netWeight.dirty || netWeight.touched)">Looks good!</div>
+            <div class="invalid-feedback" *ngIf="netWeight.invalid && (netWeight.dirty || netWeight.touched) || errorResp$.errorValidationMap?.['netWeight']">
               <ul>
-                <li [class]="errorValidationMap['netWeight'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorValidationMap['netWeight']">{{ error }}</li>
-                <li *ngIf="!errorValidationMap['netWeight'] || errorValidationMap['netWeight'][0] === ''">{{ NO_NEG_NR_OR_ZERO_FIELD_MSG }}</li>
+                <li [class]="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['netWeight'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp$.errorValidationMap?.['netWeight']">{{ error }}</li>
+                <li *ngIf="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['netWeight'][0] === ''">{{ NO_NEG_NR_OR_ZERO_FIELD_MSG }}</li>
               </ul>
             </div>
           </div>
@@ -124,12 +125,12 @@
             <label for="price" class="form-label">Price</label>
             <input type="number" class="form-control" id="price" step="0.01" min="0"
                    #price="ngModel" [(ngModel)]="article.price" name="price"
-                   [class]="price.dirty || price.touched || errorMessage || successMessage !== '' ? (price.valid ? 'is-valid' : 'is-invalid') : ''">
+                   [class]="price.dirty || price.touched || errorResp$.message || successMsg !== '' ? (price.valid ? 'is-valid' : 'is-invalid') : ''">
             <div class="valid-feedback" *ngIf="price.valid && (price.dirty || price.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="price.invalid && (price.dirty || price.touched)">
+            <div class="invalid-feedback" *ngIf="price.invalid && (price.dirty || price.touched) || errorResp$.errorValidationMap?.['price']">
               <ul>
-                <li [class]="errorValidationMap['price'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorValidationMap['price']">{{ error }}</li>
-                <li *ngIf="!errorValidationMap['price'] || errorValidationMap['price'][0] === ''">{{ NO_NEG_NR_FIELD_MSG }}</li>
+                <li [class]="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['price'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp$.errorValidationMap?.['price']">{{ error }}</li>
+                <li *ngIf="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['price'][0] === ''">{{ NO_NEG_NR_FIELD_MSG }}</li>
               </ul>
             </div>
           </div>
@@ -148,21 +149,23 @@
           <div class="col-md-6">
             <label for="category" class="form-label">Category</label>
             <select class="form-select" id="category" name="category"
-                    #category="ngModel" [(ngModel)]="!article.category || article.category.id"
-                    [class]="category.dirty || category.touched || errorMessage || successMessage !== '' ? (category.valid ? 'is-valid' : 'is-invalid') : ''">
+                    #category="ngModel" [(ngModel)]="selectedCategory"
+                    [class]="category.dirty || category.touched || errorResp$.message || successMsg !== '' ? (category.valid ? 'is-valid' : 'is-invalid') : ''">
+              <option [ngValue]="null">---SELECT CATEGORY---</option>
               <option [ngValue]="category.id" *ngFor="let category of categories">{{ category.id }} - {{ category.description }}</option>
             </select>
           </div>
 
           <!-- Status -->
           <div class="col-md-6">
-            <label for="artstatus" class="form-label">Status</label>
-            <select class="form-select" id="artstatus" name="artstatus"
-                    #artstatus="ngModel" [(ngModel)]="article.idArtStatus"
-                    [class]="artstatus.dirty || artstatus.touched || errorMessage || successMessage !== '' ? (artstatus.valid ? 'is-valid' : 'is-invalid') : ''">
-              <option value="1">Active</option>
-              <option value="2">Suspended</option>
-              <option value="3">Deleted</option>
+            <label for="idArtStatus" class="form-label">Status</label>
+            <select class="form-select" id="idArtStatus" name="idArtStatus"
+                    #idArtStatus="ngModel" [(ngModel)]="article.idArtStatus"
+                    [class]="idArtStatus.dirty || idArtStatus.touched || errorResp$.message || successMsg !== '' ? (idArtStatus.valid ? 'is-valid' : 'is-invalid') : ''">
+              <option [ngValue]="null">---SELECT STATUS---</option>
+              <option [ngValue]="'1'">Active</option>
+              <option [ngValue]="'2'">Suspended</option>
+              <option [ngValue]="'3'">Deleted</option>
             </select>
           </div>
 

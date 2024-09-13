@@ -7,7 +7,7 @@
       <div class="col-3">
         <button class="btn btn-outline-secondary ms-2">Export</button>
         <button class="btn btn-outline-secondary ms-2">Import</button>
-        <button class="btn btn-primary ms-2" (click)="createArt()">Create</button>
+        <button class="btn btn-primary ms-2" (click)="createArt()">+ New</button>
       </div>
     </div>
   </div>
@@ -39,8 +39,19 @@
     </div>
     <!-- GRID - BODY -->
     <div class="row grid-body">
+
+      <!-- *** ALERT MESSAGE *** -->
+      <!-- Operation Success -  -->
+      <div *ngIf="successMsg" id="successAlert" class="alert alert-success" role="alert">
+        {{ successMsg }}
+      </div>
+      <!-- Operation Error -->
+      <div *ngIf="errorResp$.message != ''" id="errorAlert" class="alert alert-danger" role="alert">
+        {{ errorResp$.message }}
+      </div>
+
       <!-- Product CARD -->
-      <table id="articles" class="table table-hover mb-5">
+      <table *ngIf="errorResp$.message === '' && errorResp$.message != errorMessages.UnavailableServer.toString()" id="articles" class="table table-hover mb-5">
         <thead>
           <tr>
             <th scope="col">CodArt</th>
@@ -55,7 +66,7 @@
             <th scope="col">Actions</th>
           </tr>
         </thead>
-        <tbody *ngIf="error$.message != errorMessages.UnavailableServer">
+        <tbody *ngIf="errorResp$.message != errorMessages.UnavailableServer.toString()">
           <tr *ngFor="let article of articles$">
             <td>{{ article.codArt }}</td>
             <td>{{ article.description }}</td>
@@ -93,20 +104,12 @@
         </tbody>
       </table>
 
-      <!-- *** ALERT MESSAGE *** -->
-      <!-- Operation Success -  -->
-      <div *ngIf="respObj$.code" id="successAlert" class="alert alert-success" role="alert">
-        {{ respObj$.message }}
-      </div>
-      <!-- Operation Error -->
-      <div *ngIf="error$.message != ''" id="errorAlert" class="alert alert-danger" role="alert">
-        {{ error$.message }}
-      </div>
-
       <!-- *** PAGINATION *** -->
-      <ul *ngIf="error$.code !== statusCodes.UnavailableServer
+      <ul *ngIf="errorResp$.code !== statusCodes.UnavailableServer
                   &&
-                 error$.code !== statusCodes.NotFound"
+                 errorResp$.code !== statusCodes.NotFound
+                  &&
+                 pagination$.totalPages > 1"
           class="pagination justify-content-end">
 
         <!-- Previous Page -->

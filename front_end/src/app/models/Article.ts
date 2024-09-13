@@ -7,10 +7,10 @@ export interface Article {
   netWeight?: number,
   idArtStatus?: string,
   price?: number,
-  creationDate?: Date,
+  creationDate: Date,
   urlImage?: string,
-  category?: Category,
-  vat?: Vat,
+  category?: Category | null,
+  vat?: Vat | null,
   barcodes: Barcode[]
 }
 

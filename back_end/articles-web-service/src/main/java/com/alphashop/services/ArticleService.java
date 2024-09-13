@@ -34,7 +34,7 @@ public class ArticleService {
 		this.articleMapper = articleMapper;
 	}
 
-	public PaginatedResponseList<ArticleDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) throws NotFoundException {
+	public PaginatedResponseList<Article, ArticleDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) throws NotFoundException {
 		Pageable articlesPagination = PageRequest.of(currentPage.filter(n -> n > -1).orElse(1),
 				pageSize.filter(n -> n > 0).orElse(10));
 		Page<Article> article = articleRepository.findAllByOrderByCodArtAsc(articlesPagination);
@@ -50,12 +50,12 @@ public class ArticleService {
 		List<ArticleDto> articleDto = article.stream().map(art -> articleMapper.toModel(art))
 				.collect(Collectors.toList());
 		
-		PaginatedResponseList<ArticleDto> articleResponse = new PaginatedResponseList<>(article, articleDto);
+		PaginatedResponseList<Article, ArticleDto> articleResponse = new PaginatedResponseList<Article, ArticleDto>(article, articleDto);
 		
 		return articleResponse;
 	}
 
-	public PaginatedResponseList<ArticleDto> getByDescription(String description, Optional<Integer> currentPage,
+	public PaginatedResponseList<Article, ArticleDto> getByDescription(String description, Optional<Integer> currentPage,
 			Optional<Integer> pageSize) throws NotFoundException {
 
 		description = description == "" ? " " : description;
@@ -80,7 +80,7 @@ public class ArticleService {
 		List<ArticleDto> articleDto = article.stream().map(art -> articleMapper.toModel(art))
 				.collect(Collectors.toList());
 
-		PaginatedResponseList<ArticleDto> articleResponse = new PaginatedResponseList<ArticleDto>(article, articleDto);
+		PaginatedResponseList<Article, ArticleDto> articleResponse = new PaginatedResponseList<Article, ArticleDto>(article, articleDto);
 		
 		
 		return articleResponse;

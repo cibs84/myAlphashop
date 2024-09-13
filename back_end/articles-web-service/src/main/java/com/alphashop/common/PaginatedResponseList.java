@@ -8,24 +8,24 @@ import org.springframework.data.domain.Page;
 import lombok.Getter;
 import lombok.Setter;
  /**
-  * 
-  * @param <L> Type of Item List
-  * @param Page<P> Page object 
+  * @param <P> Type of Item Page
+  * @param <T> Type of Item List
+  * @param <W> Type of Item Page in the Pagination Inner Class
   */
 @Getter
 @Setter
-public class PaginatedResponseList<L> {
+public class PaginatedResponseList<P, T> {
 	
-	private Pagination pagination;
-	private List<L> itemList;
+	private Pagination<P> pagination;
+	private List<T> itemList;
 
-	public <P> PaginatedResponseList(Page<P> page, List<L> itemList) {
-		this.pagination = new Pagination(page);
+	public PaginatedResponseList(Page<P> page, List<T> itemList) {
+		this.pagination = new Pagination<P>(page);
 		this.itemList = itemList;
 	}
 	
-	
-	public class Pagination<P> {
+	// INNER CLASS
+	public class Pagination<W> {
 		private int currentPage = 1;
 		private int totalPages = 1;
 		private int nextPage = 1;
@@ -37,7 +37,7 @@ public class PaginatedResponseList<L> {
 		public Pagination() {
 		}
 		
-		public Pagination(Page<?> page) {
+		public Pagination(Page<W> page) {
 			super();
 			setCurrentPage(page.getNumber()+1);
 			setPageSize(page.getSize());

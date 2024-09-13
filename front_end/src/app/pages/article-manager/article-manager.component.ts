@@ -1,10 +1,12 @@
 import { ViewportScroller } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { log } from 'console';
 import { Article, Category, Vat } from 'src/app/models/Article';
+import { ErrorResponse } from 'src/app/models/ErrorResponse';
 import { ArticleService } from 'src/app/services/data/article.service';
-import { ErrorMessages } from 'src/app/shared/Enums';
+import { ErrorMessages, StatusCodes } from 'src/app/shared/Enums';
 import { ErrorValidationMap } from 'src/app/shared/Types';
 import { scrollToErrorAlert, scrollToSuccessAlert } from 'src/app/shared/scroll-helpers';
 
@@ -15,22 +17,33 @@ import { scrollToErrorAlert, scrollToSuccessAlert } from 'src/app/shared/scroll-
 })
 export class ArticleManagerComponent implements OnInit {
 
-  title: string = "";
-  codArt: string = "";
-  isEditMode: boolean = true;
-
-  errorMessage: string = "";
-  successMessage: string = "";
-  respStatusCode: number = -1;
-
-  errorValidationMap!: ErrorValidationMap;
-
+  readonly CREATE_MODE_TITLE = "Create Article";
+  readonly EDIT_MODE_TITLE = "Edit Article";
   readonly REQ_FIELD_MSG = "Required field";
   readonly MIN_MAX_NR_FIELD_MSG = "Min 0 - Max 100";
   readonly NO_NEG_NR_FIELD_MSG = "No negative numbers";
   readonly NO_NEG_NR_OR_ZERO_FIELD_MSG = "No negative numbers or 0";
-  operationType: string = this.isEditMode ? "edit" : "creation";
-  succOperationMsg = "Article " + this.operationType + " successfully executed!";
+
+  title: string = "";
+  codArt: string = "";
+  isEditMode: boolean = false;
+
+  errorResp$: ErrorResponse = {
+    date: new Date(),
+    code: -1,
+    message: "",
+    errorValidationMap: {}
+  }
+
+  get operationType(): string {
+    return this.isEditMode ? "edit" : "creation";
+  }
+  get succOperationMsg(): string {
+    return "Article " + this.operationType + " successfully executed!";
+  }
+
+  successMsg: string = "";
+  respStatusCode: number = -1;
 
   article: Article = {
     codArt: "",
@@ -38,10 +51,12 @@ export class ArticleManagerComponent implements OnInit {
     barcodes: [],
     creationDate: new Date()
   }
-
   categories: Category[] = [];
   vatList: Vat[] = [];
 
+  selectedVat?: number | null;
+  selectedCategory?: number | null;
+  selectedStatus?: string | null;
 
   constructor(private route: ActivatedRoute,
               private articleService: ArticleService,
@@ -50,10 +65,12 @@ export class ArticleManagerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.errorValidationMap = this.createErrorValidationMap<Article>(this.article);
 
+    this.errorResp$.errorValidationMap = this.createErrorValidationMap<Article>(this.article);
+
+    // GET ARTICLE/S
     if (this.route.snapshot.params['codArt']) {
-      this.title = "Edit Article";
+      this.title = this.EDIT_MODE_TITLE;
       this.isEditMode = true;
 
       this.codArt = this.route.snapshot.params['codArt'];
@@ -64,80 +81,110 @@ export class ArticleManagerComponent implements OnInit {
         error: this.handleError.bind(this)
       });
     } else {
-      this.title = "Create Article";
+      this.title = this.CREATE_MODE_TITLE;
       this.isEditMode = false;
     }
-
+    // GET CATEGORIES
     this.articleService.getCategories().subscribe(
       response => this.categories = response.body as Category[]
     );
-
+    // GET VAT-LIST
     this.articleService.getVatList().subscribe(
       response => this.vatList = response.body as Vat[]
     );
-
-    console.log(this.errorValidationMap);
-    console.log("isEditMode: " + this.isEditMode);
-
   }
+  // ******* ngOnInit() - END *******
 
   handleResponse(response: any){
     console.log("handleResponse()");
-    console.log("isEditMode : " + this.isEditMode);
-    console.log("this.succOperationMsg : " + this.succOperationMsg);
-
     console.log(response);
+
+    console.log("ARTICOLO_1 - handleResponse()");
+    console.log(this.article);
 
     this.respStatusCode = response.status;
     this.article = response.body;
+    this.article.vat = this.article.vat || null;
+
+    console.log("ARTICOLO_2 - handleResponse()");
+    console.log(this.article);
 
     //  Scroll down the page to the alert element with the response message
     scrollToSuccessAlert(this.scroller);
+
+    // Used from select elements form with [(ngModel)]
+    // to set the option with [ngValue] in html
+    this.selectedVat = this.article.vat ? this.article.vat.idVat : null;
+    this.selectedCategory = this.article.category ? this.article.category.id : null;
+    this.selectedStatus = this.article.idArtStatus != null ? this.article.idArtStatus : null;
   };
 
   handleError(error: any){
     console.log("handleError()");
     console.log(error);
 
-    this.respStatusCode = error.status;
-    this.errorMessage = error.error.message || ErrorMessages.UnavailableServer;
-    this.errorValidationMap = error.error.errorValidationMap;
+    this.errorResp$ = error.error;
 
-    console.log(this.respStatusCode);
-    console.log(this.errorValidationMap);
-
+    if (error.status === StatusCodes.UnavailableServer) {
+      this.errorResp$.code = 0;
+      this.errorResp$.message = ErrorMessages.UnavailableServer;
+    } else if (error.status === StatusCodes.NotFound){
+      console.error(ErrorMessages.ElementNotFound);
+    } else if (error.status === StatusCodes.Forbidden){
+      console.error(ErrorMessages.OperationNotAllowed);
+    } else {
+      console.error(ErrorMessages.GenericError);
+      console.error(error); // Registra l'errore nella console
+    }
     //  Scroll down the page to the alert element with the error message
     scrollToErrorAlert(this.scroller);
   }
 
-  saveArt = () => {
+  saveArt = (artForm: NgForm) => {
     console.log("saveArt()");
 
-    this.errorMessage = "";
-    this.successMessage = "";
-    this.errorValidationMap = this.createErrorValidationMap<Article>(this.article);
+console.log("ART-FORM - saveArt()");
+console.log(artForm.value);
+this.article = artForm.value;
+this.article.barcodes = artForm.value.barcodes || [];
+this.article.category = this.categories.find(cat => cat.id === artForm.value.category);
+this.article.vat = this.vatList.find(vat => vat.idVat === artForm.value.vat);
 
-    console.log(this.article);
-
-    if (this.article.barcodes.length == 0) {
-      this.article.barcodes = [];
+    // RESET response variables
+    this.successMsg = '';
+    this.respStatusCode = -1;
+    this.errorResp$ = {
+      date: new Date(),
+      code: -1,
+      message: "",
+      errorValidationMap: this.createErrorValidationMap<Article>(this.article)
     }
 
-    if (this.isEditMode) {
+    console.log("ARTICLE");
+    console.log(this.article);
+
+    // if (this.article.vat?.idVat == null) {
+    //   delete this.article.vat;
+    // } else {
+    //   this.article.vat = this.vatList.find(vat => vat.idVat === this.article.vat?.idVat)
+    // }
+
+    console.log("ARTICLE");
+    console.log(this.article);
+
+    if (this.isEditMode) {  // EDIT MODE
       this.articleService.updateArt(this.article).subscribe({
         next: response => {
           this.handleResponse(response);
-          console.log(this.succOperationMsg);
-
-          this.successMessage = this.succOperationMsg;
+          this.successMsg = this.succOperationMsg;
         },
         error: error => this.handleError(error)
       });
-    } else {
+    } else {  // CREATE MODE
       this.articleService.createArt(this.article).subscribe({
         next: response => {
           this.handleResponse(response);
-          this.successMessage = this.succOperationMsg;
+          this.successMsg = this.succOperationMsg;
         },
         error: error => this.handleError(error)
       });
