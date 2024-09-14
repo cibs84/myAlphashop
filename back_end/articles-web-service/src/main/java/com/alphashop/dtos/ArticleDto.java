@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -20,6 +21,7 @@ public class ArticleDto {
 
 	@NotBlank(message = "{NotBlank.ArticleDto.codArt.Validation}")
 	@Size(min = 5, max = 20, message = "{Size.ArticleDto.codArt.Validation}")
+	@Pattern(regexp = "^[a-zA-Z0-9]+$", message = "{Pattern.OnlyLettersAndNumbers.Validation}")
 	private String codArt;
 	
 	@NotBlank(message = "{NotBlank.ArticleDto.description.Validation}")

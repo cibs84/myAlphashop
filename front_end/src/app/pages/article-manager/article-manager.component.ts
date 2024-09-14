@@ -20,6 +20,7 @@ export class ArticleManagerComponent implements OnInit {
   readonly CREATE_MODE_TITLE = "Create Article";
   readonly EDIT_MODE_TITLE = "Edit Article";
   readonly REQ_FIELD_MSG = "Required field";
+  readonly PATTERN_FIELD_MSG = "The field can only contain letters and numbers"
   readonly MIN_MAX_NR_FIELD_MSG = "Min 0 - Max 100";
   readonly NO_NEG_NR_FIELD_MSG = "No negative numbers";
   readonly NO_NEG_NR_OR_ZERO_FIELD_MSG = "No negative numbers or 0";

@@ -16,20 +16,20 @@
       </div>
 
       <!-- FORM -->
-      <form class="needs-validation" (ngSubmit)="saveArt(artForm)" #artForm="ngForm">
+      <form class="needs-validation" (ngSubmit)="artForm.dirty && saveArt(artForm)" #artForm="ngForm">
         <div class="row g-3">
 
           <!-- Codart -->
           <div class="col-sm-6">
             <label for="codart" class="form-label">Codart*</label>
-            <input type="text" class="form-control" id="codart" name="codArt" required
+            <input type="text" class="form-control" id="codart" name="codArt"  pattern="[a-zA-Z0-9]+" required
                    #codart="ngModel" [(ngModel)]="article.codArt" minlength="5" maxlength="20"
                    [class]="codart.dirty || codart.touched || errorResp$.message || successMsg !== '' ? (codart.valid ? 'is-valid' : 'is-invalid') : ''">
             <div class="valid-feedback" *ngIf="codart.valid && (codart.dirty || codart.touched)">Looks good!</div>
             <div class="invalid-feedback" *ngIf="codart.invalid && (codart.dirty || codart.touched) || errorResp$.errorValidationMap?.['codArt']">
               <ul>
                 <li [class]="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['codArt'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp$.errorValidationMap?.['codArt']">{{ error }}</li>
-                <li *ngIf="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['codArt'][0] === ''">{{ REQ_FIELD_MSG }}</li>
+                <li *ngIf="!errorResp$.errorValidationMap || errorResp$.errorValidationMap['codArt'][0] === ''">{{ codart.errors?.['pattern'] ? PATTERN_FIELD_MSG : REQ_FIELD_MSG }}</li>
               </ul>
             </div>
           </div>
