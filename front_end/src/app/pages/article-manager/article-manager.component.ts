@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { log } from 'console';
-import { Article, Category, Vat } from 'src/app/models/Article';
+import { Article, Barcode, Category, Vat } from 'src/app/models/Article';
 import { ErrorResponse } from 'src/app/models/ErrorResponse';
 import { ArticleService } from 'src/app/services/data/article.service';
 import { ErrorMessages, StatusCodes } from 'src/app/shared/Enums';
@@ -54,9 +54,11 @@ export class ArticleManagerComponent implements OnInit {
   categories: Category[] = [];
   vatList: Vat[] = [];
 
+  // Used from form elements with [(ngModel)]
   selectedVat?: number | null;
   selectedCategory?: number | null;
   selectedStatus?: string | null;
+  selectedBarcodes: Barcode[] = [];
 
   constructor(private route: ActivatedRoute,
               private articleService: ArticleService,
@@ -109,14 +111,14 @@ export class ArticleManagerComponent implements OnInit {
     console.log("ARTICOLO_2 - handleResponse()");
     console.log(this.article);
 
-    //  Scroll down the page to the alert element with the response message
-    scrollToSuccessAlert(this.scroller);
-
-    // Used from select elements form with [(ngModel)]
-    // to set the option with [ngValue] in html
+    // Used from form elements with [(ngModel)]
     this.selectedVat = this.article.vat ? this.article.vat.idVat : null;
     this.selectedCategory = this.article.category ? this.article.category.id : null;
     this.selectedStatus = this.article.idArtStatus != null ? this.article.idArtStatus : null;
+    this.selectedBarcodes = this.article.barcodes.length > 0  ? response.body.barcodes[0].barcode : [];
+
+    //  Scroll down the page to the alert element with the response message
+    scrollToSuccessAlert(this.scroller);
   };
 
   handleError(error: any){
@@ -143,12 +145,15 @@ export class ArticleManagerComponent implements OnInit {
   saveArt = (artForm: NgForm) => {
     console.log("saveArt()");
 
-console.log("ART-FORM - saveArt()");
-console.log(artForm.value);
-this.article = artForm.value;
-this.article.barcodes = artForm.value.barcodes || [];
-this.article.category = this.categories.find(cat => cat.id === artForm.value.category);
-this.article.vat = this.vatList.find(vat => vat.idVat === artForm.value.vat);
+    const barcodes: Barcode[] = this.article.barcodes;
+
+    console.log("ART-FORM - saveArt()");
+    console.log(artForm.value);
+    this.article = artForm.value;
+
+    this.article.barcodes = barcodes;
+    this.article.category = this.categories.find(cat => cat.id === artForm.value.category);
+    this.article.vat = this.vatList.find(vat => vat.idVat === artForm.value.vat);
 
     // RESET response variables
     this.successMsg = '';
@@ -160,16 +165,7 @@ this.article.vat = this.vatList.find(vat => vat.idVat === artForm.value.vat);
       errorValidationMap: this.createErrorValidationMap<Article>(this.article)
     }
 
-    console.log("ARTICLE");
-    console.log(this.article);
-
-    // if (this.article.vat?.idVat == null) {
-    //   delete this.article.vat;
-    // } else {
-    //   this.article.vat = this.vatList.find(vat => vat.idVat === this.article.vat?.idVat)
-    // }
-
-    console.log("ARTICLE");
+    console.log("ARTICLE - saveArt()");
     console.log(this.article);
 
     if (this.isEditMode) {  // EDIT MODE
