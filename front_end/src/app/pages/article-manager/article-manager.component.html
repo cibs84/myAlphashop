@@ -23,7 +23,7 @@
           <div class="col-sm-6">
             <label for="codart" class="form-label">Codart*</label>
             <input type="text" class="form-control" id="codart" name="codArt"  pattern="[a-zA-Z0-9]+" required
-                   #codart="ngModel" [(ngModel)]="article.codArt" minlength="5" maxlength="20"
+                   #codart="ngModel" [(ngModel)]="article$.codArt" minlength="5" maxlength="20"
                    [class]="codart.dirty || codart.touched || errorResp$.message || successMsg !== '' ? (codart.valid ? 'is-valid' : 'is-invalid') : ''">
             <div class="valid-feedback" *ngIf="codart.valid && (codart.dirty || codart.touched)">Looks good!</div>
             <div class="invalid-feedback" *ngIf="codart.invalid && (codart.dirty || codart.touched) || errorResp$.errorValidationMap?.['codArt']">
@@ -37,8 +37,8 @@
           <!-- Barcode -->
           <div class="col-sm-6">
             <label for="barcode" class="form-label">Barcode</label>
-            <input type="text" class="form-control" id="barcode" name="barcodes"
-                   #barcodes="ngModel" [(ngModel)]="selectedBarcodes" disabled>
+            <input type="text" class="form-control" id="barcode" name="barcodex"
+                   #barcodes="ngModel" [(ngModel)]="selectedBarcode" disabled>
           </div>
 
           <!-- Description -->
@@ -46,7 +46,7 @@
             <label for="description" class="form-label">Description*</label>
             <textarea class="form-control" id="description" name="description"
                       minlength="6" maxlength="80" required
-                      [(ngModel)]="article.description" #description="ngModel"
+                      [(ngModel)]="article$.description" #description="ngModel"
                       [class]="description.dirty || description.touched || errorResp$.message || successMsg !== '' ? (description.valid ? 'is-valid' : 'is-invalid') : ''"></textarea>
             <div class="valid-feedback" *ngIf="description.valid && (description.dirty || description.touched)">Looks good!</div>
             <div class="invalid-feedback" *ngIf="description.invalid && (description.dirty || description.touched) || errorResp$.errorValidationMap?.['description']">
@@ -61,7 +61,7 @@
           <div class="col-md-6">
             <label for="um" class="form-label">Unit of measurement</label>
             <select class="form-select" id="um" name="um"
-                    #um="ngModel" [(ngModel)]="article.um"
+                    #um="ngModel" [(ngModel)]="article$.um"
                     [class]="um.dirty || um.touched || errorResp$.message || successMsg !== '' ? (um.valid ? 'is-valid' : 'is-invalid') : ''">
               <option [ngValue]="null">Please select</option>
               <option [ngValue]="'PZ'">Pieces</option>
@@ -84,7 +84,7 @@
                     #vat="ngModel" [(ngModel)]="selectedVat"
                     [class]="vat.dirty || vat.touched || errorResp$.message || successMsg !== '' ? (vat.valid ? 'is-valid' : 'is-invalid') : ''">
               <option [ngValue]="null">---SELECT VAT---</option>
-              <option [ngValue]="vat.idVat" *ngFor="let vat of vatList">{{ vat.description }} - {{ vat === article.vat }}</option>
+              <option [ngValue]="vat.idVat" *ngFor="let vat of vatList">{{ vat.description }} - {{ vat === article$.vat }}</option>
             </select>
           </div>
 
@@ -92,7 +92,7 @@
           <div class="col-sm-3">
             <label for="pcsCart" class="form-label">Quantity</label>
             <input type="number" class="form-control" id="pcsCart" name="pcsCart"
-                   #pcsCart="ngModel" [(ngModel)]="article.pcsCart" pattern="[0-9]*" min="0" max="100"
+                   #pcsCart="ngModel" [(ngModel)]="article$.pcsCart" pattern="[0-9]*" min="0" max="100"
                    [class]="pcsCart.dirty || pcsCart.touched || errorResp$.message || successMsg !== '' ? (pcsCart.valid ? 'is-valid' : 'is-invalid') : ''">
             <div class="valid-feedback" *ngIf="pcsCart.valid && (pcsCart.dirty || pcsCart.touched)">Looks good!</div>
             <div class="invalid-feedback" *ngIf="pcsCart.invalid && (pcsCart.dirty || pcsCart.touched) || errorResp$.errorValidationMap?.['pcsCart']">
@@ -107,7 +107,7 @@
           <div class="col-sm-3">
             <label for="netWeight" class="form-label">Net Weight</label>
             <input type="number" step="0.01" class="form-control" id="netWeight" step="0.01" min="0.01"
-                   #netWeight="ngModel" [(ngModel)]="article.netWeight" name="netWeight"
+                   #netWeight="ngModel" [(ngModel)]="article$.netWeight" name="netWeight"
                    [class]="netWeight.dirty || netWeight.touched || errorResp$.message || successMsg !== '' ? (netWeight.valid ? 'is-valid' : 'is-invalid') : ''">
             <div class="valid-feedback" *ngIf="netWeight.valid && (netWeight.dirty || netWeight.touched)">Looks good!</div>
             <div class="invalid-feedback" *ngIf="netWeight.invalid && (netWeight.dirty || netWeight.touched) || errorResp$.errorValidationMap?.['netWeight']">
@@ -122,7 +122,7 @@
           <div class="col-sm-3">
             <label for="price" class="form-label">Price</label>
             <input type="number" class="form-control" id="price" step="0.01" min="0"
-                   #price="ngModel" [(ngModel)]="article.price" name="price"
+                   #price="ngModel" [(ngModel)]="article$.price" name="price"
                    [class]="price.dirty || price.touched || errorResp$.message || successMsg !== '' ? (price.valid ? 'is-valid' : 'is-invalid') : ''">
             <div class="valid-feedback" *ngIf="price.valid && (price.dirty || price.touched)">Looks good!</div>
             <div class="invalid-feedback" *ngIf="price.invalid && (price.dirty || price.touched) || errorResp$.errorValidationMap?.['price']">
@@ -158,7 +158,7 @@
           <div class="col-md-6">
             <label for="idArtStatus" class="form-label">Status</label>
             <select class="form-select" id="idArtStatus" name="idArtStatus"
-                    #idArtStatus="ngModel" [(ngModel)]="article.idArtStatus"
+                    #idArtStatus="ngModel" [(ngModel)]="article$.idArtStatus"
                     [class]="idArtStatus.dirty || idArtStatus.touched || errorResp$.message || successMsg !== '' ? (idArtStatus.valid ? 'is-valid' : 'is-invalid') : ''">
               <option [ngValue]="null">---SELECT STATUS---</option>
               <option [ngValue]="'1'">Active</option>

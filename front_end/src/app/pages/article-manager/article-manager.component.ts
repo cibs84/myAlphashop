@@ -2,8 +2,7 @@ import { ViewportScroller } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { log } from 'console';
-import { Article, Barcode, Category, Vat } from 'src/app/models/Article';
+import { Article, Category, Vat } from 'src/app/models/Article';
 import { ErrorResponse } from 'src/app/models/ErrorResponse';
 import { ArticleService } from 'src/app/services/data/article.service';
 import { ErrorMessages, StatusCodes } from 'src/app/shared/Enums';
@@ -29,13 +28,6 @@ export class ArticleManagerComponent implements OnInit {
   codArt: string = "";
   isEditMode: boolean = false;
 
-  errorResp$: ErrorResponse = {
-    date: new Date(),
-    code: -1,
-    message: "",
-    errorValidationMap: {}
-  }
-
   get operationType(): string {
     return this.isEditMode ? "edit" : "creation";
   }
@@ -44,9 +36,14 @@ export class ArticleManagerComponent implements OnInit {
   }
 
   successMsg: string = "";
-  respStatusCode: number = -1;
+  errorResp$: ErrorResponse = {
+    date: new Date(),
+    code: -1,
+    message: "",
+    errorValidationMap: {}
+  }
 
-  article: Article = {
+  article$: Article = {
     codArt: "",
     description: "",
     barcodes: [],
@@ -59,7 +56,7 @@ export class ArticleManagerComponent implements OnInit {
   selectedVat?: number | null;
   selectedCategory?: number | null;
   selectedStatus?: string | null;
-  selectedBarcodes: Barcode[] = [];
+  selectedBarcode?: string | null;
 
   constructor(private route: ActivatedRoute,
               private articleService: ArticleService,
@@ -69,7 +66,16 @@ export class ArticleManagerComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.errorResp$.errorValidationMap = this.createErrorValidationMap<Article>(this.article);
+    this.errorResp$.errorValidationMap = this.createErrorValidationMap<Article>(this.article$);
+
+    // GET CATEGORIES
+    this.articleService.getCategories().subscribe(
+      response => this.categories = response.body as Category[]
+    );
+    // GET VAT-LIST
+    this.articleService.getVatList().subscribe(
+      response => this.vatList = response.body as Vat[]
+    );
 
     // GET ARTICLE/S
     if (this.route.snapshot.params['codArt']) {
@@ -87,14 +93,6 @@ export class ArticleManagerComponent implements OnInit {
       this.title = this.CREATE_MODE_TITLE;
       this.isEditMode = false;
     }
-    // GET CATEGORIES
-    this.articleService.getCategories().subscribe(
-      response => this.categories = response.body as Category[]
-    );
-    // GET VAT-LIST
-    this.articleService.getVatList().subscribe(
-      response => this.vatList = response.body as Vat[]
-    );
   }
   // ******* ngOnInit() - END *******
 
@@ -103,20 +101,21 @@ export class ArticleManagerComponent implements OnInit {
     console.log(response);
 
     console.log("ARTICOLO_1 - handleResponse()");
-    console.log(this.article);
+    console.log(this.article$);
 
-    this.respStatusCode = response.status;
-    this.article = response.body;
-    this.article.vat = this.article.vat || null;
+    // Updates the existing 'article$' by 'response.body'
+    // Only the informations that are already in the 'article$' will be replaced with the new values,
+    // while the new informations will be added.
+    this.article$ = Object.assign({}, this.article$, response.body);
 
     console.log("ARTICOLO_2 - handleResponse()");
-    console.log(this.article);
+    console.log(this.article$);
 
-    // Used from form elements with [(ngModel)]
-    this.selectedVat = this.article.vat ? this.article.vat.idVat : null;
-    this.selectedCategory = this.article.category ? this.article.category.id : null;
-    this.selectedStatus = this.article.idArtStatus != null ? this.article.idArtStatus : null;
-    this.selectedBarcodes = this.article.barcodes.length > 0  ? response.body.barcodes[0].barcode : [];
+    // Used by form elements with [(ngModel)]
+    this.selectedVat = this.article$.vat ? this.article$.vat.idVat : null;
+    this.selectedCategory = this.article$.category ? this.article$.category.id : null;
+    this.selectedStatus = this.article$.idArtStatus ? this.article$.idArtStatus : null;
+    this.selectedBarcode = this.article$.barcodes.length > 0  ? this.article$.barcodes[0].barcode : null;
 
     //  Scroll down the page to the alert element with the response message
     scrollToSuccessAlert(this.scroller);
@@ -146,31 +145,29 @@ export class ArticleManagerComponent implements OnInit {
   saveArt = (artForm: NgForm) => {
     console.log("saveArt()");
 
-    const barcodes: Barcode[] = this.article.barcodes;
-
     console.log("ART-FORM - saveArt()");
     console.log(artForm.value);
-    this.article = artForm.value;
-
-    this.article.barcodes = barcodes;
-    this.article.category = this.categories.find(cat => cat.id === artForm.value.category);
-    this.article.vat = this.vatList.find(vat => vat.idVat === artForm.value.vat);
 
     // RESET response variables
     this.successMsg = '';
-    this.respStatusCode = -1;
     this.errorResp$ = {
       date: new Date(),
       code: -1,
       message: "",
-      errorValidationMap: this.createErrorValidationMap<Article>(this.article)
+      errorValidationMap: this.createErrorValidationMap<Article>(this.article$)
     }
 
-    console.log("ARTICLE - saveArt()");
-    console.log(this.article);
+    console.log("ARTICLE - saveArt() - PRE-MOD");
+    console.log(this.article$);
+
+    this.article$.category = this.categories.find(cat => cat.id === artForm.value.category);
+    this.article$.vat = this.vatList.find(vat => vat.idVat === artForm.value.vat);
+
+    console.log("ARTICLE - saveArt() - POST-MOD");
+    console.log(this.article$);
 
     if (this.isEditMode) {  // EDIT MODE
-      this.articleService.updateArt(this.article).subscribe({
+      this.articleService.updateArt(this.article$).subscribe({
         next: response => {
           this.handleResponse(response);
           this.successMsg = this.succOperationMsg;
@@ -178,7 +175,7 @@ export class ArticleManagerComponent implements OnInit {
         error: error => this.handleError(error)
       });
     } else {  // CREATE MODE
-      this.articleService.createArt(this.article).subscribe({
+      this.articleService.createArt(this.article$).subscribe({
         next: response => {
           this.handleResponse(response);
           this.successMsg = this.succOperationMsg;
@@ -188,7 +185,7 @@ export class ArticleManagerComponent implements OnInit {
     }
   }
 
-  // Creates a map object to initialize error messages for each item (=article) property
+  // Creates a map object to initialize error messages for each item property
   // Used to set an empty initial value for each possible validation error
   createErrorValidationMap<T>(item: T): ErrorValidationMap {
     const map: ErrorValidationMap = {};
