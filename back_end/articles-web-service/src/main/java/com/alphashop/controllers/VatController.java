@@ -18,7 +18,7 @@ import com.alphashop.mappers.VatMapper;
 import com.alphashop.services.VatService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/vat")
 @CrossOrigin(origins = "http://localhost:4200/")
 public class VatController {
 
@@ -31,7 +31,7 @@ public class VatController {
 	VatMapper vatMapper;
 	
 
-	@GetMapping("/vat-list")
+	@GetMapping("/find/all")
 	public ResponseEntity<List<VatDto>> listAll() throws NotFoundException {
 		
 		logger.info("******** Get all categories ********");

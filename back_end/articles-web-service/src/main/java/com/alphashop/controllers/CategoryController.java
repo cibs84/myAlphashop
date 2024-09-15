@@ -18,7 +18,7 @@ import com.alphashop.mappers.CategoryMapper;
 import com.alphashop.services.CategoryService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/categories")
 @CrossOrigin(origins = "http://localhost:4200/")
 public class CategoryController {
 
@@ -31,7 +31,7 @@ public class CategoryController {
 	CategoryMapper categoryMapper;
 	
 
-	@GetMapping("/categories")
+	@GetMapping("/find/all")
 	public ResponseEntity<List<CategoryDto>> listAll() throws NotFoundException {
 		
 		logger.info("******** Get all categories ********");

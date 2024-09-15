@@ -54,7 +54,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 
 	@Test
 	public void testCreateArticle() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/create")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonData)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
@@ -68,7 +68,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 	@Test
 	public void testErrCreateExistingArticle() throws Exception {
 		{
-			mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
+			mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/create")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(JsonData)
 					.accept(MediaType.APPLICATION_JSON))
@@ -79,7 +79,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 			assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST INSERIMENTO");
 		}
 		
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/create")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonData)
 				.accept(MediaType.APPLICATION_JSON))
@@ -123,7 +123,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 
 	@Test
 	public void testErrCreateArticleWithInvalidDescription() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/create")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(ErrJsonData)
 				.accept(MediaType.APPLICATION_JSON))

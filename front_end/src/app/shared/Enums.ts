@@ -7,14 +7,16 @@ export enum StatusCodes {
   Forbidden = 403, // e.g. not erasable item (delete)
   Success = 200,
   Accepted = 202,
-  NoContent = 204
+  NoContent = 204,
+  Unauthorized = 401
 };
 
 export enum ErrorMessages {
   UnavailableServer = 'The server is temporarily unavailable',
   OperationNotAllowed = "Operation not allowed",
   GenericError = 'An error occurred',
-  ElementNotFound = 'Element not found'
+  ElementNotFound = 'Element not found',
+  AuthenticationException = "Authentication Failed"
 };
 
 export enum ArtStatus {

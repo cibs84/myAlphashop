@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/articles")
 @CrossOrigin(origins = "http://localhost:4200/")
 public class ArticleController {
 
@@ -57,7 +57,7 @@ public class ArticleController {
 	@Value("${codartArtNotDeletable}")
 	private String codartArtNotDeletable;
 
-	@GetMapping("/articles")
+	@GetMapping("/find/all")
 	public ResponseEntity<PaginatedResponseList<Article, ArticleDto>> listAll(
 			@RequestParam(name = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
@@ -69,8 +69,8 @@ public class ArticleController {
 		return new ResponseEntity<PaginatedResponseList<Article, ArticleDto>>(article, HttpStatus.OK);
 	}
 
-	@GetMapping(path = {"/article/findByBarcode/{ean}",
-						"/article/findByBarcode/**"})
+	@GetMapping(path = {"/find/barcode/{ean}",
+						"/find/barcode/**"})
 	public ResponseEntity<ArticleDto> listArtByEan(@PathVariable(name = "ean", required = false) String ean) throws NotFoundException {
 
 		if (ean == null) {
@@ -84,8 +84,8 @@ public class ArticleController {
 		return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
 	}
 
-	@GetMapping(path = {"/article/findByCodart/{codart}", 
-						"/article/findByCodart/**"})
+	@GetMapping(path = {"/find/codart/{codart}", 
+						"/find/codart/**"})
 	public ResponseEntity<ArticleDto> listArtByCodArt(@PathVariable(name = "codart", required = false) String codArt) throws NotFoundException {
 
 		if (codArt == null) {
@@ -106,8 +106,8 @@ public class ArticleController {
 		return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
 	}
 	
-	@GetMapping(path = {"/articles/findByDescription/{description}",
-						"/articles/findByDescription/**"})
+	@GetMapping(path = {"/find/description/{description}",
+						"/find/description/**"})
 	public ResponseEntity<PaginatedResponseList<Article, ArticleDto>> listArtByDesc(@PathVariable(name = "description", required = false) String description,
 			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
@@ -122,7 +122,7 @@ public class ArticleController {
 		return new ResponseEntity<PaginatedResponseList<Article, ArticleDto>>(article, HttpStatus.OK);
 	}
 
-	@PostMapping("/article/create")
+	@PostMapping("/create")
 	public ResponseEntity<ArticleDto> insArt(@Valid @RequestBody ArticleDto articleDto,
 											BindingResult bindingResult)
 			throws ItemAlreadyExistsException, NotFoundException, BindingException {
@@ -156,7 +156,7 @@ public class ArticleController {
 		return new ResponseEntity<ArticleDto>(articleDtoCreated, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/article/update")
+	@PutMapping("/update")
 	public ResponseEntity<ArticleDto> updArticle(@Valid @RequestBody ArticleDto articleDto,
 												BindingResult bindingResult) throws BindingException, NotFoundException, ItemAlreadyExistsException {
 		
@@ -190,7 +190,7 @@ public class ArticleController {
 	}
 	
 	
-	@DeleteMapping("/article/delete/{codart}")
+	@DeleteMapping("/delete/{codart}")
 	public ResponseEntity<ObjectNode> delArt(@PathVariable("codart") String codArt) throws NotFoundException, NotDeletableException {
 		
 		ArticleDto articleDto = articleService.getByCodArt(codArt);

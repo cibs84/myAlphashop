@@ -125,7 +125,7 @@ export class ArticleManagerComponent implements OnInit {
     console.log("handleError()");
     console.log(error);
 
-    this.errorResp$ = error.error;
+    this.errorResp$ = Object.assign({}, this.errorResp$, error.error);
 
     if (error.status === StatusCodes.UnavailableServer) {
       this.errorResp$.code = 0;
@@ -134,6 +134,8 @@ export class ArticleManagerComponent implements OnInit {
       console.error(ErrorMessages.ElementNotFound);
     } else if (error.status === StatusCodes.Forbidden){
       console.error(ErrorMessages.OperationNotAllowed);
+    } else if (error.status === StatusCodes.Unauthorized){
+      console.error(ErrorMessages.AuthenticationException);
     } else {
       console.error(ErrorMessages.GenericError);
       console.error(error); // Registra l'errore nella console

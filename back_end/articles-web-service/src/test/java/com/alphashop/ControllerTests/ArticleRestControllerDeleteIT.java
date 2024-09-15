@@ -86,7 +86,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 	@Test
 	public void testDelArticle() throws Exception {
 	{
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/create")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonData)
 				.accept(MediaType.APPLICATION_JSON))
@@ -100,7 +100,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 	    Long articoloInitCount = articleRepository.count();
 	    
 	    mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/article/delete/123Test")
+				MockMvcRequestBuilders.delete("/api/articles/delete/123Test")
 				.accept(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.code").value("200 OK"))
@@ -114,7 +114,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 	@Test
 	public void testDelArticleNotDeletable() throws Exception {
 	{
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/create")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonData02)
 				.accept(MediaType.APPLICATION_JSON))
@@ -126,7 +126,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 	}
 		
 		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/article/delete/abcTest")
+				MockMvcRequestBuilders.delete("/api/articles/delete/abcTest")
 				.accept(MediaType.APPLICATION_JSON))
 		.andExpect(status().isForbidden())
 		.andExpect(jsonPath("$.code").value(403))
@@ -138,7 +138,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 	@Test
 	public void testDelArticleNotFound() throws Exception {
 		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/article/delete/xxxx")
+				MockMvcRequestBuilders.delete("/api/articles/delete/xxxx")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.code").value(404))

@@ -9,6 +9,7 @@ import { HttpResponse } from '@angular/common/http';
 import { ArtStatus, ErrorMessages, StatusCodes } from 'src/app/shared/Enums';
 import { scrollToErrorAlert, scrollToSuccessAlert } from 'src/app/shared/scroll-helpers';
 import { ErrorResponse } from 'src/app/models/ErrorResponse';
+import { log } from 'console';
 
 enum FilterTypes {
   ByCodart = 1,
@@ -180,28 +181,33 @@ export class ArticlesComponent implements OnInit {
   private handleError = (error: any): void => {
     console.log("handleError()");
     console.log(error);
+    console.log(error.error);
 
     this.articles$ = []; // Clean article list
+    this.errorResp$ = Object.assign({}, this.errorResp$, error.error);
 
     if (error.status === StatusCodes.UnavailableServer) {
-        this.errorResp$.code = 0;
-        this.errorResp$.message = ErrorMessages.UnavailableServer;
+      this.errorResp$.code = 0;
+      this.errorResp$.message = ErrorMessages.UnavailableServer;
+
     } else if (error.status === StatusCodes.NotFound) {
       if (this.filterType < 3) {
         this.filterType++;
         this.resetResponses();
         this.getArticles();
       } else if (this.filter === '') {
-          this.errorResp$.code = error.error.code;
           this.errorResp$.message = `Currently there are no articles!`;
       } else {
-        this.errorResp$.code = error.error.code;
         this.errorResp$.message = `The article '${this.filter}' is not found`;
       }
+
+    } else if (error.status === StatusCodes.Unauthorized){
+      console.error(ErrorMessages.AuthenticationException);
+      this.errorResp$.message = error.error;
     } else {
-      this.errorResp$ = error.error;
       this.errorResp$.message = ErrorMessages.GenericError;
     }
+
     //  Scrolla la pagina all'elemento di alert con il messaggio d'errore
     scrollToErrorAlert(this.scroller);
   }
@@ -252,6 +258,10 @@ export class ArticlesComponent implements OnInit {
       console.error(ErrorMessages.ElementNotFound);
     } else if (error.status === StatusCodes.Forbidden){
       console.error(ErrorMessages.OperationNotAllowed);
+    } else if (error.status === StatusCodes.Unauthorized){
+      console.error(ErrorMessages.AuthenticationException);
+      this.errorResp$.code = 401;
+      this.errorResp$.message = ErrorMessages.AuthenticationException;
     } else {
       this.errorResp$.message = ErrorMessages.GenericError;
     }

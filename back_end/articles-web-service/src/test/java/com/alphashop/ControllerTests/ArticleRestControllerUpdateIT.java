@@ -81,7 +81,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	@Test
 	public void testUpdArticle() throws Exception {
 		{
-			mockMvc.perform(MockMvcRequestBuilders.post("/api/article/create")
+			mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/create")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(JsonData)
 					.accept(MediaType.APPLICATION_JSON))
@@ -92,7 +92,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 			assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST INSERIMENTO");
 		}
 		
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/article/update")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/articles/update")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonDataMod).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -105,7 +105,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	
 	@Test
 	public void testErrUpdArticleNotFound() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/article/update")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/articles/update")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonDataMod).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
