@@ -51,14 +51,12 @@ public class SecurityConfiguration {
 		return new BCryptPasswordEncoder();
 	}
 	
+	
 	// AUTHORIZATION
 	private static final String[] USER_MATCHER = { "/api/articles",
-												   "/api/articles/find**/**",
-												   "/api/categories/all",
-												   "/api/vat/all"
-//												   "/api/articles/findByBarcode/**",
-//												   "/api/articles/findByCodart/**",
-//												   "/api/articles/findByDescription/**"
+												   "/api/articles/find/**",
+												   "/api/categories/find/**",
+												   "/api/vat/find/**"
 	};
 	private static final String[] ADMIN_MATCHER = { "/api/articles/create/**",
 												   "/api/articles/update/**",

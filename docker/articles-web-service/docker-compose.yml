@@ -1,6 +1,4 @@
-version: '3.3'
-
-networks: 
+networks:
   ntpgsql:
     driver: bridge
     ipam:
@@ -45,4 +43,3 @@ services:
 
 volumes:
   psdb-volume:
-

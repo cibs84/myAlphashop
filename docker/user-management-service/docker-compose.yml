@@ -1,0 +1,25 @@
+networks:
+  articles-web-service_ntpgsql:
+    external: true
+
+services:
+  mongodb:
+    build:
+      context: .
+    restart: unless-stopped
+    container_name: mongodb
+    volumes: 
+      - mongodb-volume:/var/lib/mongodb/data
+    networks: 
+        articles-web-service_ntpgsql:
+          ipv4_address: 172.21.0.5
+    ports:
+      - target: 27017
+        published: 27017
+        protocol: tcp
+        mode: host
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+       
+volumes:
+  mongodb-volume:

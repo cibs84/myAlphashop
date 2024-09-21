@@ -1,0 +1,21 @@
+#==========================================================
+#= User Management Service
+#==========================================================
+
+server:
+  port: 8019
+spring:
+  application:
+    name: UserManagementService
+#==========================================================
+#= DB MONGODB PARAMETERS
+#==========================================================
+  data:
+    mongodb:
+      authentication-database: admin
+      database: ms-users
+      host: localhost
+      password: pass123
+      port: 27017
+      username: mario
+      auto-index-creation: true
