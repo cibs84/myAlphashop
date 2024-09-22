@@ -1,4 +1,4 @@
-package com.alphashop.user_management_service;
+package com.alphashop;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
