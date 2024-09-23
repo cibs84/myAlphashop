@@ -9,7 +9,7 @@
 		<version>3.2.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.alphashop</groupId>
+	<groupId>com.alphashop.articles_web_service.articles_web_service</groupId>
 	<artifactId>articles-web-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>articles-web-service</name>

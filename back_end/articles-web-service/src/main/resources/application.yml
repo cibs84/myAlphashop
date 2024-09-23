@@ -1,5 +1,5 @@
 # ===================================================
-# = Articoli Web Service - Versione Base
+# = Articles Web Service
 # ===================================================
 server:
   port: 5051
