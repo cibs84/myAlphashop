@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import com.alphashop.user_management_service.exceptions.NotFoundException;
 import com.alphashop.user_management_service.models.User;
 import com.alphashop.user_management_service.repositories.UserRepository;
 
+import jakarta.annotation.Nullable;
 import lombok.extern.java.Log;
 
 @Service
@@ -40,9 +42,9 @@ public class UserService {
 		Pageable usersPagination = PageRequest.of(currentPage.filter(n -> n > -1).orElse(1),
 				pageSize.filter(n -> n > 0).orElse(10));
 		
-		Page<User> userList = userRepository.findAllByOrderByUserIdAsc(usersPagination);
+		Page<User> userPagList = new PageImpl<User>(userRepository.findAll(), usersPagination, 0);
 		
-		if (userList.isEmpty()) {
+		if (userPagList.isEmpty()) {
 			String errMsg = "No users were found";
 			
 			log.warning(errMsg);
@@ -51,10 +53,10 @@ public class UserService {
 		}
 		
 		// Converts Page<User> to List<UserDto>
-		List<UserDto> userDtoList = userList.stream().map(user -> modelMapper.map(user, UserDto.class))
+		List<UserDto> userDtoList = userPagList.stream().map(user -> modelMapper.map(user, UserDto.class))
 				.collect(Collectors.toList());
 		
-		return new PaginatedResponseList<User, UserDto>(userList, userDtoList);
+		return new PaginatedResponseList<User, UserDto>(userPagList, userDtoList);
 	}
 
 	@Transactional
@@ -68,11 +70,24 @@ public class UserService {
 	}
 
 	public UserDto getByUserId(String userId) throws NotFoundException {
+		boolean throwExceptionIfNotFound = true;
+		return getByUserId(userId, throwExceptionIfNotFound);
+	}
+	
+	public UserDto getByUserId(String userId, Boolean throwExceptionIfNotFound) throws NotFoundException {
 		
 		Optional<User> user = userRepository.findByUserId(userId);
 		UserDto userDto = null;
 		
-		if (user.isPresent()) {
+		throwExceptionIfNotFound = throwExceptionIfNotFound == null ? true : throwExceptionIfNotFound;
+		
+		if (user.isEmpty() && throwExceptionIfNotFound) {
+			String errMsg = "User with userId '%s' not found".formatted(userId);
+			log.warning(errMsg);
+			
+			throw new NotFoundException(errMsg);
+		} else if (user.isPresent()) {
+
 			userDto = modelMapper.map(user.get(), UserDto.class);
 		}
 		

@@ -8,6 +8,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -39,6 +40,9 @@ public class UserController {
 	
 	@Autowired
 	private ResourceBundleMessageSource errMessageSource;
+	
+	@Autowired
+	private BCryptPasswordEncoder pwdEncoder;
 	
 	@GetMapping("/find/all")
 	public ResponseEntity<PaginatedResponseList<User, UserDto>> findAll(
@@ -83,7 +87,8 @@ public class UserController {
 		}
 		
 		// Check if the user to be created already exists
-		UserDto user = userService.getByUserId(userDto.getUserId());
+		boolean throwExceptionIfNotFound = false;
+		UserDto user = userService.getByUserId(userDto.getUserId(), throwExceptionIfNotFound);
 		if (user != null) {
 			
 			String errMsg = "User '%s' already exists".formatted(userDto.getUserId());
@@ -92,10 +97,11 @@ public class UserController {
 			throw new ItemAlreadyExistsException(errMsg);
 		}
 		
+		// ENCODING PASSWORD
+		userDto.setPassword(pwdEncoder.encode(userDto.getPassword()));
+		
 		UserDto newUserDto = userService.create(userDto);
-		
-		
-		
+
 		return new ResponseEntity<UserDto>(newUserDto, HttpStatus.CREATED);
 	}
 }

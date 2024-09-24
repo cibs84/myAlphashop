@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 public class UserDto {
-
+	
 	private String id;
 	
 	@Size(min = 5, max = 80, message = "{Size.UserDto.userId.Validation}")
