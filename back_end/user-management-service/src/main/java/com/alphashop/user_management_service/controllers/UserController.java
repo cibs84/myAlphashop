@@ -12,9 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,12 +28,15 @@ import com.alphashop.user_management_service.exceptions.ItemAlreadyExistsExcepti
 import com.alphashop.user_management_service.exceptions.NotFoundException;
 import com.alphashop.user_management_service.models.User;
 import com.alphashop.user_management_service.services.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.validation.Valid;
 import lombok.extern.java.Log;
 
 @Log
 @Controller
+//@Api(value = "User Controller")
 @RequestMapping("/api/users")
 public class UserController {
 	
@@ -44,41 +49,53 @@ public class UserController {
 	@Autowired
 	private BCryptPasswordEncoder pwdEncoder;
 	
+	
 	@GetMapping("/find/all")
+//	@ApiOperation(value = "Get all users", notes = "Returns all users")
 	public ResponseEntity<PaginatedResponseList<User, UserDto>> findAll(
 			@RequestParam(name = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
-		
-		log.info("******** Get all Users ********");
-		
 		 
 		PaginatedResponseList<User, UserDto> userPagList = userService.getAll(currentPage, pageSize);
+
+		log.info("******** Get all Users ********");
 		
 		return new ResponseEntity<PaginatedResponseList<User, UserDto>>(userPagList, HttpStatus.OK);
 	}
 	
 	@GetMapping("/find/userid/{userId}")
-	public ResponseEntity<UserDto> findUserId(@PathVariable String userId) throws NotFoundException {
+//	@ApiOperation(value = "Get user by UserId", notes = "Returns a user by UserId")
+	public ResponseEntity<UserDto> findUserId(@PathVariable(required = false) String userId) throws NotFoundException {
 		
 		if (userId == null) {
-			throw new NotFoundException("Insert a valid userId");
+			String errMsg = "Insert a valid userId";
+			log.warning(errMsg);
+			
+			throw new NotFoundException(errMsg);
 		}
-		
-		log.info("******** Get user with userId %s ********".formatted(userId));
 		
 		UserDto userDto = userService.getByUserId(userId);
 		
+		if (userDto == null) {
+			String errMsg = "The User with userId '%s' was not found".formatted(userId);
+			log.warning(errMsg);
+
+			throw new NotFoundException(errMsg);
+		}
+		
+		log.info("******** Get user with userId %s ********".formatted(userId));
+
 		return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
 	}
 	
 	@PostMapping("/create")
+//	@ApiOperation(value = "Create a user", notes = "Creates a user")
 	public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto,
 											BindingResult bindingResult) throws ItemAlreadyExistsException, BindingException, NotFoundException {
 		
 		// Check article data validity
 		if (bindingResult.hasErrors()) {
 			String msgErr = errMessageSource.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
-			
 			log.warning(msgErr);
 			
 			List<ObjectError> errorValidationList = bindingResult.getAllErrors();
@@ -87,10 +104,8 @@ public class UserController {
 		}
 		
 		// Check if the user to be created already exists
-		boolean throwExceptionIfNotFound = false;
-		UserDto user = userService.getByUserId(userDto.getUserId(), throwExceptionIfNotFound);
+		UserDto user = userService.getByUserId(userDto.getUserId());
 		if (user != null) {
-			
 			String errMsg = "User '%s' already exists".formatted(userDto.getUserId());
 			log.warning(errMsg);
 			
@@ -101,8 +116,62 @@ public class UserController {
 		userDto.setPassword(pwdEncoder.encode(userDto.getPassword()));
 		
 		UserDto newUserDto = userService.create(userDto);
+		
+		log.info("******** User with userId '%s' was crreated ********".formatted(newUserDto.getUserId()));
 
 		return new ResponseEntity<UserDto>(newUserDto, HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/update")
+	public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDto,
+											BindingResult bindingResult) throws BindingException, NotFoundException{
+		
+		// CHECK VALIDATION ERRORS
+		if (bindingResult.hasErrors()) {
+			String errMsg = errMessageSource.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+			log.warning(errMsg);
+			
+			List<ObjectError> errorValidationList = bindingResult.getAllErrors();
+			
+			throw new BindingException(errMsg, errorValidationList);
+		}
+		
+		UserDto userDb = userService.getByUserId(userDto.getUserId());
+		if ( userDb == null) {
+			String errMsg = "User '%s' doesn't exists".formatted(userDto.getUserId());
+			log.warning(errMsg);
+			
+			throw new NotFoundException(errMsg);
+		}
+		
+		userDto.setId(userDb.getId());
+		userDto.setPassword(pwdEncoder.encode(userDb.getPassword()));
+		userDto = userService.create(userDto);
+		
+		return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/delete/{userId}")
+	public ResponseEntity<ObjectNode> delete(@PathVariable String userId) throws NotFoundException {
+		
+		UserDto userDto = userService.getByUserId(userId);
+		
+		if (userDto == null) {
+			String errMsg = String.format("User to be deleted '%s' was not found", userId);
+			log.warning(errMsg);
+			
+			throw new NotFoundException(errMsg);
+		}
+		
+		userService.delete(userDto);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode responseNode = mapper.createObjectNode();
+		
+		responseNode.put("code", HttpStatus.OK.toString());
+		responseNode.put("message", String.format("Deleting user '%s' performed successfully", userId));
+		
+		return new ResponseEntity<ObjectNode>(responseNode, HttpStatus.OK);
 	}
 }
 

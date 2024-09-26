@@ -55,7 +55,7 @@ public class UserControllerTest
 	String JsonData = """
 			{
 			    "userId": "mario",
-			    "password": "pass123",
+			    "password": "pass1234",
 			    "active": true,
 			    "roles": [
 			            "USER"
@@ -95,7 +95,7 @@ public class UserControllerTest
 				.andExpect(jsonPath("$.roles[0]").value("USER")) 
 				.andDo(print());
 		
-				assertThat(passwordEncoder.matches("pass123", 
+				assertThat(passwordEncoder.matches("pass1234", 
 						userRepository.findByUserId("mario").get().getPassword()))
 				.isEqualTo(true);
 	}
@@ -103,7 +103,7 @@ public class UserControllerTest
 	String JsonData2 = """
 			{
 			    "userId": "admin",
-			    "password": "pass123",
+			    "password": "pass1234",
 			    "active": true,
 			    "roles": [
 			            "USER",
@@ -128,7 +128,7 @@ public class UserControllerTest
 			[
 			    {
 			        "userId": "mario",
-			        "password": "pass123",
+			        "password": "pass1234",
 			        "active": true,
 			        "roles": [
 			            "USER"
@@ -136,7 +136,7 @@ public class UserControllerTest
 			    },
 			    {
 			        "userId": "admin",
-			        "password": "pass123",
+			        "password": "pass1234",
 			        "active": true,
 			        "roles": [
 			            "USER",
@@ -153,39 +153,62 @@ public class UserControllerTest
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/users/find/all")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$", hasSize(2)))
+				.andExpect(jsonPath("$.pagination.totalPagesArray", hasSize(2)))
+				.andExpect(jsonPath("$.itemList", hasSize(2)))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				 //UTENTE 1
-				.andExpect(jsonPath("$[0].id").exists())
-				.andExpect(jsonPath("$[0].userId").exists())
-				.andExpect(jsonPath("$[0].userId").value("mario"))
-				.andExpect(jsonPath("$[0].password").exists())
-				.andExpect(jsonPath("$[0].active").exists())
-				.andExpect(jsonPath("$[0].active").value(true))
-				.andExpect(jsonPath("$[0].roles[0]").exists())
-				.andExpect(jsonPath("$[0].roles[0]").value("USER")) 
+				.andExpect(jsonPath("$.itemList[0].id").exists())
+				.andExpect(jsonPath("$.itemList[0].userId").exists())
+				.andExpect(jsonPath("$.itemList[0].userId").value("mario"))
+				.andExpect(jsonPath("$.itemList[0].password").exists())
+				.andExpect(jsonPath("$.itemList[0].active").exists())
+				.andExpect(jsonPath("$.itemList[0].active").value(true))
+				.andExpect(jsonPath("$.itemList[0].roles[0]").exists())
+				.andExpect(jsonPath("$.itemList[0].roles[0]").value("USER")) 
 				 //UTENTE 2
-				.andExpect(jsonPath("$[1].id").exists())
-				.andExpect(jsonPath("$[1].userId").exists())
-				.andExpect(jsonPath("$[1].userId").value("admin"))
-				.andExpect(jsonPath("$[1].password").exists())
-				.andExpect(jsonPath("$[1].active").exists())
-				.andExpect(jsonPath("$[1].active").value(true))
-				.andExpect(jsonPath("$[1].roles[0]").exists())
-				.andExpect(jsonPath("$[1].roles[0]").value("USER")) 
-				.andExpect(jsonPath("$[1].roles[1]").exists())
-				.andExpect(jsonPath("$[1].roles[1]").value("ADMIN")) 
+				.andExpect(jsonPath("$.itemList[1].id").exists())
+				.andExpect(jsonPath("$.itemList[1].userId").exists())
+				.andExpect(jsonPath("$.itemList[1].userId").value("admin"))
+				.andExpect(jsonPath("$.itemList[1].password").exists())
+				.andExpect(jsonPath("$.itemList[1].active").exists())
+				.andExpect(jsonPath("$.itemList[1].active").value(true))
+				.andExpect(jsonPath("$.itemList[1].roles[0]").exists())
+				.andExpect(jsonPath("$.itemList[1].roles[0]").value("USER")) 
+				.andExpect(jsonPath("$.itemList[1].roles[1]").exists())
+				.andExpect(jsonPath("$.itemList[1].roles[1]").value("ADMIN")) 
 				.andReturn();
 		
-				assertThat(passwordEncoder.matches("pass123", 
+				assertThat(passwordEncoder.matches("pass1234", 
 						userRepository.findByUserId("admin").get().getPassword()))
 				.isEqualTo(true);
 	}
 	
-	
+	String JsonDataUpdated = """
+			{
+			    "userId": "admin",
+			    "password": "pass1234567",
+			    "active": true,
+			    "roles": [
+			            "USER",
+			            "ADMIN"
+			        ]
+			}
+			""";
 	
 	@Test
 	@Order(5)
+	public void testUsersUpdate() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/users/update")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(JsonDataUpdated)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").value(JsonDataUpdated))
+				.andDo(print());
+	}
+	
+	@Test
+	@Order(6)
 	//@Disabled //<-- Enable to preserve user in mongodb
 	public void testDelUtente1() throws Exception
 	{
@@ -193,12 +216,12 @@ public class UserControllerTest
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.code").value("200 OK"))
-				.andExpect(jsonPath("$.message").value("Deleting User mario Successfully Executed"))
+				.andExpect(jsonPath("$.message").value("Deleting user 'mario' performed successfully"))
 				.andDo(print());
 	}
 	
 	@Test
-	@Order(6)
+	@Order(7)
 	//@Disabled //<-- Enable to preserve user in mongodb
 	public void testDelUtente2() throws Exception
 	{
@@ -206,7 +229,7 @@ public class UserControllerTest
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.code").value("200 OK"))
-				.andExpect(jsonPath("$.message").value("Admin User Deletion Successfully Executed\n"
+				.andExpect(jsonPath("$.message").value("Deleting user 'admin' performed successfully"
 						+ ""))
 				.andDo(print());
 	}

@@ -18,7 +18,6 @@ import com.alphashop.user_management_service.exceptions.NotFoundException;
 import com.alphashop.user_management_service.models.User;
 import com.alphashop.user_management_service.repositories.UserRepository;
 
-import jakarta.annotation.Nullable;
 import lombok.extern.java.Log;
 
 @Service
@@ -60,7 +59,8 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserDto create(UserDto userDto) {
+	// Used by create and update UserController methods
+	public UserDto create(UserDto userDto) { 
 
 		User user = modelMapper.map(userDto, User.class);
 		user = userRepository.save(user);
@@ -70,27 +70,18 @@ public class UserService {
 	}
 
 	public UserDto getByUserId(String userId) throws NotFoundException {
-		boolean throwExceptionIfNotFound = true;
-		return getByUserId(userId, throwExceptionIfNotFound);
-	}
-	
-	public UserDto getByUserId(String userId, Boolean throwExceptionIfNotFound) throws NotFoundException {
 		
 		Optional<User> user = userRepository.findByUserId(userId);
+		
 		UserDto userDto = null;
-		
-		throwExceptionIfNotFound = throwExceptionIfNotFound == null ? true : throwExceptionIfNotFound;
-		
-		if (user.isEmpty() && throwExceptionIfNotFound) {
-			String errMsg = "User with userId '%s' not found".formatted(userId);
-			log.warning(errMsg);
-			
-			throw new NotFoundException(errMsg);
-		} else if (user.isPresent()) {
-
+		if (user.isPresent()) {
 			userDto = modelMapper.map(user.get(), UserDto.class);
 		}
 		
 		return userDto;
+	}
+	
+	public void delete(UserDto userDto) {
+		userRepository.delete(modelMapper.map(userDto, User.class));
 	}
 }
