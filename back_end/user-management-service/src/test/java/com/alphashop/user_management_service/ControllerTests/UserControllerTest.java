@@ -30,29 +30,18 @@ import com.alphashop.user_management_service.UserManagementServiceApplication;
 import com.alphashop.user_management_service.models.User;
 import com.alphashop.user_management_service.repositories.UserRepository;
 
+import test.BaseSpringIT;
+
 @ContextConfiguration(classes = UserManagementServiceApplication.class)
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class UserControllerTest 
-{
-    private MockMvc mockMvc;
+public class UserControllerTest extends BaseSpringIT {
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private WebApplicationContext wac;
-	
-	@BeforeEach
-	public void setup() throws JSONException, IOException
-	{
-		mockMvc = MockMvcBuilders
-				.webAppContextSetup(wac)
-				.build();	
-	}
 	
 	String JsonData = """
 			{

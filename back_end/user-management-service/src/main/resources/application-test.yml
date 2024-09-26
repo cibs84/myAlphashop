@@ -1,0 +1,13 @@
+#==========================================================
+#= DBMS MongoDB Parameters
+#==========================================================
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      database: ms-users-test
+      host: localhost
+      password: pass123
+      port: 27017
+      username: mario
+      auto-index-creation: true

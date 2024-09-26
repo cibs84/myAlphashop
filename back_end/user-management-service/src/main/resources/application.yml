@@ -18,9 +18,6 @@ spring:
       port: 27017
       username: mario
       auto-index-creation: true
-  sql:
-    init:
-      mode: always
   jpa:
     hibernate:
       ddl-auto: none
