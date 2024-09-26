@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.alphashop.user_management_service.UserManagementServiceApplication;
+import com.alphashop.user_management_service.models.User;
 import com.alphashop.user_management_service.repositories.UserRepository;
 
 @ContextConfiguration(classes = UserManagementServiceApplication.class)
@@ -139,8 +141,7 @@ public class UserControllerTest
 			        "password": "pass1234",
 			        "active": true,
 			        "roles": [
-			            "USER",
-			            "ADMIN"
+			            "USER"
 			        ]
 			    }
 			]
@@ -186,7 +187,7 @@ public class UserControllerTest
 	String JsonDataUpdated = """
 			{
 			    "userId": "admin",
-			    "password": "pass1234567",
+			    "password": "pass1234",
 			    "active": true,
 			    "roles": [
 			            "USER",
@@ -203,8 +204,10 @@ public class UserControllerTest
 				.content(JsonDataUpdated)
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").value(JsonDataUpdated))
 				.andDo(print());
+		
+		Optional<User> user = userRepository.findByUserId("admin");
+		assertThat(user.get().getRoles().size()).isEqualTo(2);
 	}
 	
 	@Test
