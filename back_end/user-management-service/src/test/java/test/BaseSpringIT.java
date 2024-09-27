@@ -22,19 +22,17 @@ public abstract class BaseSpringIT {
 	
 	@Autowired
 	private WebApplicationContext wac;
-
+	
 	protected MockMvc mockMvc;
 
 	@Container
-    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:7.0");
+    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:7");
 
     @DynamicPropertySource
     static void containersProperties(DynamicPropertyRegistry registry) {
         mongoDBContainer.start();
-        registry.add("spring.data.mongodb.host", mongoDBContainer::getHost);
-        registry.add("spring.data.mongodb.port", mongoDBContainer::getFirstMappedPort);
     }
-	
+    
 	@BeforeAll
     public static void setUp() {
     }

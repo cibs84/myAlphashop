@@ -10,7 +10,5 @@ import com.alphashop.user_management_service.models.User;
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
 	
-//	public Page<User> findAll(Pageable pageRequest);
-	
 	public Optional<User> findByUserId(String userId);
 }
