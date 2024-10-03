@@ -38,10 +38,13 @@ public abstract class BaseSpringIT {
     @Autowired
     private IntegrationTestsNeeds integrationTestsNeeds;
     
-    @BeforeAll
-    public static void setUp(ConfigurableApplicationContext configurableApplicationContext) throws FileNotFoundException, IOException {
+    static {
     	Properties properties = new Properties();
-        properties.load(new FileInputStream("src/test/resources/application-test.properties"));
+        try {
+			properties.load(new FileInputStream("src/test/resources/application-test.properties"));
+		} catch (IOException e) {
+			log.warning(e.getMessage());
+		}
         
         String url = properties.getProperty("spring.datasource.url");
         String user= properties.getProperty("spring.datasource.user");
@@ -50,6 +53,20 @@ public abstract class BaseSpringIT {
     	Flyway.configure()
 		  	  .dataSource(url, user, password)
 		      .load().migrate();
+    }
+    
+    @BeforeAll
+    public static void setUp() {
+//    	Properties properties = new Properties();
+//        properties.load(new FileInputStream("src/test/resources/application-test.properties"));
+//        
+//        String url = properties.getProperty("spring.datasource.url");
+//        String user= properties.getProperty("spring.datasource.user");
+//        String password= properties.getProperty("spring.datasource.password");
+//    	
+//    	Flyway.configure()
+//		  	  .dataSource(url, user, password)
+//		      .load().migrate();
     }
     
     @BeforeEach

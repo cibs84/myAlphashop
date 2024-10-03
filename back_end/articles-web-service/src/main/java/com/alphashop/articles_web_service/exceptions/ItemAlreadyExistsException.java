@@ -3,7 +3,7 @@ package com.alphashop.articles_web_service.exceptions;
 public class ItemAlreadyExistsException extends Exception {
 
 	private static final long serialVersionUID = 5584960734228774089L;
-	private String errorMessage = "L'elemento da inserire già esiste!";
+	private String errorMessage = "Item already exists";
 
 	public ItemAlreadyExistsException() {
 		super();

@@ -5,12 +5,11 @@ import java.util.List;
 
 import org.springframework.validation.ObjectError;
 
-public class BindingException extends Exception
-{
+public class BindingException extends Exception {
 
 	private static final long serialVersionUID = -1646083143194195402L;
 	
-	private String message;
+	private String message = "Validation error";;
 	private List<ObjectError> errorValidationList;
 	
 	public BindingException()
