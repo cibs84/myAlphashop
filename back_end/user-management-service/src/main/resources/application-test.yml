@@ -10,7 +10,7 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      database: ms-users-test
+      database: ms-users
       host: localhost
       password: pass123
       port: 27017

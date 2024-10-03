@@ -10,6 +10,7 @@ public class IntegrationTestsNeeds {
 	
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    
     @Autowired
     protected TransactionTemplate transactionTemplate;
 

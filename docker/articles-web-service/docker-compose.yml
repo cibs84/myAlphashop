@@ -1,5 +1,5 @@
 networks:
-  ntpgsql:
+  alphashop_network:
     driver: bridge
     ipam:
       driver: default
@@ -14,7 +14,7 @@ services:
     volumes: 
       - psdb-volume:/var/lib/postgresql/data
     networks: 
-      ntpgsql:
+      alphashop_network:
         ipv4_address: 172.21.0.2
     ports:
       - target: 5432
@@ -29,7 +29,7 @@ services:
     container_name: pgadmin4
     
     networks:
-      ntpgsql:
+      alphashop_network:
         ipv4_address: 172.21.0.3
     ports:
       - target: 80

@@ -1,4 +1,4 @@
-package com.alphashop.articles_web_service;
+package com.alphashop.articles_web_service.configurations;
 
 import java.util.Locale;
 

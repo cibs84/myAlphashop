@@ -16,10 +16,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.alphashop.user_management_service.UserManagementServiceApplication;
 import com.alphashop.user_management_service.models.User;
 import com.alphashop.user_management_service.repositories.UserRepository;
 

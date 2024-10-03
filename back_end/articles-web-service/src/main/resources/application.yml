@@ -6,7 +6,7 @@ server:
 
 spring:
   application: 
-    name: Application
+    name: Articles Web Service
 # ===================================================
 # = DBMS PostgreSQL Parameters
 # ===================================================
@@ -21,13 +21,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    properties:
-      hibernate:
-         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 # ===================================================
 # = CONSTANTS
 # ===================================================
 codartArtNotDeletable: "abcTest"
+# DEBUG
+profile:
+  property:
+    value: "This the the application.yaml file"
 
 

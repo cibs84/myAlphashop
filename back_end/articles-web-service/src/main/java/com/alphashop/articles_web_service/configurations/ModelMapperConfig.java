@@ -1,4 +1,4 @@
-package com.alphashop.articles_web_service;
+package com.alphashop.articles_web_service.configurations;
 
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;

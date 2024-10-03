@@ -1,4 +1,4 @@
-package com.alphashop.articles_web_service.ControllerTests;
+package com.alphashop.articles_web_service.controllers;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;

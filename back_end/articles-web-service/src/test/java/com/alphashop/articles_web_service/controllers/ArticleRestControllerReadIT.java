@@ -1,4 +1,4 @@
-package com.alphashop.articles_web_service.ControllerTests;
+package com.alphashop.articles_web_service.controllers;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
