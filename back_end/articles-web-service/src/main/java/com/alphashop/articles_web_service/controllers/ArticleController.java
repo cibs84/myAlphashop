@@ -40,7 +40,9 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/articles")
-@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = {"http://localhost:4200", 
+						"http://34.124.165.164:8084" , "http://localhost:8084", 
+						"http://www.dariotilesi.linkpc.net:8084", "http://www.dariotilesi.linkpc.net"})
 public class ArticleController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
