@@ -2,7 +2,7 @@
 #= User Management Service
 #==========================================================
 server:
-  port: 8019
+  port: 5051
 spring:
   application:
     name: UserManagementService
