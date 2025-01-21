@@ -1,9 +1,11 @@
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+// My default 'ng build' configuration
+
+const HOST = '34.124.165.164';
+const PORT = '80';
 
 export const environment = {
-  production: false
+  production: true,
+  apiUrl: `http://${HOST}:${PORT}/api`
 };
 
 /*

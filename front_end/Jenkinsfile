@@ -1,0 +1,59 @@
+def repositoryUrl = 'https://github.com/cibs84/test-jenkins-alphashop-frontend.git'
+def angularImageName = 'node-with-angular'
+def angularDockerfile = './docker/Dockerfile.node-with-angular'
+def distCachedFolder = 'distCachedFolder'
+def dockerImageName = 'cibs84/alphashop-nginx'
+def dockerfilePath = './docker/Dockerfile.alphashop-nginx'
+def dockerRegistryUrl = 'https://registry.hub.docker.com'
+def dockerRegistryCredentialsId = 'dockerhub'
+
+node {
+    // Recupera il codice sorgente dal repository configurato - questo include tutti i file e le directory del progetto -
+    // e lo copia nel workspace di Jenkins, che è la directory in cui Jenkins esegue i comandi della pipeline.
+    stage('Pull repository') {
+        checkout scm
+    }
+    stage('Build Angular Image') {
+        // Costruisce l'immagine Docker in cui viene installato Angular
+        // attraverso l'esecuzione di 'npm install -g @angular/cli' presente nell'dockerfile
+        sh "docker build -t ${angularImageName} -f ${angularDockerfile} ."
+    }
+}
+
+node {
+    stage('Build ng image') {
+        def customNodeImage = docker.image(angularImageName)
+        // '.inside' fa un run dell'immagine creando un container
+        customNodeImage.inside {
+            // Recupera il codice sorgente dal repository configurato - questo include tutti i file e le directory del progetto -
+            // e lo copia nel workspace di Jenkins, che è la directory in cui Jenkins esegue i comandi della pipeline.
+            stage('Pull repository') {
+                checkout scm
+            }
+            stage('Install npm') {
+                sh 'npm install'
+            }
+            stage('Build') {
+                sh 'ng build'
+            }
+            stage('Stash dist folder') {
+                stash includes: 'dist/**/*', name: distCachedFolder
+            }
+        }
+    }
+}
+
+node {
+    stage('Unstash dist folder') {
+        unstash distCachedFolder
+    }
+    stage('Build Docker image') {
+        def customImage = docker.build("${dockerImageName}", "-f ${dockerfilePath} .")
+        stage('Push Docker image') {
+            docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
+                customImage.push("$BUILD_NUMBER")
+                customImage.push("latest")
+            }
+        }
+    }
+}

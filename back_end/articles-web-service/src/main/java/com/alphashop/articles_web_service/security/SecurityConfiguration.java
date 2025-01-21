@@ -1,3 +1,4 @@
+/*
 package com.alphashop.articles_web_service.security;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.SneakyThrows;
 
-@EnableWebSecurity
+//@EnableWebSecurity
 @Configuration
 public class SecurityConfiguration {
 	
@@ -107,3 +108,4 @@ public class SecurityConfiguration {
 		return new AuthEntryPoint();
 	}
 }
+*/

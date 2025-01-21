@@ -1,0 +1,42 @@
+def mavenImage = 'maven:3.9.9-amazoncorretto-21-debian'
+def dockerfilePath = './docker/Dockerfile.article-management'
+def dockerContext = './docker'
+def dockerImageName = 'cibs84/article-management'
+def dockerRegistry = 'https://registry.hub.docker.com'
+def dockerCredentials = 'dockerhub'
+
+node {
+    docker.image(mavenImage).inside("-u root -v $HOME/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2 -e MAVEN_OPTS=\"-Duser.home=/var/maven\"") {
+        stage('Create Jenkins User and Group') {
+            sh '''
+                useradd jenkins
+                usermod -aG jenkins jenkins
+            '''
+        }
+        stage('Pull repository') {
+            checkout scm
+        }
+        stage('Build') {
+            sh 'mvn -B -DskipTests clean package -Pprod'
+        }
+        stage('Set Jenkins ownership on artifact file') { 
+            sh 'chown jenkins:jenkins target/*.jar'
+        }
+        stage('Stash artifact and docker folder') {
+            stash includes: 'target/*.jar, docker/**', name: 'artifact-and-dockers'
+        }
+    }
+}
+
+node {
+    stage('Unstash jar file') {
+        unstash 'artifact-and-dockers'
+    }
+    stage('Build and push Docker image') {
+        def customImage = docker.build(dockerImageName, "-f ${dockerfilePath} .")
+        docker.withRegistry(dockerRegistry, dockerCredentials) {
+            customImage.push("$BUILD_NUMBER")
+            customImage.push("latest")
+        }
+    }
+}

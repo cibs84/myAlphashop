@@ -12,7 +12,7 @@ public class TestActiveProfileUnitTest extends BaseSpringIT {
 	private String propertyString;
 
 	@Test
-	void whenTestIsActive_thenValueShouldBeKeptFromApplicationTestYaml() {
+	void whenTestIsActive_thenValueShouldBeKeptFromApplicationTestProperties() {
 		Assertions.assertEquals("This the application-test.properties file src/test", propertyString);
 	}
 }

@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.alphashop.articles_web_service.entities.Article;
-import com.alphashop.articles_web_service.repositories.ArticleRepository;
 import com.alphashop.articles_web_service.test.BaseSpringIT;
 
 public class ArticleRepositoryTest extends BaseSpringIT {

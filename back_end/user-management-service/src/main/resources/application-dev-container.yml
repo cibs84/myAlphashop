@@ -1,0 +1,10 @@
+#==========================================================
+#= User Management Service
+#==========================================================
+server:
+  port: 5051
+
+spring:
+  data:
+    mongodb:
+      host: mongodb # docker network alias for mongodb service

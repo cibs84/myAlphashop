@@ -1,0 +1,6 @@
+# ===================================================
+# = Articles Web Service
+# ===================================================
+spring:
+  datasource:
+    url: jdbc:postgresql://postgresql:5432/alphashop

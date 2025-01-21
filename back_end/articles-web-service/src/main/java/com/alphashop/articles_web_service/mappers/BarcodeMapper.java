@@ -1,14 +1,10 @@
 package com.alphashop.articles_web_service.mappers;
 
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.alphashop.articles_web_service.common.mappers.BaseAlphaMapper;
 import com.alphashop.articles_web_service.dtos.BarcodeDto;
 import com.alphashop.articles_web_service.entities.Barcode;
-import com.alphashop.articles_web_service.repositories.ArticleRepository;
 
 @Component
 public class BarcodeMapper extends BaseAlphaMapper<Barcode, BarcodeDto> {

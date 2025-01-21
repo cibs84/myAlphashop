@@ -3,9 +3,6 @@ package com.alphashop.articles_web_service.exceptions;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.validation.ObjectError;
-
 import lombok.Data;
 
 @Data

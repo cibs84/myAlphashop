@@ -80,6 +80,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 
 	@Test
 	public void testUpdArticle() throws Exception {
+		// Creating article '123Test' 
 		{
 			mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/create")
 					.contentType(MediaType.APPLICATION_JSON)
@@ -91,7 +92,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 			Article article = articleRepository.findByCodArt("123Test").get();
 			assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST INSERIMENTO");
 		}
-		
+		// Updating article '123Test'
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/articles/update")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonDataMod).accept(MediaType.APPLICATION_JSON))

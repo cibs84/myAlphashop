@@ -1,0 +1,31 @@
+# Example of custom Java runtime using jlink in a multi-stage container build
+FROM eclipse-temurin:21 AS jre-build
+
+# jlink crea un Java runtime (JRE) più piccolo
+# e lo salva nella cartella impostata da --output
+RUN $JAVA_HOME/bin/jlink \
+         --add-modules ALL-MODULE-PATH \
+         --strip-debug \
+         --no-man-pages \
+         --no-header-files \
+         --compress=2 \
+         --output /javaruntime
+
+# Define your base image
+FROM debian:buster-slim
+ENV JAVA_HOME=/opt/
+ENV PATH "${JAVA_HOME}/bin:${PATH}"
+
+# Copia nella cartella $JAVA_HOME
+# il Java Runtime (JRE) creato in precedenza 
+COPY --from=jre-build /javaruntime $JAVA_HOME
+
+RUN mkdir /opt/app
+
+# Path del file .jar presente nell'host
+ARG JAR_FILE
+
+RUN echo "JAR_FILE: $JAR_FILE"
+COPY ${JAR_FILE} /opt/app/app.jar
+
+ENTRYPOINT ["java", "-jar", "/opt/app/app.jar"]

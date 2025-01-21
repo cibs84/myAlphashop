@@ -1,0 +1,73 @@
+user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    # Include i file di configurazione presenti in /etc/nginx/conf.d
+    # include /etc/nginx/conf.d/*.conf;
+
+    upstream $ART_MNG__HOST {
+        server $ART_MNG__HOST:$API_PORT;
+    }
+
+    upstream $USR_MNG__HOST {
+        server $USR_MNG__HOST:$API_PORT;
+    }
+
+    map $uri $backend {
+        ~^/api/(articles|categories|vat) $ART_MNG__HOST;
+        ~^/api/users $USR_MNG__HOST;
+    }
+
+    server {
+        listen       80;
+        server_name  my_alphashop_server;
+
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+            try_files $uri $uri/ /index.html;
+        }
+
+        location /api/ {
+            proxy_pass http://$backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+
+            # --- CACHE ---
+            # Disable caching with HTTP headers
+            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+            add_header Pragma "no-cache";
+            add_header Expires 0;
+
+            # DISABILITA PROXY CACHE
+            proxy_no_cache 1;
+            proxy_cache_bypass 1;
+        }
+    }
+}
