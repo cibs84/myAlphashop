@@ -1,12 +1,17 @@
 def envFilePath = '.env'
+
 def angularImageName = 'node-with-angular'
 def angularDkrContext = 'front_end'
 def angularDockerfile = 'front_end/docker/Dockerfile.node-with-angular'
+
 def distCachedFolder = 'distCachedFolder'
+
 def frontendDkrContext = ''
 def frontendDkrImage = ''
 def frontendDockerfile = ''
+
 def mavenDkrImage = 'maven:3.9.9-amazoncorretto-21-debian'
+
 def articleSvcName = ''
 def articleDockerfile = ''
 def articleDkrContext = ''
@@ -14,6 +19,7 @@ def articleDkrImage = ''
 def articleSprBtProfile = 'prod'
 def articleSprBtPath = 'back_end/articles-web-service'
 def articleSprBtJarFile = ''
+
 def userSvcName = ''
 def userDkrContext = ''
 def userDockerfile = ''
@@ -21,6 +27,7 @@ def userDkrImage = ''
 def userSprBtProfile = 'prod'
 def userSprBtPath = 'back_end/user-management-service'
 def userSprBtJarFile = ''
+
 def dockerRegistryUrl = 'https://registry.hub.docker.com'
 def dockerRegistryCredentialsId = 'dockerhub'
 
@@ -109,7 +116,8 @@ node {
             unstash 'article-artifact'
         }
         stage('Build and Push Article Docker Image') {
-            def customImage = docker.build(articleDkrImage, "-f ${articleDockerfile} ${articleSprBtPath}")
+            def jarFile = sh(script: "ls ${articleSprBtPath}/target/*.jar", returnStdout: true).trim()
+            def customImage = docker.build(articleDkrImage, "-f ${articleDockerfile} --build-arg JAR_FILE=${jarFile} .")
             docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
                 customImage.push(articleSvcName)
             }
@@ -141,7 +149,8 @@ node {
             unstash 'user-artifact'
         }
         stage('Build and Push User Docker Image') {
-            def customImage = docker.build(userDkrImage, "-f ${userDockerfile} ${userSprBtPath}")
+            def jarFile = sh(script: "ls ${userSprBtPath}/target/*.jar", returnStdout: true).trim()
+            def customImage = docker.build(userDkrImage, "-f ${userDockerfile} --build-arg JAR_FILE=${jarFile} .")
             docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
                 customImage.push(userSvcName)
             }
