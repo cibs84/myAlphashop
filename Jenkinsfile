@@ -117,7 +117,7 @@ node {
         }
         stage('Build and Push Article Docker Image') {
             def jarFile = sh(script: "ls ${articleSprBtPath}/target/*.jar", returnStdout: true).trim()
-            def customImage = docker.build(articleDkrImage, "-f ${articleDockerfile} --build-arg JAR_FILE=${jarFile} .")
+            def customImage = docker.build(articleDkrImage, "-f ${articleDockerfile} --build-arg JAR_FILE=${jarFile} ${articleDkrContext}")
             docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
                 customImage.push(articleSvcName)
             }
@@ -150,7 +150,7 @@ node {
         }
         stage('Build and Push User Docker Image') {
             def jarFile = sh(script: "ls ${userSprBtPath}/target/*.jar", returnStdout: true).trim()
-            def customImage = docker.build(userDkrImage, "-f ${userDockerfile} --build-arg JAR_FILE=${jarFile} .")
+            def customImage = docker.build(userDkrImage, "-f ${userDockerfile} --build-arg JAR_FILE=${jarFile} ${articleDkrContext}")
             docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
                 customImage.push(userSvcName)
             }
