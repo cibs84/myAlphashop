@@ -28,7 +28,7 @@ public class UserDto implements Cloneable {
 	private List<String> roles;
 	
 	@Override
-	// Permorms deep copy of this UserDto instance. Returns a UserDto clone deep copied
+	// Performs deep copy of this UserDto instance. Returns a UserDto clone deep copied
 	public UserDto clone() throws CloneNotSupportedException {
 
 		UserDto userDto = new UserDto();
