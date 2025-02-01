@@ -81,15 +81,16 @@ services:
     restart: ${MGDB_RESTART}
     container_name: ${MGDB_SVC_NAME}
     volumes: 
-      - ${MGDB_SVC_NAME}:${MGDB_CONTAINER_DATA}
+      - ${MGDB_SVC_NAME}-data:${MGDB_CONTAINER_DATA}
+      - ${MGDB_SVC_NAME}-config:${MGDB_CONTAINER_CONFIG}
+      - ${MGDB_SVC_NAME}-log:${MGDB_CONTAINER_LOG}
     ports:
       - ${MGDB_PORTS}
-    environment:
-      ME_CONFIG_MGDB_ADMINUSERNAME: ${MGDB_ADMINUSERNAME}
     networks:
       alphashop:
         aliases:
           - ${MGDB_SVC_NAME}
+    entrypoint: ["mongod", "-f", "/etc/mongod.conf"]
 
   ###---- FRONT-END - ALPHASHOP-NGINX ----###
   nginx:
@@ -137,12 +138,26 @@ volumes:
       type: none
       device: ${PGSQL_VOLUME_DATA}
       o: bind
-  mongodb:
-    name: ${MGDB_SVC_NAME}
+  mongodb-data:
+    name: ${MGDB_SVC_NAME}-data
     driver: local
     driver_opts:
       type: none
       device: ${MGDB_VOLUME_DATA}
+      o: bind
+  mongodb-config:
+    name: ${MGDB_SVC_NAME}-config
+    driver: local
+    driver_opts:
+      type: none
+      device: ${MGDB_VOLUME_CONFIG}
+      o: bind
+  mongodb-log:
+    name: ${MGDB_SVC_NAME}-log
+    driver: local
+    driver_opts:
+      type: none
+      device: ${MGDB_VOLUME_LOG}
       o: bind
   pgadmin:
     name: ${PGADMIN_SVC_NAME}
