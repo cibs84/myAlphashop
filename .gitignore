@@ -1,5 +1,8 @@
 database/postgresql
 database/pgadmin
+database/**/data
+database/mongodb/config/*
+!database/mongodb/config/mongod.conf
 
 ### STS ###
 .apt_generated
