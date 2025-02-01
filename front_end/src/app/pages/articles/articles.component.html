@@ -105,9 +105,7 @@
       </table>
 
       <!-- *** PAGINATION *** -->
-      <ul *ngIf="errorResp$.code !== statusCodes.UnavailableServer
-                  &&
-                 errorResp$.code !== statusCodes.NotFound
+      <ul *ngIf="!serverError && errorResp$.code !== statusCodes.NotFound
                   &&
                  pagination$.totalPages > 1"
           class="pagination justify-content-end">

@@ -8,6 +8,7 @@ import { ArticleService } from 'src/app/services/data/article.service';
 import { ErrorMessages, StatusCodes } from 'src/app/shared/Enums';
 import { ErrorValidationMap } from 'src/app/shared/Types';
 import { scrollToErrorAlert, scrollToSuccessAlert } from 'src/app/shared/scroll-helpers';
+import { isServerErrorStatus } from 'src/app/shared/Utils';
 
 @Component({
   selector: 'app-article-manager',
@@ -127,8 +128,8 @@ export class ArticleManagerComponent implements OnInit {
 
     this.errorResp$ = Object.assign({}, this.errorResp$, error.error);
 
-    if (error.status === StatusCodes.UnavailableServer) {
-      this.errorResp$.code = 0;
+    if (isServerErrorStatus(error.status)) {
+      this.errorResp$.code = error.status;
       this.errorResp$.message = ErrorMessages.UnavailableServer;
     } else if (error.status === StatusCodes.NotFound){
       console.error(ErrorMessages.ElementNotFound);

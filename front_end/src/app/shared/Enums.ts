@@ -1,5 +1,4 @@
 export enum StatusCodes {
-  UnavailableServer = 0, // e.g. server disconnected
   BadRequest = 400, // e.g. malformed request syntax
   NotFound = 404, // item not found (read)
   Conflict = 409, // e.g. item already exists (create)

@@ -9,6 +9,7 @@ import { HttpResponse } from '@angular/common/http';
 import { ArtStatus, ErrorMessages, StatusCodes } from 'src/app/shared/Enums';
 import { scrollToErrorAlert, scrollToSuccessAlert } from 'src/app/shared/scroll-helpers';
 import { ErrorResponse } from 'src/app/models/ErrorResponse';
+import { isServerErrorStatus } from "src/app/shared/Utils";
 import { log } from 'console';
 
 enum FilterTypes {
@@ -28,6 +29,8 @@ export class ArticlesComponent implements OnInit {
   artStatus: typeof ArtStatus = ArtStatus;
   errorMessages: typeof ErrorMessages = ErrorMessages;
   statusCodes: typeof StatusCodes = StatusCodes;
+
+  serverError = false;
 
   // PAGINATION
   readonly MAX_PAG_BTNS_NR = 7;
@@ -186,8 +189,9 @@ export class ArticlesComponent implements OnInit {
     this.articles$ = []; // Clean article list
     this.errorResp$ = Object.assign({}, this.errorResp$, error.error);
 
-    if (error.status === StatusCodes.UnavailableServer) {
-      this.errorResp$.code = 0;
+    if (isServerErrorStatus(error.status)) {
+      this.serverError = true;
+      this.errorResp$.code = error.status;
       this.errorResp$.message = ErrorMessages.UnavailableServer;
 
     } else if (error.status === StatusCodes.NotFound) {
@@ -251,8 +255,9 @@ export class ArticlesComponent implements OnInit {
 
     this.errorResp$ = error.error;
 
-    if (error.status === StatusCodes.UnavailableServer) {
-      this.errorResp$.code = 0;
+    if (isServerErrorStatus(error.status)) {
+      this.serverError = true;
+      this.errorResp$.code = error.status;
       this.errorResp$.message = ErrorMessages.UnavailableServer;
     } else if (error.status === StatusCodes.NotFound){
       console.error(ErrorMessages.ElementNotFound);
