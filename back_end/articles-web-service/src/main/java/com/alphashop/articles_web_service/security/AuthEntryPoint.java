@@ -1,4 +1,3 @@
-/*
 package com.alphashop.articles_web_service.security;
 
 import java.io.PrintWriter;
@@ -43,4 +42,3 @@ public class AuthEntryPoint extends BasicAuthenticationEntryPoint {
 		super.afterPropertiesSet();
 	}
 }
-*/

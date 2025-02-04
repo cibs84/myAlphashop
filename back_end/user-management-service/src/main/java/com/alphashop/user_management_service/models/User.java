@@ -20,7 +20,7 @@ public class User {
 
 	private String password;
 
-	private Boolean active = true;
+	private Boolean active;
 
 	private List<String> roles;
 }

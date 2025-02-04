@@ -36,7 +36,6 @@ import lombok.extern.java.Log;
 
 @Log
 @Controller
-//@Api(value = "User Controller")
 @RequestMapping("/api/users")
 public class UserController {
 	
@@ -51,7 +50,6 @@ public class UserController {
 	
 	
 	@GetMapping("/find/all")
-//	@ApiOperation(value = "Get all users", notes = "Returns all users")
 	public ResponseEntity<PaginatedResponseList<User, UserDto>> findAll(
 			@RequestParam(name = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
@@ -64,7 +62,6 @@ public class UserController {
 	}
 	
 	@GetMapping("/find/userid/{userId}")
-//	@ApiOperation(value = "Get user by UserId", notes = "Returns a user by UserId")
 	public ResponseEntity<UserDto> findUserId(@PathVariable(required = false) String userId) throws NotFoundException {
 		
 		if (userId == null) {
@@ -89,7 +86,6 @@ public class UserController {
 	}
 	
 	@PostMapping("/create")
-//	@ApiOperation(value = "Create a user", notes = "Creates a user")
 	public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto,
 											BindingResult bindingResult) throws ItemAlreadyExistsException, BindingException, NotFoundException {
 		

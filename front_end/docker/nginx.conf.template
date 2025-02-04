@@ -61,13 +61,13 @@ http {
 
             # --- CACHE ---
             # Disable caching with HTTP headers
-            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
-            add_header Pragma "no-cache";
-            add_header Expires 0;
+            # add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+            # add_header Pragma "no-cache";
+            # add_header Expires 0;
 
             # DISABILITA PROXY CACHE
-            proxy_no_cache 1;
-            proxy_cache_bypass 1;
+            # proxy_no_cache 1;
+            # proxy_cache_bypass 1;
         }
     }
 }

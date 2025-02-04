@@ -86,6 +86,7 @@ services:
       - ${MGDB_SVC_NAME}-log:${MGDB_CONTAINER_LOG}
     ports:
       - ${MGDB_PORTS}
+    user: "root"
     networks:
       alphashop:
         aliases:
