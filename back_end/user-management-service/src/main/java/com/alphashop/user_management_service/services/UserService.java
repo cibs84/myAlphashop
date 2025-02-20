@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +28,15 @@ public class UserService {
 	
 	private final UserRepository userRepository;
 	private final ModelMapper modelMapper;
+	private final BCryptPasswordEncoder passwordEncoder;
 	
 	public UserService(UserRepository userRepository,
-						ModelMapper modelMapper) {
+						ModelMapper modelMapper,
+						BCryptPasswordEncoder passwordEncoder) {
 		
 		this.userRepository = userRepository;
 		this.modelMapper = modelMapper;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	public PaginatedResponseList<User, UserDto> getAll(Optional<Integer> currentPage, 
@@ -61,6 +65,14 @@ public class UserService {
 	@Transactional
 	// Used by create and update UserController methods
 	public UserDto create(UserDto userDto) { 
+		
+		System.out.println("RAW PASSWORD 'userDtov : " + userDto.getPassword());
+		
+		String hashedPassword = hashPassword(userDto.getPassword());
+		
+		System.out.println("HASHED PASSWORD : " + hashedPassword);
+		
+		userDto.setPassword(hashedPassword);
 
 		User user = modelMapper.map(userDto, User.class);
 		user = userRepository.save(user);
@@ -83,5 +95,9 @@ public class UserService {
 	
 	public void delete(UserDto userDto) {
 		userRepository.delete(modelMapper.map(userDto, User.class));
+	}
+	
+	private String hashPassword (String password) {
+		return passwordEncoder.encode(password);
 	}
 }

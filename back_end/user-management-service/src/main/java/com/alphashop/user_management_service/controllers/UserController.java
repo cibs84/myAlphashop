@@ -107,13 +107,10 @@ public class UserController {
 			
 			throw new ItemAlreadyExistsException(errMsg);
 		}
-		
-		// ENCODING PASSWORD
-		userDto.setPassword(pwdEncoder.encode(userDto.getPassword()));
-		
+				
 		UserDto newUserDto = userService.create(userDto);
 		
-		log.info("******** User with userId '%s' was crreated ********".formatted(newUserDto.getUserId()));
+		log.info("******** User with userId '%s' was created ********".formatted(newUserDto.getUserId()));
 
 		return new ResponseEntity<UserDto>(newUserDto, HttpStatus.CREATED);
 	}

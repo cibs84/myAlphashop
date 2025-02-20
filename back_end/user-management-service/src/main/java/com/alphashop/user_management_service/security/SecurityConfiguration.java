@@ -31,19 +31,19 @@ public class SecurityConfiguration {
 	@Bean
 	UserDetailsService userDetailsService() {
 		
-		UserDetails user = User
-				.withUsername("mario")
-				.password(new BCryptPasswordEncoder().encode("pass123"))
+		UserDetails userRead = User
+				.withUsername("userRead")
+				.password(new BCryptPasswordEncoder().encode("pass1234"))
 				.roles("USER")
 				.build();
 		
-		UserDetails admin = User
-				.withUsername("admin")
-				.password(new BCryptPasswordEncoder().encode("pass123"))
+		UserDetails userAdmin = User
+				.withUsername("userAdmin")
+				.password(new BCryptPasswordEncoder().encode("pass1234"))
 				.roles("USER", "ADMIN")
 				.build();
 
-		return new InMemoryUserDetailsManager(user, admin);
+		return new InMemoryUserDetailsManager(userRead, userAdmin);
 	}
 	
 	@Bean
@@ -89,7 +89,9 @@ public class SecurityConfiguration {
 		allowedHeaders.add("Cache-Control");
 		
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200/"));
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200",
+													  "http://localhost:4300",
+													  "http://localhost:5051"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT"));
 		configuration.setMaxAge((long) 3600);
 		configuration.setAllowedHeaders(allowedHeaders);

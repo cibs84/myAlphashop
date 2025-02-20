@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -75,8 +76,9 @@ public class UserControllerTest extends BaseSpringIT {
 				.andExpect(jsonPath("$.roles[0]").value("USER")) 
 				.andDo(print());
 		
-				assertThat(passwordEncoder.matches("pass1234", 
-						userRepository.findByUserId("mario").get().getPassword()))
+		String hashedPasswordInDb = userRepository.findByUserId("mario").get().getPassword();
+		
+		assertThat(passwordEncoder.matches("pass1234", hashedPasswordInDb))
 				.isEqualTo(true);
 	}
 	
@@ -157,8 +159,9 @@ public class UserControllerTest extends BaseSpringIT {
 				.andExpect(jsonPath("$.itemList[1].roles[1]").value("ADMIN")) 
 				.andReturn();
 		
-				assertThat(passwordEncoder.matches("pass1234", 
-						userRepository.findByUserId("admin").get().getPassword()))
+		String hashedPasswordInDb = userRepository.findByUserId("mario").get().getPassword();
+		
+		assertThat(passwordEncoder.matches("pass1234", hashedPasswordInDb))
 				.isEqualTo(true);
 	}
 	

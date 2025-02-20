@@ -16,7 +16,7 @@ spring:
       host: localhost
       password: pass123
       port: 27017
-      username: mario
+      username: myAuthUser
       auto-index-creation: true
   jpa:
     hibernate:

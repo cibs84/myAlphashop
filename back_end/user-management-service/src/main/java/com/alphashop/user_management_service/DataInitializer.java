@@ -6,6 +6,7 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.alphashop.user_management_service.dtos.UserDto;
@@ -15,7 +16,7 @@ import com.alphashop.user_management_service.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 
 @Component
-@Profile("!test")
+@Profile("!test") // All profiles except 'test'
 public class DataInitializer {
 
     @Autowired
@@ -23,6 +24,9 @@ public class DataInitializer {
     
     @Autowired
     ModelMapper modelMapper;
+    
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void initializeData() throws CloneNotSupportedException {
@@ -30,23 +34,20 @@ public class DataInitializer {
     	// DELETE ALL USER
     	userRepository.deleteAll();
 
-    	// CREATE USER
-        UserDto user_1 = new UserDto();
-        user_1.setUserId("user_1");
-        user_1.setPassword("pass1234");
-        user_1.setActive(true);
-        user_1.setRoles(Arrays.asList("USER"));
-    	// CREATE USER
-        UserDto user_2 = user_1.clone();
-        user_2.setUserId("user_2");
-        // CREATE USER
-        UserDto user_3 = user_1.clone();
-        user_3.setUserId("user_3");
-        user_3.setRoles(Arrays.asList("USER", "ADMIN"));
+    	// CREATE 'UserAdmin'
+        UserDto userAdmin = new UserDto();
+        userAdmin.setUserId("userAdmin");
+        userAdmin.setPassword(passwordEncoder.encode("pass1234"));
+        userAdmin.setActive(true);
+        userAdmin.setRoles(Arrays.asList("USER", "ADMIN"));
+    	        
+        // CREATE 'UserRead'
+        UserDto userRead = userAdmin.clone();
+        userRead.setUserId("userRead");
+        userRead.setRoles(Arrays.asList("USER"));
         
-        List<User> users = Arrays.asList(modelMapper.map(user_1, User.class), 
-							        		modelMapper.map(user_2, User.class), 
-							        		modelMapper.map(user_3, User.class));
+        List<User> users = Arrays.asList(modelMapper.map(userAdmin, User.class), 
+							        		modelMapper.map(userRead, User.class));
         
         // SAVE NEW USERS
         userRepository.saveAll(users);
