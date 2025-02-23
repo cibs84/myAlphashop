@@ -118,7 +118,7 @@ export class ArticlesComponent implements OnInit {
     }
   }
 
-  // ******** CRUD Articles ********
+  // ******** CRUD Articles - Start ********
   resetResponses = (): void => {
     this.successMsg = '';
     this.errorResp$ = {
@@ -138,7 +138,6 @@ export class ArticlesComponent implements OnInit {
       error: this.handleError
     });
   }
-
   private getObservableByFilterType(): Observable<HttpResponse<any>> {
     console.log("getObservableByFilterType()");
     console.log("filter -> " + this.filter);
@@ -158,7 +157,6 @@ export class ArticlesComponent implements OnInit {
       throw new Error("Invalid filterType");
     }
   }
-
   private handleResponse = (response: any): void => {
     console.log("handleResponse()");
     console.log(response);
@@ -180,7 +178,6 @@ export class ArticlesComponent implements OnInit {
 
     this.filterType = FilterTypes.ByCodart;
   }
-
   private handleError = (error: any): void => {
     console.log("handleError()");
     console.log(error);
@@ -207,24 +204,13 @@ export class ArticlesComponent implements OnInit {
 
     } else if (error.status === StatusCodes.Unauthorized){
       console.error(ErrorMessages.AuthenticationException);
-      this.errorResp$.message = error.error;
+      this.errorResp$.message = ErrorMessages.AuthenticationException;
     } else {
       this.errorResp$.message = ErrorMessages.GenericError;
     }
 
     //  Scrolla la pagina all'elemento di alert con il messaggio d'errore
     scrollToErrorAlert(this.scroller);
-  }
-
-  // DELETE
-  deleteArt = (codArt: string): void => {
-    this.resetResponses();
-    this.codArt = codArt;
-
-    this.articleService.deleteArticleByCodart(codArt).subscribe({
-      next: this.handleSuccessResp,
-      error: this.handleErrorResp
-    });
   }
 
   // CREATE
@@ -237,6 +223,17 @@ export class ArticlesComponent implements OnInit {
     this.router.navigate(['article-manager', codArt]);
   }
 
+
+  // DELETE
+  deleteArt = (codArt: string): void => {
+    this.resetResponses();
+    this.codArt = codArt;
+
+    this.articleService.deleteArticleByCodart(codArt).subscribe({
+      next: this.handleSuccessResp,
+      error: this.handleErrorResp
+    });
+  }
   private handleSuccessResp = (response: any): void => {
     console.log("handleSuccessResp()");
     console.log(response);
@@ -261,8 +258,10 @@ export class ArticlesComponent implements OnInit {
       this.errorResp$.message = ErrorMessages.UnavailableServer;
     } else if (error.status === StatusCodes.NotFound){
       console.error(ErrorMessages.ElementNotFound);
+      this.errorResp$.message = ErrorMessages.ElementNotFound;
     } else if (error.status === StatusCodes.Forbidden){
       console.error(ErrorMessages.OperationNotAllowed);
+      this.errorResp$.message = ErrorMessages.OperationNotAllowed;
     } else if (error.status === StatusCodes.Unauthorized){
       console.error(ErrorMessages.AuthenticationException);
       this.errorResp$.code = 401;
@@ -276,7 +275,7 @@ export class ArticlesComponent implements OnInit {
   // ******** End - CRUD Articles ********
 
 
-  // ----- PAGINATION -----
+  // ******** PAGINATION - Start ********
   // pageNr: numeroPagina passato dalla pagina HTML al metodo
   // this.pagination.pagButtonsNr: Attuale numero di bottoni-pagina visualizzato
   // this.pagination$.currentPage: numeroPagina corrente
@@ -352,5 +351,5 @@ export class ArticlesComponent implements OnInit {
 
     return showEllipsis ? "..." : pageNr.toString();
   }
-// ----- PAGINATION - END -----
+// ******** End - PAGINATION ********
 }

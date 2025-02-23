@@ -16,12 +16,11 @@ const routes: Routes = [
   {path:'welcome', component:WelcomeComponent, canActivate:[RouteGuardService]},
   {path:'home', component:WelcomeComponent, canActivate:[RouteGuardService]},
   {path:'welcome/:username', component:WelcomeComponent, canActivate:[RouteGuardService]},
-  {path:'articles', component:ArticlesComponent},
+  {path:'articles', component:ArticlesComponent, canActivate:[RouteGuardService]},
   {path:'article-manager/:codArt', component:ArticleManagerComponent, canActivate:[RouteGuardService]},
   {path:'article-manager', component:ArticleManagerComponent, canActivate:[RouteGuardService]},
   // {path:'50x', component:Page50xComponent},
   // {path:'api/**', component:Page50xComponent},
-  {path:'**', component:Page404Component, canActivate:[RouteGuardService]},
   {path:'**', component:Page404Component}
 ];
 

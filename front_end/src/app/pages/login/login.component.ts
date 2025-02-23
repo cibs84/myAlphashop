@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AuthappService } from '../../services/authapp.service';
+import { Observable, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -13,23 +14,40 @@ export class LoginComponent implements OnInit {
   title: string = "Login & Authentication";
   subtitle: string = "Login or Sign Up";
 
-  userId: string = "Dario";
-
   authenticated: boolean = true;
-  errMsg: string = "Sorry, the credentials entered are incorrect!";
+  notlogged: boolean = false;
+  nologgedQueryParam$: Observable<string | null> = of("");
 
-  constructor(private route: Router, private authapp: AuthappService) { }
+  errMsgBadCred: string = 'Sorry, userid or password is incorrect!';
+  errMsgLoginReq: string = "Login is required to access the selected page";
+
+  constructor(private route: Router,
+              private authapp: AuthappService,
+              private activeRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.nologgedQueryParam$ = this.activeRoute.queryParamMap.pipe(
+      map((params: ParamMap) => params.get('nologged')),
+    );
+
+    this.nologgedQueryParam$.subscribe(
+      param => (param) ? this.notlogged = true : this.notlogged = false
+    );
   }
 
   gestAuth(f: NgForm): void {
-    if (this.authapp.authenticate(f.value.username, f.value.password)) {
-      sessionStorage.setItem("username", f.value.username);
-      this.route.navigate(['welcome', this.userId]);
-      this.authenticated = true;
-    } else {
-      this.authenticated = false;
-    }
+    this.authapp.authenticate(f.value.username, f.value.password).subscribe({
+      next: (response) => {
+        console.log(response);
+
+        this.route.navigate(['welcome', f.value.username]);
+        this.authenticated = true;
+      },
+      error: (error) => {
+        console.log(error);
+
+        this.authenticated = false;
+      }
+    });
   }
 }

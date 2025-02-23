@@ -27,7 +27,8 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 	
-	private static final String[] USER_MATCHER = { "/api/articles/find/**",
+	private static final String[] USER_MATCHER = { "/api/articles/test", 
+												   "/api/articles/find/**",
 												   "/api/categories/find/**",
 												   "/api/vat/find/**"};
 	

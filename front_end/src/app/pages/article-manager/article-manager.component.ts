@@ -78,7 +78,7 @@ export class ArticleManagerComponent implements OnInit {
       response => this.vatList = response.body as Vat[]
     );
 
-    // GET ARTICLE/S
+    // GET ARTICLE(S)
     if (this.route.snapshot.params['codArt']) {
       this.title = this.EDIT_MODE_TITLE;
       this.isEditMode = true;
@@ -133,13 +133,17 @@ export class ArticleManagerComponent implements OnInit {
       this.errorResp$.message = ErrorMessages.UnavailableServer;
     } else if (error.status === StatusCodes.NotFound){
       console.error(ErrorMessages.ElementNotFound);
+      this.errorResp$.message = ErrorMessages.ElementNotFound;
     } else if (error.status === StatusCodes.Forbidden){
       console.error(ErrorMessages.OperationNotAllowed);
+      this.errorResp$.message = ErrorMessages.OperationNotAllowed;
     } else if (error.status === StatusCodes.Unauthorized){
       console.error(ErrorMessages.AuthenticationException);
+      this.errorResp$.message = ErrorMessages.AuthenticationException;
     } else {
       console.error(ErrorMessages.GenericError);
       console.error(error); // Registra l'errore nella console
+      this.errorResp$.message = ErrorMessages.GenericError;
     }
     //  Scroll down the page to the alert element with the error message
     scrollToErrorAlert(this.scroller);

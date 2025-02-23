@@ -59,6 +59,16 @@ public class ArticleController {
 	
 	@Value("${codartArtNotDeletable}")
 	private String codartArtNotDeletable;
+	
+	@GetMapping("/test")
+	public ResponseEntity<ObjectNode> test(){
+		ObjectMapper objMapper = new ObjectMapper();
+		ObjectNode responseNode = objMapper.createObjectNode();
+		responseNode.put("code", HttpStatus.OK.toString());
+		responseNode.put("message", "Authentication successful");
+
+		return new ResponseEntity<ObjectNode>(responseNode, HttpStatus.OK);
+	}
 
 	@GetMapping("/find/all")
 	public ResponseEntity<PaginatedResponseList<Article, ArticleDto>> listAll(

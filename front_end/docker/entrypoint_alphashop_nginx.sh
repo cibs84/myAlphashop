@@ -10,6 +10,7 @@ echo "API_PORT: $API_PORT"
 # e salva il risultato nel file di configurazione effettivo di Nginx (nginx.conf).
 envsubst '\$API_PORT \$ART_MNG__HOST \$USR_MNG__HOST' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
+# Stampa in console la configurazione di Nginx
 cat /etc/nginx/nginx.conf
 
 # Avvia NGINX

@@ -51,7 +51,7 @@
       </div>
 
       <!-- Product CARD -->
-      <table *ngIf="errorResp$.message === '' && errorResp$.message != errorMessages.UnavailableServer.toString()" id="articles" class="table table-hover mb-5">
+      <table *ngIf="errorResp$.message !== errorMessages.UnavailableServer.toString()" id="articles" class="table table-hover mb-5">
         <thead>
           <tr>
             <th scope="col">CodArt</th>
