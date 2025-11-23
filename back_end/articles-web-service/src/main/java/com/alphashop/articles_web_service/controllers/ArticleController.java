@@ -40,10 +40,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/articles")
-// @CrossOrigin(origins = {"http://localhost:4200", 
-// 						"http://34.124.165.164:8084" , "http://localhost:8084",
-// 						"http://article-management:5051",
-@CrossOrigin(origins = "*")
 public class ArticleController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
@@ -59,16 +55,6 @@ public class ArticleController {
 	
 	@Value("${codartArtNotDeletable}")
 	private String codartArtNotDeletable;
-	
-	@GetMapping("/test")
-	public ResponseEntity<ObjectNode> test(){
-		ObjectMapper objMapper = new ObjectMapper();
-		ObjectNode responseNode = objMapper.createObjectNode();
-		responseNode.put("code", HttpStatus.OK.toString());
-		responseNode.put("message", "Authentication successful");
-
-		return new ResponseEntity<ObjectNode>(responseNode, HttpStatus.OK);
-	}
 
 	@GetMapping("/find/all")
 	public ResponseEntity<PaginatedResponseList<Article, ArticleDto>> listAll(
@@ -86,7 +72,7 @@ public class ArticleController {
 						"/find/barcode/**"})
 	public ResponseEntity<ArticleDto> listArtByEan(@PathVariable(name = "ean", required = false) String ean) throws NotFoundException {
 
-		if (ean == null) {
+		if (ean == null || ean.isBlank()) {
 			throw new NotFoundException("Insert a valid barcode!");
 		}
 		
@@ -101,7 +87,7 @@ public class ArticleController {
 						"/find/codart/**"})
 	public ResponseEntity<ArticleDto> listArtByCodArt(@PathVariable(name = "codart", required = false) String codArt) throws NotFoundException {
 
-		if (codArt == null) {
+		if (codArt == null || codArt.isBlank()) {
 			throw new NotFoundException("Insert a valid codArt!");
 		}
 		
@@ -125,9 +111,8 @@ public class ArticleController {
 			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
 		
-		if (description == null) {
-			throw new NotFoundException("Insert a valid description!");
-		}
+		if (description == null) throw new NotFoundException("Insert a valid description!");
+		if (description.isBlank()) description = "";
 		
 		logger.info("******** Get articles by description %s ********".formatted(description));
 		
@@ -227,7 +212,7 @@ public class ArticleController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode responseNode = mapper.createObjectNode();
 		
-		responseNode.put("code", HttpStatus.OK.toString());
+		responseNode.put("status", HttpStatus.OK.toString());
 		responseNode.put("message", String.format("Deleting article '%s - %s' performed successfully", article.getCodArt(), article.getDescription()));
 		
 		return new ResponseEntity<ObjectNode>(responseNode, HttpStatus.OK);

@@ -110,7 +110,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonDataMod).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.code").value(404))
+				.andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message")
 						.value("Article '123Test' doesn't exist"))
 				.andDo(print());

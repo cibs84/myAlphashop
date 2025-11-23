@@ -1,0 +1,20 @@
+<div class="invalid-feedback" *ngIf="hasNgValidation() || errors?.length">
+  <ul>
+    <li
+      [class.pointed-list]="!errors || errors.length > 1"
+      *ngFor="let error of errors">
+      {{ error }}
+    </li>
+    <li *ngIf="!errors?.length">
+      {{
+        ngModel.errors?.['required'] ? defaultMsg :
+        ngModel.errors?.['pattern'] ? (customMsgs?.['pattern'] || 'Invalid format') :
+        ngModel.errors?.['minlength'] ? (customMsgs?.['minlength'] || 'Too short') :
+        ngModel.errors?.['maxlength'] ? (customMsgs?.['maxlength'] || 'Too long') :
+        ngModel.errors?.['min'] ? (customMsgs?.['min'] || 'Too small') :
+        ngModel.errors?.['max'] ? (customMsgs?.['max'] || 'Too large') :
+        defaultMsg
+      }}
+    </li>
+  </ul>
+</div>

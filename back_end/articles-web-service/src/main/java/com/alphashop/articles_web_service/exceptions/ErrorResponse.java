@@ -9,7 +9,7 @@ import lombok.Data;
 public class ErrorResponse {
 
 	private Date date = new Date();
-	private int code;
+	private int status;
 	private String message;
 	private Map<String, List<String>> errorValidationMap;
 }

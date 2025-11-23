@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Alphashop</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <span class="material-icons-outlined">home</span>
+          <a class="nav-link active" aria-current="page" routerLink="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <span class="material-icons-outlined">view_list</span>
+          <a class="nav-link" routerLink="/articles">Products</a>
+        </li>
+        <li class="nav-item">
+          <span class="material-icons-outlined">local_offer</span>
+          <a class="nav-link" routerLink="/promotions">Promotions</a>
+        </li>
+        <li class="nav-item">
+          <span class="material-icons-outlined">card_membership</span>
+          <a class="nav-link" routerLink="/fidelity">Fidelity</a>
+        </li>
+        <li class="nav-item">
+          <span class="material-icons-outlined">shopping_cart</span>
+          <a class="nav-link" routerLink="/orders">Orders</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+      <li class="nav-item dropdown user-item">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fa-solid fa-user"></i>
+        </a>
+        <ul class="dropdown-menu ms_dropdown-menu-user" aria-labelledby="navbarDropdown">
+          <ng-container *ngIf="!(isAuthenticated$ | async)">
+            <li><a class="dropdown-item" routerLink="/login">Login</a></li>
+            <li><a class="dropdown-item" routerLink="/signup">Sign Up</a></li>
+          </ng-container>
+          <ng-container *ngIf="isAuthenticated$ | async">
+            <li><a class="dropdown-item"
+                  routerLink="/logout">Logout {{ usernameLogged$ | async }}</a>
+            </li>
+          </ng-container>
+        </ul>
+      </li>
+    </div>
+  </div>
+</nav>

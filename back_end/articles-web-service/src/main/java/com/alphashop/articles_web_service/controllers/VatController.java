@@ -19,7 +19,7 @@ import com.alphashop.articles_web_service.services.VatService;
 
 @RestController
 @RequestMapping("/api/vat")
-@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = "*")
 public class VatController {
 
 	private static final Logger logger = LoggerFactory.getLogger(VatController.class);

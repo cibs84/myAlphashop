@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { GreetingsDataService } from 'src/app/services/data/greetings-data.service';
+import { GreetingsDataService } from 'src/app/shared/services/greetings-data.service';
 
 @Component({
   selector: 'app-welcome',

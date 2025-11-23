@@ -59,17 +59,19 @@ public class ArticleService {
 	public PaginatedResponseList<Article, ArticleDto> getByDescription(String description, Optional<Integer> currentPage,
 			Optional<Integer> pageSize) throws NotFoundException {
 
-		description = description == "" ? " " : description;
-		
 		String descriptionMod = "%" + description.toUpperCase() + "%";
 
-		Pageable articlesPagination = PageRequest.of(currentPage.map(n -> n-1).filter(n -> n > -1).orElse(0),
-				pageSize.filter(n -> n > 0).orElse(10));
+		Pageable articlesPagination = PageRequest.of(
+				currentPage.map(n -> n-1).filter(n -> n > -1).orElse(0),
+				pageSize.filter(n -> n > 0).orElse(10)
+		);
 		
-		Page<Article> articleList = articleRepository.findByDescriptionLikeOrderByCodArtAsc(descriptionMod, articlesPagination);
+		Page<Article> articleList = 
+				articleRepository.findByDescriptionLikeOrderByCodArtAsc(descriptionMod, articlesPagination);
 		
 		if (articleList.isEmpty()) {
-			String errMessage = description.trim() == "" ? "No articles were found" 
+			String errMessage = description.isEmpty() 
+					? "No articles were found" 
 					: "No article with description '%s' was found".formatted(description);
 			
 			logger.warn(errMessage);
@@ -88,6 +90,7 @@ public class ArticleService {
 	}
 
 	public ArticleDto getByCodArt(String codArt) throws NotFoundException {
+		
 		Optional<Article> article = articleRepository.findByCodArt(codArt);
 		ArticleDto articleDto = null;
 		
@@ -99,7 +102,7 @@ public class ArticleService {
 	}
 
 	public ArticleDto getByBarcode(String ean) throws NotFoundException {
-		
+
 		Optional<Article> article = articleRepository.selByEan(ean);
 		
 		if (article.isEmpty()) {

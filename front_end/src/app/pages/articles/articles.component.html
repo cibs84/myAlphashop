@@ -14,9 +14,15 @@
   <div class="container">
     <!-- GRID - HEADER -->
     <div class="row grid-header justify-content-between align-items-center">
-      <div class="col-4">
+      <div class="col-5">
         <!-- Input: Description -->
         <input type="text" placeholder="Search..." [(ngModel)]="filter" (keyup.enter)="refresh()" >
+        <!-- Select: Filter Type -->
+        <select [(ngModel)]="filterType" id="filterType" class="form-select" name="filterType" >
+          <option [ngValue]="filterTypeItem.value" *ngFor="let filterTypeItem of filterTypeList">
+            {{filterTypeItem.key}}
+          </option>
+        </select>
       </div>
       <div class="col-4">
         <div class="d-flex justify-content-between">
@@ -46,12 +52,12 @@
         {{ successMsg }}
       </div>
       <!-- Operation Error -->
-      <div *ngIf="errorResp$.message != ''" id="errorAlert" class="alert alert-danger" role="alert">
-        {{ errorResp$.message }}
+      <div *ngIf="errorResponse.message != ''" id="errorAlert" class="alert alert-danger" role="alert">
+        {{ errorResponse.message }}
       </div>
 
       <!-- Product CARD -->
-      <table *ngIf="errorResp$.message !== errorMessages.UnavailableServer.toString()" id="articles" class="table table-hover mb-5">
+      <table *ngIf="errorResponse.message !== errorMessages.UnavailableServer.toString()" id="articles" class="table table-hover mb-5">
         <thead>
           <tr>
             <th scope="col">CodArt</th>
@@ -66,8 +72,8 @@
             <th scope="col">Actions</th>
           </tr>
         </thead>
-        <tbody *ngIf="errorResp$.message != errorMessages.UnavailableServer.toString()">
-          <tr *ngFor="let article of articles$">
+        <tbody>
+          <tr *ngFor="let article of articles$ | async">
             <td>{{ article.codArt }}</td>
             <td>{{ article.description }}</td>
             <td>{{ article.um }}</td>
@@ -105,18 +111,18 @@
       </table>
 
       <!-- *** PAGINATION *** -->
-      <ul *ngIf="!serverError && errorResp$.code !== statusCodes.NotFound
+      <ul *ngIf="errorResponse.status !== statusCodes.NotFound
                   &&
-                 pagination$.totalPages > 1"
+                 paginationModel.totalPages > 1"
           class="pagination justify-content-end">
 
         <!-- Previous Page -->
-        <li class="page-item" [ngClass]="{'disabled pe-none': pagination$.currentPage==1}">
-          <a class="page-link" (click)="pageChange(pagination$.currentPage-1)">Previous</a>
+        <li class="page-item" [ngClass]="{'disabled pe-none': paginationModel.currentPage==1}">
+          <a class="page-link" (click)="pageChange(paginationModel.currentPage-1)">Previous</a>
         </li>
 
         <!-- Loop: Page Number - NEW VERSION -->
-        <ng-template ngFor let-pageNr [ngForOf]="pagination$.totalPagesArray">
+        <ng-template ngFor let-pageNr [ngForOf]="paginationModel.totalPagesArray">
           <li *ngIf="shouldDisplayPageNr(pageNr)" [ngClass]="{'active': isCurrentPageNr(pageNr)}" class="page-item">
             <a class="page-link" #pageNrElement (click)="pageChange(pageNr)">
               {{ displayPageNr(pageNr) }}
@@ -126,8 +132,8 @@
         </ng-template>
 
         <!-- Next Page -->
-        <li class="page-item" [class]="pagination$.currentPage==pagination$.totalPages ? 'disabled pe-none' : ''">
-          <a class="page-link" (click)="pageChange(pagination$.currentPage+1)">Next</a>
+        <li class="page-item" [class]="paginationModel.currentPage==paginationModel.totalPages ? 'disabled pe-none' : ''">
+          <a class="page-link" (click)="pageChange(paginationModel.currentPage+1)">Next</a>
         </li>
 
       </ul>
@@ -135,4 +141,8 @@
 
     </div>
   </div>
+
+  <!-- *** SPINNER - LOADING *** -->
+   <app-spinner></app-spinner>
+
 </section>

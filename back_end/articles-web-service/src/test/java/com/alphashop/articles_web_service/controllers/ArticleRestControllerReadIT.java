@@ -95,7 +95,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/barcode/" + inexistentBarcode)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+		.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
 		.andExpect(jsonPath("$.message").value("The article with barcode \'" + inexistentBarcode + "\' was not found!"))
 		.andDo(print());
 	}
@@ -105,7 +105,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/barcode")
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message").value("Insert a valid barcode!"))
 				.andDo(print());
 	}
@@ -128,7 +128,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/codart/" + inexistentCodArt)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message").value("The article with codart " + inexistentCodArt + " was not found!"))
 				.andDo(print());
 	}
@@ -138,7 +138,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/codart")
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message").value("Insert a valid codArt!"))
 				.andDo(print());
 	}
@@ -239,7 +239,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	public void errListArtByDescWithoutDescription1() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message").value("Insert a valid description!"))
 				.andDo(print());
 	}
@@ -248,7 +248,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	public void errorListArtByDescWithoutDescription2() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description")
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message").value("Insert a valid description!"))
 				.andDo(print());
 	}
@@ -260,7 +260,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/" + emptyDescription)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.pagination.totalPages", equalTo(597)))
+				.andExpect(jsonPath("$.pagination.totalPages", equalTo(598)))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andReturn();
 	}
 	
@@ -274,7 +274,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/" + CodArt)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value(404))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message").value("No articles were found"))
 				.andDo(print());
 	}

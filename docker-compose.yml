@@ -119,6 +119,8 @@ services:
       alphashop:
         aliases:
           - ${NGINX_SVC_NAME}
+    volumes:
+      - ./nginx.conf:'/etc/nginx/nginx.conf'
   
 
 ###---- COMMONS - Networks and Volumes ----###

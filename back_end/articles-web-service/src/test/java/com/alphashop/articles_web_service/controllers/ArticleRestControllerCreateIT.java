@@ -83,7 +83,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 				.content(JsonData)
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isConflict())
-				.andExpect(jsonPath("$.code").value(409))
+				.andExpect(jsonPath("$.status").value(409))
 				.andExpect(jsonPath("$.message")
 						.value("Article '123Test - ARTICOLO UNIT TEST INSERIMENTO' already exists"))
 				.andDo(print());
@@ -127,7 +127,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 				.content(ErrJsonData)
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.code").value(422))
+				.andExpect(jsonPath("$.status").value(422))
 				.andExpect(jsonPath("$.message")
 						.value("Validation error"))
 				.andExpect(jsonPath("$.errorValidationMap.description[0]")

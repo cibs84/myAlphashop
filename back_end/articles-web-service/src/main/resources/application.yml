@@ -30,10 +30,9 @@ codartArtNotDeletable: "abcTest"
 profile:
   property:
     value: "This the the application.yaml file"
-# ===================================================
-# = USER MANAGEMENT SERVICE
-# ===================================================
-user-service:
-  serverUrl: http://localhost:5052/api/users/find/userid/
-  username: userRead
-  password: pass1234
+# ==============================================================
+# = Security JWT' 
+# ==============================================================
+security:
+    header: Authorization
+    secret: 2f70d44e3613b8a1370eafeb8912bc4e487eb077ee1bf777304c277639311429

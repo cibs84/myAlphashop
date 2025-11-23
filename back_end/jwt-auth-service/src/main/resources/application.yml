@@ -1,0 +1,46 @@
+# ==============================================================
+# = JWT AUTHENTICATION SERVICE
+# ==============================================================
+spring:
+    application:
+        name: jwt-auth-service
+server:
+    port: 5053
+    forward-headers-strategy: native
+
+# ==============================================================
+# = USER MANAGEMENT SERVICE
+# ==============================================================
+user-service:
+  serverUrl: http://localhost:5052/api/users/find/userid/
+  username: userRead
+  password: pass1234
+
+# ==============================================================
+# = Security JWT' 
+# ==============================================================
+security:
+    loginPath: /api/authentication/login
+    logoutPath: /api/authentication/logout
+    refreshPath: /api/authentication/refresh
+    userInfoPath: /api/authentication/me
+    header: Authorization
+    prefix: Bearer 
+    expToken: 1 # 1800 === 30 min => (min * sec)
+    expRefreshToken: 1296000 # 15 days (day * hour * min * sec)
+    secret: 2f70d44e3613b8a1370eafeb8912bc4e487eb077ee1bf777304c277639311429
+
+# ==============================================================
+# = Security Log's Level
+# ==============================================================  
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+
+        
+
+  
+ 

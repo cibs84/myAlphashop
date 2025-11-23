@@ -103,7 +103,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 				MockMvcRequestBuilders.delete("/api/articles/delete/123Test")
 				.accept(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.code").value("200 OK"))
+		.andExpect(jsonPath("$.status").value("200 OK"))
 		.andExpect(jsonPath("$.message")
 				.value("Deleting article '123Test - ARTICOLO UNIT TEST INSERIMENTO' performed successfully"))
 		.andDo(print());
@@ -129,7 +129,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 				MockMvcRequestBuilders.delete("/api/articles/delete/abcTest")
 				.accept(MediaType.APPLICATION_JSON))
 		.andExpect(status().isForbidden())
-		.andExpect(jsonPath("$.code").value(403))
+		.andExpect(jsonPath("$.status").value(403))
 		.andExpect(jsonPath("$.message")
 				.value("Article 'abcTest' not deletable"))
 		.andDo(print());
@@ -141,7 +141,7 @@ class ArticleRestControllerDeleteIT extends BaseSpringIT {
 				MockMvcRequestBuilders.delete("/api/articles/delete/xxxx")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.code").value(404))
+				.andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message")
 						.value("Article to be deleted 'xxxx' was not found"))
 				.andDo(print());

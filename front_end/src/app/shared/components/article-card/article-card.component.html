@@ -1,0 +1,21 @@
+<div class="col">
+  <div class="card">
+    <img src="{{article.urlImage}}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">{{article.description}}</h5>
+      <p class="card-text">{{article.price}}</p>
+      <div class="d-flex flex-wrap">
+        <button class="btn btn-outline-secondary d-flex"
+                (click)="editArticle()">
+          <span class="material-icons-outlined">edit</span>
+          Edit
+        </button>
+        <button class="btn btn-danger d-flex"
+                (click)="deleteArticle()">
+          <span class="material-icons-outlined">delete</span>
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

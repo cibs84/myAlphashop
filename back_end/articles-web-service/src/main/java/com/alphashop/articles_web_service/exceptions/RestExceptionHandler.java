@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.java.Log;
+
+@Log
 @ControllerAdvice
 @RestController
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -21,7 +28,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<ErrorResponse> exceptionNotFoundHandler(Exception ex) {
 		ErrorResponse response = new ErrorResponse();
 		response.setDate(new Date());
-		response.setCode(HttpStatus.NOT_FOUND.value());
+		response.setStatus(HttpStatus.NOT_FOUND.value());
 		response.setMessage(ex.getMessage());
 		
 		return new ResponseEntity<ErrorResponse>(response, HttpStatus.NOT_FOUND);
@@ -31,7 +38,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<ErrorResponse> exceptionItemAlreadyExistsHandler(Exception ex) {
 		ErrorResponse response = new ErrorResponse();
 		response.setDate(new Date());
-		response.setCode(HttpStatus.CONFLICT.value());
+		response.setStatus(HttpStatus.CONFLICT.value());
 		response.setMessage(ex.getMessage());
 
 		return new ResponseEntity<ErrorResponse>(response, HttpStatus.CONFLICT);
@@ -42,7 +49,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	{
 		ErrorResponse response = new ErrorResponse();
 		response.setDate(new Date());
-		response.setCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+		response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
 		response.setMessage("Validation error");
 		
 		// Collects validation errors into a map where the key is the field name 
@@ -61,9 +68,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<ErrorResponse> exceptionNotDeletableHandler(Exception ex) {
 		ErrorResponse response = new ErrorResponse();
 		response.setDate(new Date());
-		response.setCode(HttpStatus.FORBIDDEN.value());
+		response.setStatus(HttpStatus.FORBIDDEN.value());
 		response.setMessage(ex.getMessage());
 
 		return new ResponseEntity<ErrorResponse>(response, HttpStatus.FORBIDDEN);
 	}
+	
 }

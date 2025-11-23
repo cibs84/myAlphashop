@@ -22,3 +22,10 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+#==========================================================
+#= LOGGING
+#==========================================================
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG

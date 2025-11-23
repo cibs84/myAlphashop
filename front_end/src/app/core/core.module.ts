@@ -1,15 +1,19 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from './header/header.component';
-import { FooterComponent } from './footer/footer.component';
-import { JumbotronComponent } from './jumbotron/jumbotron.component';
+import { HeaderComponent } from '../shared/components/header/header.component';
+import { FooterComponent } from '../shared/components/footer/footer.component';
+import { JumbotronComponent } from '../shared/components/jumbotron/jumbotron.component';
 import { RouterModule } from '@angular/router';
+import { SpinnerComponent } from '../shared/components/spinner/spinner.component';
+import { ValidationMessagesComponent } from '../shared/components/validation-messages/validation-messages.component';
 
 @NgModule({
   declarations: [
     HeaderComponent,
     FooterComponent,
-    JumbotronComponent
+    JumbotronComponent,
+    SpinnerComponent,
+    ValidationMessagesComponent
   ],
   imports: [
     CommonModule,
@@ -18,7 +22,9 @@ import { RouterModule } from '@angular/router';
   exports: [
     HeaderComponent,
     FooterComponent,
-    JumbotronComponent
+    JumbotronComponent,
+    SpinnerComponent,
+    ValidationMessagesComponent
   ]
 })
 export class CoreModule { }

@@ -1,7 +1,7 @@
 // My default 'ng build' configuration
 
 const HOST = '34.124.165.164';
-const PORT = '80';
+const PORT = '80'; // NGINX Port
 
 export const environment = {
   production: true,
