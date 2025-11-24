@@ -111,8 +111,7 @@ public class ArticleController {
 			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
 		
-		if (description == null) throw new NotFoundException("Insert a valid description!");
-		if (description.isBlank()) description = "";
+		if (description == null || description.isBlank()) description = "";
 		
 		logger.info("******** Get articles by description %s ********".formatted(description));
 		
