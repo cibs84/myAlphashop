@@ -23,7 +23,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	
 	String JsonData = """
 	{
-	    "codArt": "002000301",
+	    "codart": "002000301",
 	    "description": "ACQUA ULIVETO 15 LT",
 	    "um": "PZ",
 	    "codStat": "",
@@ -59,7 +59,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 				MockMvcRequestBuilders.get("/api/articles/find/barcode/" + existentBarcode).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				// articolo
-				.andExpect(jsonPath("$.codArt").exists()).andExpect(jsonPath("$.codArt").value("002000301"))
+				.andExpect(jsonPath("$.codart").exists()).andExpect(jsonPath("$.codart").value("002000301"))
 				.andExpect(jsonPath("$.description").exists())
 				.andExpect(jsonPath("$.description").value("ACQUA ULIVETO 15 LT")).andExpect(jsonPath("$.um").exists())
 				.andExpect(jsonPath("$.um").value("PZ")).andExpect(jsonPath("$.codStat").exists())
@@ -111,7 +111,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	}
 	
 	@Test
-	public void listArtByCodArt() throws Exception {
+	public void listArtByCodart() throws Exception {
 		
 		String existentCodart = "002000301";
 		
@@ -122,24 +122,24 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	}
 
 	@Test
-	public void errListArtByCodArtWithInexistentCodArt() throws Exception {
+	public void errListArtByCodartWithInexistentCodart() throws Exception {
 		
-		String inexistentCodArt = "inexistent_codart";
+		String inexistentCodart = "inexistent_codart";
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/codart/" + inexistentCodArt)
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/codart/" + inexistentCodart)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
-				.andExpect(jsonPath("$.message").value("The article with codart " + inexistentCodArt + " was not found!"))
+				.andExpect(jsonPath("$.message").value("The article with codart " + inexistentCodart + " was not found!"))
 				.andDo(print());
 	}
 
 	@Test
-	public void errListArtByCodArtWithoutCodArt() throws Exception {
+	public void errListArtByCodartWithoutCodart() throws Exception {
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/codart")
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
-				.andExpect(jsonPath("$.message").value("Insert a valid codArt!"))
+				.andExpect(jsonPath("$.message").value("Insert a valid codart!"))
 				.andDo(print());
 	}
 	
@@ -158,7 +158,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	    },
 	    "itemList": [
 	        {
-	            "codArt": "002000301",
+	            "codart": "002000301",
 	            "description": "ACQUA ULIVETO 15 LT",
 	            "um": "PZ",
 	            "codStat": "",
@@ -185,7 +185,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	            }
 	        },
 	        {
-	            "codArt": "058578901",
+	            "codart": "058578901",
 	            "description": "ACQUA ULIVETO NATUR.ML.500",
 	            "um": "PZ",
 	            "codStat": "",
@@ -270,9 +270,9 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		articleRepository.deleteAll();
 		
-		String CodArt = " ";
+		String Codart = " ";
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/" + CodArt)
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/" + Codart)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
 				.andExpect(jsonPath("$.message").value("No articles were found"))

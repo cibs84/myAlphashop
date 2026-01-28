@@ -1,20 +1,20 @@
-<div class="invalid-feedback" *ngIf="hasNgValidation() || errors?.length">
-  <ul>
-    <li
-      [class.pointed-list]="!errors || errors.length > 1"
-      *ngFor="let error of errors">
-      {{ error }}
-    </li>
-    <li *ngIf="!errors?.length">
-      {{
-        ngModel.errors?.['required'] ? defaultMsg :
-        ngModel.errors?.['pattern'] ? (customMsgs?.['pattern'] || 'Invalid format') :
-        ngModel.errors?.['minlength'] ? (customMsgs?.['minlength'] || 'Too short') :
-        ngModel.errors?.['maxlength'] ? (customMsgs?.['maxlength'] || 'Too long') :
-        ngModel.errors?.['min'] ? (customMsgs?.['min'] || 'Too small') :
-        ngModel.errors?.['max'] ? (customMsgs?.['max'] || 'Too large') :
-        defaultMsg
-      }}
-    </li>
-  </ul>
+<!-- VALID -->
+<div *ngIf="showValidMsg()">
+  <div class="valid-feedback d-block mb-3">{{IS_VALID_MSG}}</div>
 </div>
+
+<!-- INVALID - Show only if there are frontend or backend errors -->
+<ng-container *ngIf="isFrontendInvalid() || (beErrorMsgs?.length ?? 0) > 0">
+
+  <!-- Frontend - Error -->
+  <div  *ngIf="isFrontendInvalid()" class="invalid-feedback d-block mb-3">
+    FE: {{ getFeErrorMsg() }}
+  </div>
+
+  <!-- Backend - Error -->
+  <div *ngIf="!isFrontendInvalid()"
+    class="invalid-feedback d-block mb-3"
+    [class.pointed-list]="beErrorMsgs.length > 1">
+    BE: {{ beErrorMsgs[0] }}
+  </div>
+</ng-container>

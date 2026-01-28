@@ -17,7 +17,7 @@ public class Ingredients {
 
 	@Id
 	@Column(name = "codart")
-	private String codArt;
+	private String codart;
 
 	@Column
 	private String info;

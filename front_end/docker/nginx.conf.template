@@ -36,9 +36,14 @@ http {
         server $USR_MNG__HOST:$API_PORT;
     }
 
+    upstream $JWT_AUTH__HOST {
+        server $JWT_AUTH__HOST:$API_PORT;
+    }
+
     map $uri $backend {
         ~^/api/(articles|categories|vat) $ART_MNG__HOST;
         ~^/api/users $USR_MNG__HOST;
+        ~^/api/authentication $JWT_AUTH__HOST;
     }
 
     server {

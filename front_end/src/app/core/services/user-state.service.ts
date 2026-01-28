@@ -20,7 +20,11 @@ export class UserStateService {
   constructor(private logger: LoggingService, private httpClient: HttpClient) { }
 
   getUsernameLogged = (): Observable<string | null> => this.userInfo$.pipe(
-    map(userInfo => userInfo ? userInfo.username : null)
+    map(userInfo => userInfo ? userInfo.username : null),
+    catchError((error) => {
+      this.logger.error("[UserStateService] Error in getUsernameLogged():", error);
+      return throwError(() => error);
+    })
   );
 
   getRoles(): Observable<string[]> {
@@ -30,11 +34,11 @@ export class UserStateService {
         filter((userInfo): userInfo is UserInfoResponse => userInfo != null),
         take(1),
         map(userInfo => {
-            this.logger.log("getRoles() userInfo -> ", userInfo);
+            this.logger.log("[UserStateService] getRoles() userInfo -> ", userInfo);
             return userInfo.roles ?? [];
         }),
         catchError((error) => {
-          this.logger.error("Error in getRoles():", error);
+          this.logger.error("[UserStateService] Error in getRoles():", error);
           return throwError(() => error);
         })
     );
@@ -48,14 +52,14 @@ export class UserStateService {
       }
       // 2. Avvia la nuova richiesta solo se la cache è vuota (this.userInfoRequest$ == null)
       // e quindi non c'è una richiesta in corso o non è presente un risultato HTTP in cache
-      this.logger.log('getUserInfo: Creazione e avvio nuova richiesta ME.');
+      this.logger.log('[UserStateService] getUserInfo() | Creazione e avvio nuova richiesta ME.');
       this.userInfoRequest$ = this.httpClient.get<UserInfoResponse>(`${this.apiUrl}/authentication/me`).pipe(
           tap(userInfo => {
-            this.logger.log("*** USER INFO RICEVUTO e Subject Aggiornato ***", userInfo);
+            this.logger.log("[UserStateService] getUserInfo() | UserInfo received", userInfo);
               this.userInfoRequestSubject.next(userInfo);
           }),
           catchError(err => {
-              this.logger.error('getUserInfo: error received', err);
+              this.logger.error('[UserStateService] getUserInfo() | Error received', err);
               this.clearUserState();
               return throwError(() => err);
           }),

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alphashop.articles_web_service.dtos.CategoryDto;
+import com.alphashop.articles_web_service.dtos.CategoryResponseDto;
 import com.alphashop.articles_web_service.exceptions.NotFoundException;
 import com.alphashop.articles_web_service.mappers.CategoryMapper;
 import com.alphashop.articles_web_service.services.CategoryService;
@@ -32,12 +32,12 @@ public class CategoryController {
 	
 
 	@GetMapping("/find/all")
-	public ResponseEntity<List<CategoryDto>> listAll() throws NotFoundException {
+	public ResponseEntity<List<CategoryResponseDto>> listAll() throws NotFoundException {
 		
 		logger.info("******** Get all categories ********");
 
-		List<CategoryDto> article = categoryService.getAll();
+		List<CategoryResponseDto> article = categoryService.getAll();
 		
-		return new ResponseEntity<List<CategoryDto>>(article, HttpStatus.OK);
+		return new ResponseEntity<List<CategoryResponseDto>>(article, HttpStatus.OK);
 	}
 }

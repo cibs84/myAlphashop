@@ -6,10 +6,10 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ArticlesComponent } from './pages/articles/articles.component';
 import { ArticleManagerComponent } from './pages/article-manager/article-manager.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { Page404Component } from './pages/page-404/page-404.component';
-import { Page50xComponent } from './pages/page-50x/page-50x.component';
+import { Page5xxComponent } from './pages/page-5xx/page-5xx.component';
 import { CoreModule } from './core/core.module';
 import { LogoutComponent } from './pages/logout/logout.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -17,15 +17,19 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { ForbiddenComponent } from './pages/forbidden/forbidden.component';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 import { AuthappService } from './core/services/authapp.service';
-import { LoggingService } from './core/services/logging.service';
-import { PublicRoutesService } from './core/services/public-routes.service';
-import { catchError, defaultIfEmpty, lastValueFrom, of } from 'rxjs';
-import { ArticleCardComponent } from './shared/components/article-card/article-card.component';
-import { ArticlesGridComponent } from './pages/articles-grid/articles-grid.component';
+import { defaultIfEmpty, lastValueFrom, of } from 'rxjs';
+import { GenericCardComponent } from './shared/components/generic-card/generic-card.component';
+import { PaginationComponent } from './shared/components/pagination/pagination.component';
+import { ArticlesTableComponent } from './shared/components/articles-table/articles-table.component';
+import { LiteralItemStatusPipe } from './shared/pipes/literal-item-status.pipe';
+import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
+import { TranslatePipe } from './shared/pipes/translate.pipe';
+import { GlobalErrorInterceptor } from './core/interceptors/global-error.interceptor';
+import { StatusInfoComponent } from './shared/components/status-info/status-info.component';
+import { AppModalComponent } from './shared/components/app-modal/app-modal.component';
 
 export function initializeApp(authService: AuthappService) {
   return () => {
-    // Chiama la logica complessa del Service e la converte in Promise
     return lastValueFrom(authService.initializeAuthStatus().pipe(defaultIfEmpty(null)));
   };
 }
@@ -36,29 +40,37 @@ export function initializeApp(authService: AuthappService) {
     LoginComponent,
     WelcomeComponent,
     Page404Component,
-    Page50xComponent,
+    Page5xxComponent,
     ArticlesComponent,
-    ArticleCardComponent,
-    ArticlesGridComponent,
+    GenericCardComponent,
     LogoutComponent,
     ArticleManagerComponent,
-    ForbiddenComponent
+    ForbiddenComponent,
+    PaginationComponent,
+    ArticlesTableComponent,
+    LiteralItemStatusPipe,
+    ArticleDetailComponent,
+    TranslatePipe,
+    StatusInfoComponent,
+    AppModalComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     CoreModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [
     {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
-      deps: [AuthappService, LoggingService, PublicRoutesService],
+      deps: [AuthappService],
       multi: true
     },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: GlobalErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

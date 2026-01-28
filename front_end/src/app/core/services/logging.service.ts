@@ -20,6 +20,11 @@ export class LoggingService {
     console.error(`[ERROR] ${caller}:`, message, ...optionalParams);
   }
 
+  warn(message: any, ...optionalParams: any[]): void {
+    const caller = this.getCallerDetails();
+    console.error(`[WARN] ${caller}:`, message, ...optionalParams);
+  }
+
   private getCallerDetails(): string {
     const err = new Error();
     if (err.stack) {

@@ -1,6 +1,7 @@
 package com.alphashop.jwt_auth_service.security;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,16 +9,16 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Clock;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultClock;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.java.Log;
 
 @Component
@@ -26,12 +27,11 @@ public class JwtTokenUtil implements Serializable {
 
 	static final String CLAIM_KEY_USERNAME = "sub";
 	static final String CLAIM_KEY_CREATED = "iat";
+	
 	private static final long serialVersionUID = -3301605591108950415L;
-	private Clock clock = DefaultClock.INSTANCE;
 
-	@Autowired
-	private JwtConfig jwtConfig;
-
+    @Autowired
+    private JwtConfig jwtConfig;
 
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
@@ -72,20 +72,23 @@ public class JwtTokenUtil implements Serializable {
 		return null;
 	}
 
+	private SecretKey getSigningKey() {
+        byte[] keyBytes = jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+	
 	private Claims getAllClaimsFromToken(String token) {
-		Claims retVal = null;
-		
-		try {
-			retVal = Jwts.parser()
-					.setSigningKey(jwtConfig.getSecret().getBytes())
-					.parseClaimsJws(token)
-					.getBody();
-		} catch (Exception ex) {
-			log.warning(ex.getMessage());
-		}
-		
-		return retVal;
-	}
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build() 
+                    .parseSignedClaims(token)    
+                    .getPayload();    
+        } catch (Exception ex) {
+            log.warning("Errore nel parsing del token: " + ex.getMessage());
+            return null;
+        }
+    }
 
 	public Boolean isTokenExpired(String token) {
 	
@@ -103,22 +106,21 @@ public class JwtTokenUtil implements Serializable {
 	}
 
 	public String generateToken(Map<String, Object> claims, UserDetails userDetails, boolean isRefreshToken) {
-		final Date createdDate = clock.now();
-		final Date expirationDate = isRefreshToken ? calculateExpirationRefreshTokenDate(createdDate) : calculateExpirationTokenDate(createdDate);
-		
-		final String secret = jwtConfig.getSecret();
+        final Date createdDate = new Date(); 
+        final Date expirationDate = isRefreshToken ? calculateExpirationRefreshTokenDate(createdDate) : calculateExpirationTokenDate(createdDate);
 
-		return Jwts.builder()
-				.setClaims(claims)
-				.setSubject(userDetails.getUsername())
-				.claim("authorities", userDetails.getAuthorities()
-						.stream()
-							.map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-				.setIssuedAt(createdDate)
-				.setExpiration(expirationDate)
-				.signWith(SignatureAlgorithm.HS512, secret.getBytes())
-				.compact();
-	}
+        return Jwts.builder()
+                .claims(claims)
+                .subject(userDetails.getUsername())
+                .claim("authorities", userDetails.getAuthorities()
+                        .stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
+                .issuedAt(createdDate)
+                .expiration(expirationDate)
+                .signWith(getSigningKey())
+                .compact();
+    }
 
 	public Boolean canTokenBeRefreshed(String token) {
 		return (isTokenExpired(token));

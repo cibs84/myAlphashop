@@ -6,14 +6,11 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -27,39 +24,10 @@ public class SecurityConfiguration {
 	
 	private static final String REALM = "REAME";
 	
-	// AUTHENICATION
-	@Bean
-	UserDetailsService userDetailsService() {
-		
-		UserDetails userRead = User
-				.withUsername("userRead")
-				.password(new BCryptPasswordEncoder().encode("pass1234"))
-				.roles("USER")
-				.build();
-		
-		UserDetails userAdmin = User
-				.withUsername("userAdmin")
-				.password(new BCryptPasswordEncoder().encode("pass1234"))
-				.roles("USER", "ADMIN")
-				.build();
-
-		return new InMemoryUserDetailsManager(userRead, userAdmin);
-	}
-	
 	@Bean
 	BCryptPasswordEncoder bcryptEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-	
-	// AUTHORIZATION
-	private static final String[] USER_MATCHER = { "/api/users",
-												   "/api/users/find/**"
-	};
-	private static final String[] ADMIN_MATCHER = { "/api/users/create/**",
-												   "/api/users/update/**",
-												   "/api/users/delete/**"
-	};
 	
 	@Bean
 	@SneakyThrows
@@ -70,10 +38,15 @@ public class SecurityConfiguration {
 			.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.httpBasic(e -> e.realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()))
 			.authorizeHttpRequests(authz -> {
+				
 				authz
-					.requestMatchers(ADMIN_MATCHER).hasRole("ADMIN")
-					.requestMatchers(USER_MATCHER).hasRole("USER")
-					.anyRequest().authenticated();
+				// Regole per USER (Scrittura solo ADMIN, Lettura USER/ADMIN)
+                .requestMatchers(HttpMethod.POST, "/api/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("USER", "ADMIN")
+				
+                .anyRequest().authenticated();
 			});
 		
 		return http.build();
@@ -89,9 +62,12 @@ public class SecurityConfiguration {
 		allowedHeaders.add("Cache-Control");
 		
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200",
-													  "http://localhost:4300",
-													  "http://localhost:5053"));
+		configuration.setAllowedOrigins(Arrays.asList(
+				"http://localhost:4200", // Frontend Angular dev
+			    "http://localhost:4300", 
+			    "http://localhost:8084", // Porta esposta da Nginx container
+			    "http://127.0.0.1:8084"
+	    ));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT"));
 		configuration.setMaxAge((long) 3600);
 		configuration.setAllowedHeaders(allowedHeaders);

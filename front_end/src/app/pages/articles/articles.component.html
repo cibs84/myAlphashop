@@ -7,7 +7,10 @@
       <div class="col-3">
         <button class="btn btn-outline-secondary ms-2">Export</button>
         <button class="btn btn-outline-secondary ms-2">Import</button>
-        <button class="btn btn-primary ms-2" (click)="createArt()">+ New</button>
+        <button class="btn btn-primary ms-2" (click)="goToCreate()">+ New</button>
+        <button class="btn btn-success  ms-2" (click)="switchView()">
+          <i class="fa-solid fa-border-all"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -15,15 +18,27 @@
     <!-- GRID - HEADER -->
     <div class="row grid-header justify-content-between align-items-center">
       <div class="col-5">
-        <!-- Input: Description -->
-        <input type="text" placeholder="Search..." [(ngModel)]="filter" (keyup.enter)="refresh()" >
-        <!-- Select: Filter Type -->
-        <select [(ngModel)]="filterType" id="filterType" class="form-select" name="filterType" >
-          <option [ngValue]="filterTypeItem.value" *ngFor="let filterTypeItem of filterTypeList">
-            {{filterTypeItem.key}}
-          </option>
-        </select>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <!-- Input: Search... -->
+          <input type="text" placeholder="Search..."
+                 formControlName="filter" class="form-control"
+                 [ngClass]="{'is-invalid': form.get('filter')?.invalid && (form.get('filter')?.touched || form.get('filter')?.dirty)}">
+          <app-validation-messages
+            [formCtrl]="form.get('filter')"
+            [feErrorMsgs]="FE_ERROR_MSGS['filter']">
+          </app-validation-messages>
+          <!-- Select: Filter Type -->
+          <select id="filterType" class="form-select" name="filterType"
+                  formControlName="filterType"
+                  (change)="updateFilterValidators(form.get('filterType')?.value)">
+            <option *ngFor="let filterTypeItem of filterTypeList"
+                    [ngValue]="filterTypeItem.value">
+              {{filterTypeItem.key}}
+            </option>
+          </select>
+        </form>
       </div>
+
       <div class="col-4">
         <div class="d-flex justify-content-between">
           <!-- Select - All -->
@@ -46,103 +61,53 @@
     <!-- GRID - BODY -->
     <div class="row grid-body">
 
-      <!-- *** ALERT MESSAGE *** -->
-      <!-- Operation Success -  -->
-      <div *ngIf="successMsg" id="successAlert" class="alert alert-success" role="alert">
-        {{ successMsg }}
-      </div>
-      <!-- Operation Error -->
-      <div *ngIf="errorResponse.message != ''" id="errorAlert" class="alert alert-danger" role="alert">
-        {{ errorResponse.message }}
-      </div>
+      <!-- *** ARTICLES *** -->
+      <ng-container *ngIf="viewModel$ | async as vm" id="articles-container">
 
-      <!-- Product CARD -->
-      <table *ngIf="errorResponse.message !== errorMessages.UnavailableServer.toString()" id="articles" class="table table-hover mb-5">
-        <thead>
-          <tr>
-            <th scope="col">CodArt</th>
-            <th scope="col">Description</th>
-            <th scope="col">Um</th>
-            <th scope="col">CodStat</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Weight(KG/LT)</th>
-            <th scope="col">IdArtStatus</th>
-            <th scope="col">Price</th>
-            <th scope="col">Date</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let article of articles$ | async">
-            <td>{{ article.codArt }}</td>
-            <td>{{ article.description }}</td>
-            <td>{{ article.um }}</td>
-            <td>{{ article.codStat }}</td>
-            <td>{{ article.pcsCart }}</td>
-            <td>{{ article.netWeight }}</td>
-            <td class="text-center">
-              <span class="badge rounded-pill"
-                [ngClass]="{'bg-success': article.idArtStatus === artStatus.Active,
-                'bg-warning text-dark': article.idArtStatus === artStatus.Suspended,
-                'bg-danger': article.idArtStatus === artStatus.Deleted}">
-                  {{ article.idArtStatus }}
-              </span>
-            </td>
-            <td>{{ article.price | currency:"EUR" }}</td>
-            <td>{{ article.creationDate | date:"dd-MM-yyyy" }}</td>
+        <!-- *** Spinner - Local Loading *** -->
+        <app-spinner [isVisible]="vm.showLoading"></app-spinner>
 
-            <!-- Buttons Group: DELETE, MODIFY, INFO, DETAIL -->
-            <td class="btn-group">
-              <button type="button" class="btn btn-light text-danger me-3"
-                (click)="deleteArt(article.codArt)">
-                Delete
-              </button>
-              <button type="button" class="btn btn-light fw-bold" data-bs-toggle="dropdown" aria-expanded="false">
-                ...
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Detail</a></li>
-                <li><a class="dropdown-item" href="#">Info</a></li>
-                <li><a class="dropdown-item" (click)="updateArt(article.codArt)">Edit</a></li>
-              </ul>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <!-- Article Result List - GRID / TABLE -->
+        <ng-container *ngIf="vm.showData">
+          <!-- VIEW-MODE: Grid -->
+          <ng-container *ngIf="vm.viewMode === 'grid'">
+            <div *ngIf="vm.articles.length > 0"
+                  class="row row-cols-1 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
+              <app-generic-card *ngFor="let article of vm.articles"
+                [data]="article"
+                [fieldsConfig]="cardFieldsConfig"
+                (edit)="goToEdit($event)"
+                (delete)="onDelete($event)">
+              </app-generic-card>
+            </div>
+            <!-- No Result Grid -->
+            <div *ngIf="vm.articles.length === 0" class="text-center py-4">
+              <i class="fa-solid fa-triangle-exclamation mb-2 me-2"></i>
+              <span class="fw-bold text-secondary">{{ NO_RESULT_MSG_KEY | translate }}</span>
+            </div>
+          </ng-container>
 
-      <!-- *** PAGINATION *** -->
-      <ul *ngIf="errorResponse.status !== statusCodes.NotFound
-                  &&
-                 paginationModel.totalPages > 1"
-          class="pagination justify-content-end">
+          <!-- VIEW-MODE: Table -->
+          <ng-container *ngIf="vm.viewMode === 'table'">
+            <app-articles-table
+              [data]="vm.articles"
+              (edit)="goToEdit($event)"
+              (delete)="onDelete($event)"
+              (detail)="goToDetail($event)">
+            </app-articles-table>
+          </ng-container>
 
-        <!-- Previous Page -->
-        <li class="page-item" [ngClass]="{'disabled pe-none': paginationModel.currentPage==1}">
-          <a class="page-link" (click)="pageChange(paginationModel.currentPage-1)">Previous</a>
-        </li>
+          <!-- *** PAGINATION *** -->
+          <ng-container *ngIf="vm.showPagination">
+            <app-pagination
+              [pagination]="vm.pagination"
+              [maxPagBtns]="MAX_TOT_PAG_BTNS"
+              (pageChange)="pageChange($event)">
+            </app-pagination>
+          </ng-container>
+        </ng-container>
 
-        <!-- Loop: Page Number - NEW VERSION -->
-        <ng-template ngFor let-pageNr [ngForOf]="paginationModel.totalPagesArray">
-          <li *ngIf="shouldDisplayPageNr(pageNr)" [ngClass]="{'active': isCurrentPageNr(pageNr)}" class="page-item">
-            <a class="page-link" #pageNrElement (click)="pageChange(pageNr)">
-              {{ displayPageNr(pageNr) }}
-              <!-- {{ pageNr }} -->
-            </a>
-          </li>
-        </ng-template>
-
-        <!-- Next Page -->
-        <li class="page-item" [class]="paginationModel.currentPage==paginationModel.totalPages ? 'disabled pe-none' : ''">
-          <a class="page-link" (click)="pageChange(paginationModel.currentPage+1)">Next</a>
-        </li>
-
-      </ul>
-      <!-- *** PAGINATION - END *** -->
-
+      </ng-container>
     </div>
   </div>
-
-  <!-- *** SPINNER - LOADING *** -->
-   <app-spinner></app-spinner>
-
 </section>

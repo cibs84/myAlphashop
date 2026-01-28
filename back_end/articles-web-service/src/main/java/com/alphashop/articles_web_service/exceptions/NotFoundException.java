@@ -1,6 +1,6 @@
 package com.alphashop.articles_web_service.exceptions;
 
-public class NotFoundException extends Exception {
+public class NotFoundException extends RuntimeException {
 
 	private static final long serialVersionUID = 2270349322050673409L;
 	private String errorMessage = "Item not found";

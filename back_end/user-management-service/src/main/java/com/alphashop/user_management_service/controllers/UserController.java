@@ -1,17 +1,12 @@
 package com.alphashop.user_management_service.controllers;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,13 +38,10 @@ public class UserController {
 	private UserService userService;
 	
 	@Autowired
-	private ResourceBundleMessageSource errMessageSource;
-	
-	@Autowired
 	private BCryptPasswordEncoder pwdEncoder;
 	
 	
-	@GetMapping("/find/all")
+	@GetMapping("/find")
 	public ResponseEntity<PaginatedResponseList<User, UserDto>> findAll(
 			@RequestParam(name = "currentPage", required = false) Optional<Integer> currentPage,
 			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
@@ -61,7 +53,7 @@ public class UserController {
 		return new ResponseEntity<PaginatedResponseList<User, UserDto>>(userPagList, HttpStatus.OK);
 	}
 	
-	@GetMapping("/find/userid/{userId}")
+	@GetMapping("/{userId}")
 	public ResponseEntity<UserDto> findUserId(@PathVariable(required = false) String userId) throws NotFoundException {
 		
 		if (userId == null) {
@@ -85,19 +77,8 @@ public class UserController {
 		return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
 	}
 	
-	@PostMapping("/create")
-	public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto,
-											BindingResult bindingResult) throws ItemAlreadyExistsException, BindingException, NotFoundException {
-		
-		// Check article data validity
-		if (bindingResult.hasErrors()) {
-			String msgErr = errMessageSource.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
-			log.warning(msgErr);
-			
-			List<ObjectError> errorValidationList = bindingResult.getAllErrors();
-			
-			throw new BindingException(msgErr, errorValidationList);
-		}
+	@PostMapping
+	public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto) throws ItemAlreadyExistsException, BindingException, NotFoundException {
 		
 		// Check if the user to be created already exists
 		UserDto user = userService.getByUserId(userDto.getUserId());
@@ -115,19 +96,8 @@ public class UserController {
 		return new ResponseEntity<UserDto>(newUserDto, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/update")
-	public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDto,
-											BindingResult bindingResult) throws BindingException, NotFoundException{
-		
-		// CHECK VALIDATION ERRORS
-		if (bindingResult.hasErrors()) {
-			String errMsg = errMessageSource.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
-			log.warning(errMsg);
-			
-			List<ObjectError> errorValidationList = bindingResult.getAllErrors();
-			
-			throw new BindingException(errMsg, errorValidationList);
-		}
+	@PutMapping("/{userId}")
+	public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDto) throws BindingException, NotFoundException{
 		
 		UserDto userDb = userService.getByUserId(userDto.getUserId());
 		if ( userDb == null) {
@@ -144,7 +114,7 @@ public class UserController {
 		return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/delete/{userId}")
+	@DeleteMapping("/{userId}")
 	public ResponseEntity<ObjectNode> delete(@PathVariable String userId) throws NotFoundException {
 		
 		UserDto userDto = userService.getByUserId(userId);

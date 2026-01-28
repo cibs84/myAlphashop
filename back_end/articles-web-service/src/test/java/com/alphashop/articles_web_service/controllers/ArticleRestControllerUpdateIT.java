@@ -22,7 +22,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	
 	private String JsonData = """
 	{
-	  "codArt": "123Test",
+	  "codart": "123Test",
 	  "description": "ARTICOLO UNIT TEST INSERIMENTO",
 	  "um": "PZ",
 	  "codStat": "TESTART",
@@ -35,7 +35,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	      "type": "CP"
 	    }],
 	  "ingredients": {
-	    "codArt": "123Test",
+	    "codart": "123Test",
 	    "info": "TEST INGREDIENTI"
 	  },
 	  "vat": {
@@ -51,7 +51,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	
 	private String JsonDataMod = """
 	{
-	  "codArt": "123Test",
+	  "codart": "123Test",
 	  "description": "ARTICOLO UNIT TEST MODIFICA",
 	  "um": "PZ",
 	  "codStat": "TESTART",
@@ -64,7 +64,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 	      "type": "CP"
 	    }],
 	  "ingredients": {
-	    "codArt": "123Test",
+	    "codart": "123Test",
 	    "info": "TEST INGREDIENTI"
 	  },
 	  "vat": {
@@ -89,7 +89,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 					.andExpect(status().isCreated())
 					.andDo(print());
 			
-			Article article = articleRepository.findByCodArt("123Test").get();
+			Article article = articleRepository.findByCodart("123Test").get();
 			assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST INSERIMENTO");
 		}
 		// Updating article '123Test'
@@ -100,7 +100,7 @@ class ArticleRestControllerUpdateIT extends BaseSpringIT {
 				.andExpect(content().json(JsonDataMod))
 				.andReturn();
 		
-		Article article = articleRepository.findByCodArt("123Test").get();
+		Article article = articleRepository.findByCodart("123Test").get();
 		assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST MODIFICA");
 	}
 	

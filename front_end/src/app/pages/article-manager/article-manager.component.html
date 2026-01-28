@@ -1,194 +1,259 @@
-
 <!-- SECTION: Article-Manager -->
-<section id="article-manager" class="py-4 container">
-  <div class="row g-5 justify-content-md-center">
-    <div class="col-md-7 col-lg-8">
-      <h4 class="mb-3">{{ title }}</h4>
+<section id="article-manager" class="container py-4"
+         *ngIf="viewModel$ | async as vm">
 
-      <!-- *** ALERT MESSAGE *** -->
-      <!-- Operation Success -  -->
-      <div *ngIf="successMsg" id="successAlert" class="alert alert-success mt-4" role="alert">
-        {{ successMsg }}
-      </div>
-      <!-- Operation Error -->
-      <div *ngIf="errorResp.message" id="errorAlert" class="alert alert-danger mt-4" role="alert">
-        {{ errorResp.message }}
-      </div>
+  <!-- *** SPINNER - LOADING *** -->
+  <app-spinner [isVisible]="vm.showLoading"></app-spinner>
 
-      <!-- FORM -->
-      <form class="needs-validation" (ngSubmit)="artForm.dirty && saveArt(artForm)" #artForm="ngForm">
-        <div class="row g-3">
+  <!-- Show Data -->
+  <ng-container *ngIf="vm.showData">
 
-          <!-- Codart -->
-          <div class="col-sm-6">
-            <label for="codart" class="form-label">Codart*</label>
-            <input type="text" class="form-control" id="codart" name="codArt"  pattern="[a-zA-Z0-9]+" required
-                   #codart="ngModel" [(ngModel)]="article.codArt" minlength="5" maxlength="20"
-                   [class]="getValidationClass(codart)">
-            <div class="valid-feedback" *ngIf="codart.valid && (codart.dirty || codart.touched)">Looks good!</div>
-            <!-- <div class="invalid-feedback" *ngIf="codart.invalid && (codart.dirty || codart.touched) || errorResp.errorValidationMap?.['codArt']">
-              <ul>
-                <li [class]="!errorResp.errorValidationMap || errorResp.errorValidationMap['codArt'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp.errorValidationMap?.['codArt']">{{ error }}</li>
-                <li *ngIf="!errorResp.errorValidationMap || errorResp.errorValidationMap['codArt'][0] === ''">{{ codart.errors?.['pattern'] ? PATTERN_FIELD_MSG : REQ_FIELD_MSG }}</li>
-              </ul>
+    <!-- Error 404 - Not found article -->
+    <app-status-info
+      *ngIf="vm.errorVM && vm.errorVM?.status === 404"
+      [title]="vm.errorVM.message"
+      icon="fa-circle-exclamation"
+      iconClass="text-danger"
+      [showBackButton]="true"
+      [showHomeButton]="true"
+      (back)="goBack()">
+    </app-status-info>
+
+    <!-- Article Manager -->
+    <div class="row g-5 justify-content-md-center"
+         *ngIf="!vm.errorVM || vm.errorVM.status !== 404">
+
+      <div class="col-md-7 col-lg-8">
+        <h4 class="mb-3">{{ vm.title }}</h4>
+
+        <!-- FORM -->
+        <form class="needs-validation" [formGroup]="form">
+          <div class="row g-3">
+
+            <!-- Codart -->
+            <div class="col-sm-6">
+              <label for="codart" class="form-label">Codart*</label>
+              <input type="text" class="form-control" id="codart"
+                    formControlName="codart"
+                    [class]="getValidationClass('codart')">
+              <app-validation-messages
+                [formCtrl]="form.get('codart')"
+                [beErrorMsgs]="getBackendErrorsByField('codart')"
+                [feErrorMsgs]="FE_ERROR_MSGS['codart']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Barcode -->
+            <div class="col-sm-6">
+              <label for="barcodes" class="form-label">Barcodes</label>
+              <input type="text" class="form-control" id="barcodes"
+                    formControlName="barcodes"
+                    [class]="getValidationClass('barcodes')">
+              <app-validation-messages
+                [formCtrl]="form.get('barcodes')"
+                [beErrorMsgs]="getBackendErrorsByField('barcodes')"
+                [feErrorMsgs]="FE_ERROR_MSGS['barcodes']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+              <label for="description" class="form-label">Description*</label>
+              <textarea class="form-control" id="description"
+                        formControlName="description"
+                        [class]="getValidationClass('description')"></textarea>
+              <app-validation-messages
+                [formCtrl]="form.get('description')"
+                [beErrorMsgs]="getBackendErrorsByField('description')"
+                [feErrorMsgs]="FE_ERROR_MSGS['description']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Ingredients -->
+            <div class="col-12">
+              <label for="ingredients" class="form-label">Ingredients</label>
+              <textarea class="form-control" id="ingredients"
+                        formControlName="ingredients"
+                        [class]="getValidationClass('ingredients')"></textarea>
+              <app-validation-messages
+                [formCtrl]="form.get('ingredients')"
+                [beErrorMsgs]="getBackendErrorsByField('ingredients')"
+                [feErrorMsgs]="FE_ERROR_MSGS['ingredients']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Unit of Measurement -->
+            <div class="col-md-6">
+              <label for="um" class="form-label">Unit of measurement</label>
+              <select class="form-select" id="um"
+                      formControlName="um"
+                      [class]="getValidationClass('um')">
+                <option [ngValue]="null">Please select</option>
+                <option [ngValue]="'PZ'">Pieces</option>
+                <option [ngValue]="'LT'">Liters</option>
+                <option [ngValue]="'KG'">Kilograms</option>
+              </select>
+              <app-validation-messages
+                [formCtrl]="form.get('um')"
+                [beErrorMsgs]="getBackendErrorsByField('um')"
+                [feErrorMsgs]="FE_ERROR_MSGS['um']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Vat -->
+            <div class="col-md-6">
+              <label for="vat" class="form-label">Vat*</label>
+              <select class="form-select" id="vat"
+                      formControlName="vat"
+                      [class]="getValidationClass('vat')">
+                <option [ngValue]="null">Select</option>
+                <option [ngValue]="vat.idVat" *ngFor="let vat of vm.vatList">{{ vat.description }}</option>
+              </select>
+              <app-validation-messages
+                [formCtrl]="form.get('vat')"
+                [beErrorMsgs]="getBackendErrorsByField('vat')"
+                [feErrorMsgs]="FE_ERROR_MSGS['vat']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Quantity (PcsCart) -->
+            <div class="col-sm-3">
+              <label for="pcsCart" class="form-label">Quantity</label>
+              <input type="number" class="form-control" id="pcsCart"
+                      formControlName="pcsCart"
+                      [class]="getValidationClass('pcsCart')">
+              <app-validation-messages
+                [formCtrl]="form.get('pcsCart')"
+                [beErrorMsgs]="getBackendErrorsByField('pcsCart')"
+                [feErrorMsgs]="FE_ERROR_MSGS['pcsCart']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Net Weight -->
+            <div class="col-sm-3">
+              <label for="netWeight" class="form-label">Net Weight</label>
+              <input type="number" class="form-control" id="netWeight" step="0.01"
+                      formControlName="netWeight"
+                      [class]="getValidationClass('netWeight')">
+              <app-validation-messages
+                [formCtrl]="form.get('netWeight')"
+                [beErrorMsgs]="getBackendErrorsByField('netWeight')"
+                [feErrorMsgs]="FE_ERROR_MSGS['netWeight']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Price -->
+            <div class="col-sm-3">
+              <label for="price" class="form-label">Price*</label>
+              <input type="number" class="form-control" id="price" step="0.01"
+                      formControlName="price"
+                      [class]="getValidationClass('price')">
+              <app-validation-messages
+                [formCtrl]="form.get('price')"
+                [beErrorMsgs]="getBackendErrorsByField('price')"
+                [feErrorMsgs]="FE_ERROR_MSGS['price']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Currency -->
+            <div class="col-md-3">
+              <label for="currency" class="form-label invisible">Currency</label>
+              <select class="form-select" id="currency"
+                      formControlName="currency"
+                      [class]="getValidationClass('currency')">
+                <option [ngValue]="'EUR'">EUR</option>
+                <option [ngValue]="'USD'">USD</option>
+                <option [ngValue]="'GBP'">GBP</option>
+              </select>
+              <app-validation-messages
+                [formCtrl]="form.get('currency')"
+                [beErrorMsgs]="getBackendErrorsByField('currency')"
+                [feErrorMsgs]="FE_ERROR_MSGS['currency']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Category -->
+            <div class="col-md-6">
+              <label for="category" class="form-label">Category*</label>
+              <select class="form-select" id="category"
+                      formControlName="category"
+                      [class]="getValidationClass('category')">
+                <option [ngValue]="null">Select</option>
+                <option [ngValue]="category.id" *ngFor="let category of vm.categories">
+                  {{ category.id }} - {{ category.description }}
+                </option>
+              </select>
+              <app-validation-messages
+                [formCtrl]="form.get('category')"
+                [beErrorMsgs]="getBackendErrorsByField('category')"
+                [feErrorMsgs]="FE_ERROR_MSGS['category']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Status -->
+            <div class="col-md-6">
+              <label for="idArtStatus" class="form-label">Status*</label>
+              <select class="form-select" id="idArtStatus"
+                      formControlName="idArtStatus"
+                      [class]="getValidationClass('idArtStatus')">
+                <option [ngValue]="null">Select</option>
+                <option [ngValue]="1">Active</option>
+                <option [ngValue]="2">Suspended</option>
+                <option [ngValue]="3">Deleted</option>
+              </select>
+              <app-validation-messages
+                [formCtrl]="form.get('idArtStatus')"
+                [beErrorMsgs]="getBackendErrorsByField('idArtStatus')"
+                [feErrorMsgs]="FE_ERROR_MSGS['idArtStatus']">
+              </app-validation-messages>
+            </div>
+
+            <!-- Image -->
+            <!-- <div class="col-12">
+              <label for="artimage" class="form-label">Image</label>
+              <div class="input-group has-validation">
+                <span class="input-group-text">Select File</span>
+                <input type="text" class="form-control" id="artimage" placeholder="No file selected"
+                        formControlName="imageUrl"
+                        [class]="getValidationClass('imageUrl')">
+                <app-validation-messages
+                  [formCtrl]="form.get('imageUrl')"
+                  [beErrorMsgs]="getBackendErrorsByField('imageUrl')"
+                  [feErrorMsgs]="FE_ERROR_MSGS['imageUrl']">
+                </app-validation-messages>
+              </div>
             </div> -->
-            <app-validation-messages
-              [errors]="errorResp.errorValidationMap?.['codArt'] ?? []"
-              [ngModel]="codart"
-              [defaultMsg]="REQ_FIELD_MSG"
-              [customMsgs]="{ pattern: PATTERN_FIELD_MSG }">
-            </app-validation-messages>
           </div>
 
-          <!-- Barcode -->
-          <div class="col-sm-6">
-            <label for="barcode" class="form-label">Barcode</label>
-            <input type="text" class="form-control" id="barcode" name="barcodes" [ngModelOptions]="{standalone: true}"
-                   #barcodes="ngModel" [(ngModel)]="selectedBarcode" disabled>
-          </div>
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-between mt-4">
+            <div>
+              <!-- DELETE - Delete Article -->
+              <button
+                *ngIf="vm.isEditMode"
+                type="button"
+                class="btn btn-danger"
+                (click)="onDelete()">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </div>
 
-          <!-- Description -->
-          <div class="col-12">
-            <label for="description" class="form-label">Description*</label>
-            <textarea class="form-control" id="description" name="description"
-                      minlength="6" maxlength="80" required
-                      [(ngModel)]="article.description" #description="ngModel"
-                      [class]="getValidationClass(description)"></textarea>
-            <div class="valid-feedback" *ngIf="description.valid && (description.dirty || description.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="description.invalid && (description.dirty || description.touched) || errorResp.errorValidationMap?.['description']">
-              <ul>
-                <li [class]="!errorResp.errorValidationMap || errorResp.errorValidationMap['description'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp.errorValidationMap?.['description']">{{ error }}</li>
-                <li *ngIf="!errorResp.errorValidationMap || errorResp.errorValidationMap['description'][0] === ''">{{ REQ_FIELD_MSG }}</li>
-              </ul>
+            <div class="d-flex gap-2">
+              <!-- CANCEL - Go back -->
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="goBack()">
+                Cancel
+              </button>
+
+              <!-- SUBMIT - Save Article -->
+              <button (click)="onSubmit()" class="btn btn-primary">Save</button>
             </div>
           </div>
 
-          <!-- Unit of Measurement -->
-          <div class="col-md-6">
-            <label for="um" class="form-label">Unit of measurement</label>
-            <select class="form-select" id="um" name="um"
-                    #um="ngModel" [(ngModel)]="article.um"
-                    [class]="getValidationClass(um)">
-              <option [ngValue]="null">Please select</option>
-              <option [ngValue]="'PZ'">Pieces</option>
-              <option [ngValue]="'LT'">Liters</option>
-              <option [ngValue]="'KG'">Kilograms</option>
-            </select>
-            <div class="valid-feedback" *ngIf="um.valid && (um.dirty || um.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="um.invalid && (um.dirty || um.touched) || errorResp.errorValidationMap?.['um']">
-              <ul>
-                <li [class]="!errorResp.errorValidationMap || errorResp.errorValidationMap['um'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp.errorValidationMap?.['um']">{{ error }}</li>
-                <li *ngIf="!errorResp.errorValidationMap || errorResp.errorValidationMap['um'][0] === ''">{{ REQ_FIELD_MSG }}</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Vat -->
-          <div class="col-md-6">
-            <label for="vat" class="form-label">Vat</label>
-            <select class="form-select" id="vat" name="vat"
-                    #vat="ngModel" [(ngModel)]="selectedVat"
-                    [class]="getValidationClass(vat)">
-              <option [ngValue]="null">---SELECT VAT---</option>
-              <option [ngValue]="vat.idVat" *ngFor="let vat of vatList">{{ vat.description }} - {{ vat === article.vat }}</option>
-            </select>
-          </div>
-
-          <!-- Quantity (PcsCart) -->
-          <div class="col-sm-3">
-            <label for="pcsCart" class="form-label">Quantity</label>
-            <input type="number" class="form-control" id="pcsCart" name="pcsCart"
-                   #pcsCart="ngModel" [(ngModel)]="article.pcsCart" pattern="[0-9]*" min="0" max="100"
-                   [class]="getValidationClass(pcsCart)">
-            <div class="valid-feedback" *ngIf="pcsCart.valid && (pcsCart.dirty || pcsCart.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="pcsCart.invalid && (pcsCart.dirty || pcsCart.touched) || errorResp.errorValidationMap?.['pcsCart']">
-              <ul>
-                <li [class]="!errorResp.errorValidationMap || errorResp.errorValidationMap['pcsCart'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp.errorValidationMap?.['pcsCart']">{{ error }}</li>
-                <li *ngIf="!errorResp.errorValidationMap || errorResp.errorValidationMap['pcsCart'][0] === ''">{{ MIN_MAX_NR_FIELD_MSG }}</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Net Weight -->
-          <div class="col-sm-3">
-            <label for="netWeight" class="form-label">Net Weight</label>
-            <input type="number" step="0.01" class="form-control" id="netWeight" step="0.01" min="0.01"
-                   #netWeight="ngModel" [(ngModel)]="article.netWeight" name="netWeight"
-                   [class]="getValidationClass(netWeight)">
-            <div class="valid-feedback" *ngIf="netWeight.valid && (netWeight.dirty || netWeight.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="netWeight.invalid && (netWeight.dirty || netWeight.touched) || errorResp.errorValidationMap?.['netWeight']">
-              <ul>
-                <li [class]="!errorResp.errorValidationMap || errorResp.errorValidationMap['netWeight'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp.errorValidationMap?.['netWeight']">{{ error }}</li>
-                <li *ngIf="!errorResp.errorValidationMap || errorResp.errorValidationMap['netWeight'][0] === ''">{{ NO_NEG_NR_OR_ZERO_FIELD_MSG }}</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Price -->
-          <div class="col-sm-3">
-            <label for="price" class="form-label">Price</label>
-            <input type="number" class="form-control" id="price" step="0.01" min="0"
-                   #price="ngModel" [(ngModel)]="article.price" name="price"
-                   [class]="getValidationClass(price)">
-            <div class="valid-feedback" *ngIf="price.valid && (price.dirty || price.touched)">Looks good!</div>
-            <div class="invalid-feedback" *ngIf="price.invalid && (price.dirty || price.touched) || errorResp.errorValidationMap?.['price']">
-              <ul>
-                <li [class]="!errorResp.errorValidationMap || errorResp.errorValidationMap['price'].length > 1 ? 'pointed-list' : ''" *ngFor="let error of errorResp.errorValidationMap?.['price']">{{ error }}</li>
-                <li *ngIf="!errorResp.errorValidationMap || errorResp.errorValidationMap['price'][0] === ''">{{ NO_NEG_NR_FIELD_MSG }}</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Currency -->
-          <div class="col-md-3">
-            <label for="currency" class="form-label invisible">Currency</label>
-            <select class="form-select" id="currency" name="currency">
-              <option value="">EUR</option>
-              <option value="">USD</option>
-              <option value="">GBP</option>
-            </select>
-          </div>
-
-          <!-- Category -->
-          <div class="col-md-6">
-            <label for="category" class="form-label">Category</label>
-            <select class="form-select" id="category" name="category"
-                    #category="ngModel" [(ngModel)]="selectedCategory"
-                    [class]="getValidationClass(category)">
-              <option [ngValue]="null">---SELECT CATEGORY---</option>
-              <option [ngValue]="category.id" *ngFor="let category of categories">{{ category.id }} - {{ category.description }}</option>
-            </select>
-          </div>
-
-          <!-- Status -->
-          <div class="col-md-6">
-            <label for="idArtStatus" class="form-label">Status</label>
-            <select class="form-select" id="idArtStatus" name="idArtStatus"
-                    #idArtStatus="ngModel" [(ngModel)]="article.idArtStatus"
-                    [class]="getValidationClass(idArtStatus)">
-              <option [ngValue]="null">---SELECT STATUS---</option>
-              <option [ngValue]="'1'">Active</option>
-              <option [ngValue]="'2'">Suspended</option>
-              <option [ngValue]="'3'">Deleted</option>
-            </select>
-          </div>
-
-          <!-- Image -->
-          <div class="col-12">
-            <label for="artimage" class="form-label">Image</label>
-            <div class="input-group has-validation">
-              <span class="input-group-text">Select File</span>
-              <input type="text" class="form-control" id="artimage" placeholder="No file selected">
-            </div>
-          </div>
-        </div>
-
-        <!-- SUBMIT - Save Article -->
-        <button type="submit" class="btn btn-primary mt-4">Save Article</button>
-        <!-- <button type="submit" class="btn btn-primary mt-4" [disabled]="!artForm.valid">Save Article</button> -->
-
-      </form>
-
+        </form>
+      </div>
     </div>
-  </div>
+  </ng-container>
 </section>

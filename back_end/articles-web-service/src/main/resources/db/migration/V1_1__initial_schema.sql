@@ -162,7 +162,7 @@ BEGIN
 	 SELECT (ACQUISTATO - RESO - VENDUTO - USCITE - SCADUTI) INTO V_RetVal
      FROM MOVIMENTI
      WHERE
-     CODART = V_CodArt;  
+     CODART = V_Codart;  
 	 
 	 IF V_RetVal < 0 THEN
 		RAISE NO_DATA_FOUND;
@@ -173,7 +173,7 @@ BEGIN
 	EXCEPTION
 	WHEN NO_DATA_FOUND
     THEN
-		RAISE INFO 'AVVISO: Valore di Magazzino dell''articolo %s minore di 0',V_CodArt;
+		RAISE INFO 'AVVISO: Valore di Magazzino dell''articolo %s minore di 0',V_Codart;
         RETURN 0;
 END;
 $$;
@@ -241,7 +241,7 @@ BEGIN
 		Uf_GetQtaMag(A.CODART) AS QtaMag
 		FROM ARTICOLI A JOIN FAMASSORT B
 		ON A.IDFAMASS = B.ID
-		WHERE A.CODART = V_CodArt
+		WHERE A.CODART = V_Codart
 	);
 END;
 $$;

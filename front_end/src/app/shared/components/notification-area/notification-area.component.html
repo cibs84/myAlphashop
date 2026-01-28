@@ -1,0 +1,20 @@
+<div *ngIf="notification$ | async as notification"
+     aria-live="polite" aria-atomic="true" class="bg-body-secondary position-relative bd-example-toasts rounded-3 ">
+
+  <div class="toast-container p-3 position-fixed top-0 start-50 translate-middle-x" id="toastPlacement">
+
+    <div class="toast show" [ngClass]="{
+              'bg-success': notification.type === 'success',
+              'bg-danger': notification.type === 'error',
+              'bg-info': notification.type === 'info',
+              'bg-warning': notification.type === 'warning'}"
+              role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-body"
+           [ngClass]="notification.type === 'warning'
+                      ? 'text-dark' : 'text-white'">
+        {{ notification.message }}
+      </div>
+    </div>
+
+  </div>
+</div>

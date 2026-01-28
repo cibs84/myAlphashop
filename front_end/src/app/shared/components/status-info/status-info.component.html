@@ -1,0 +1,18 @@
+<div class="text-center py-5 animate__animated animate__fadeIn">
+  <div class="mb-4">
+    <i class="fa-solid fs-1" [ngClass]="[icon, iconClass]"></i>
+  </div>
+
+  <h2 class="display-6 fw-bold">{{ title }}</h2>
+  <p *ngIf="subtitle" class="text-muted fs-5">{{ subtitle }}</p>
+
+  <div class="mt-4 d-flex justify-content-center gap-2">
+    <button *ngIf="showBackButton" class="btn btn-outline-primary" (click)="back.emit()">
+      <i class="fa-solid fa-arrow-left me-2"></i>Indietro
+    </button>
+
+    <button *ngIf="showHomeButton" class="btn btn-primary" routerLink="/articles">
+      <i class="fa-solid fa-list me-2"></i>Torna alla Lista
+    </button>
+  </div>
+</div>

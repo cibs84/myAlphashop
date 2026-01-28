@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alphashop.articles_web_service.dtos.CategoryDto;
+import com.alphashop.articles_web_service.dtos.CategoryResponseDto;
 import com.alphashop.articles_web_service.entities.Category;
 import com.alphashop.articles_web_service.exceptions.NotFoundException;
 import com.alphashop.articles_web_service.mappers.CategoryMapper;
@@ -28,7 +28,7 @@ public class CategoryService {
 		this.categoryMapper = categoryMapper;
 	}
 
-	public List<CategoryDto> getAll() throws NotFoundException {
+	public List<CategoryResponseDto> getAll() throws NotFoundException {
 		List<Category> categories = categoryRepository.findAll();
 		
 		if (categories.isEmpty()) {
@@ -39,7 +39,7 @@ public class CategoryService {
 			throw new NotFoundException(errMessage);
 		}
 		
-		List<CategoryDto> categoriesDto = categories.stream().map(category -> categoryMapper.toModel(category))
+		List<CategoryResponseDto> categoriesDto = categories.stream().map(category -> categoryMapper.toModel(category))
 				.collect(Collectors.toList());
 		
 		return categoriesDto;

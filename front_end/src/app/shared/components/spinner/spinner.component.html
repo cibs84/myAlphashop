@@ -1,5 +1,13 @@
-<div class="d-flex justify-content-center m-5" *ngIf="loading$ | async">
+<!-- Wrapper -->
+<div *ngIf="isVisible"
+     class="spinner-wrapper"
+     [ngClass]="{'global-overlay': isGlobal}">
+
+  <!-- Spinner -->
   <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
-    <span class="visually-hidden">Loading...</span>
+    <span class="visually-hidden">hidden element</span>
   </div>
+
+  <!-- Text -->
+  <span class="spinner-text">Loading...</span>
 </div>

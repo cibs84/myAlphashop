@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -35,16 +36,6 @@ public class JWTWebSecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-
-	private static final String[] USER_MATCHER = { "/api/articles/find/**",
-												   "/api/categories/find/**",
-												   "/api/vat/find/**"};
-
-	private static final String[] ADMIN_MATCHER = { "/api/articles/create/**",
-												    "/api/articles/update/**",
-												    "/api/articles/delete/**"};
-	
-
 	@Bean
     UserDetailsService userDetailsService() {
         return username -> null; // Disabilita l'autenticazione basata su UserDetailsService
@@ -60,10 +51,26 @@ public class JWTWebSecurityConfig {
 	        .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
 	        .authorizeHttpRequests(authz -> 
 	        {
-	            authz
-	                .requestMatchers(ADMIN_MATCHER).hasRole("ADMIN")
-	                .requestMatchers(USER_MATCHER).hasRole("USER")
-	                .anyRequest().authenticated();
+	        	authz
+                // Regole per ARTICLE (Scrittura solo ADMIN, Lettura USER/ADMIN)
+                .requestMatchers(HttpMethod.POST, "/api/articles/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/articles/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/articles/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/articles/**").hasAnyRole("USER", "ADMIN")
+                
+                // Regole per CATEGORY (Scrittura solo ADMIN, Lettura USER/ADMIN)
+                .requestMatchers(HttpMethod.POST, "/api/categories/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/categories/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/categories/**").hasAnyRole("USER", "ADMIN")
+                
+                // Regole per VAT (Scrittura solo ADMIN, Lettura USER/ADMIN)
+                .requestMatchers(HttpMethod.POST, "/api/vat/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/vat/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/vat/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/vat/**").hasAnyRole("USER", "ADMIN")
+
+                .anyRequest().authenticated();
 	        });
 
 	    return http.build();
@@ -81,8 +88,12 @@ public class JWTWebSecurityConfig {
 	
 		  
 	      CorsConfiguration configuration = new CorsConfiguration();
-	      configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200",
-														"http://localhost:4300"));
+	      configuration.setAllowedOrigins(Arrays.asList(
+					"http://localhost:4200", // Frontend Angular dev
+				    "http://localhost:4300", 
+				    "http://localhost:8084", // Porta esposta da Nginx container
+				    "http://127.0.0.1:8084"	// Opzionale, per sicurezza
+		  ));
 	      configuration.setAllowedMethods(Arrays.asList("GET","POST","OPTIONS","DELETE","PUT"));
 	      configuration.setMaxAge((long) 3600);
 	      configuration.setAllowedHeaders(allowedHeaders);

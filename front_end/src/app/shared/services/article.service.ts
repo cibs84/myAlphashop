@@ -2,69 +2,89 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Pagination } from 'src/app/shared/models/Pagination';
 import { PaginatedResponseList } from 'src/app/shared/models/PaginatedResponseList';
-import { Article, Vat, Category } from 'src/app/shared/models/Article';
 import { environment } from "src/environments/environment";
+import { ArticleResponse } from '../models/ArticleResponse';
+import { ArticleCreateRequest } from '../models/ArticleCreateRequest';
+import { ArticleUpdateRequest } from '../models/ArticleUpdateRequest';
+import { Category } from '../models/Category';
+import { Vat } from '../models/Vat';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ArticleService {
-
   apiUrl: string = environment.apiUrl;
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
-  private queryStringBuilder(pagination?: Pagination) {
-    const currentPage = pagination?.currentPage ?? 1;
-    const pageSize = pagination?.pageSize ?? 10;
-    return `?currentPage=${currentPage}&pageSize=${pageSize}`;
-  }
-
-  getArticleByCodart = (/*codArt*/ filter: string) => {
-    return this.httpClient.get<Article>(`${this.apiUrl}/articles/find/codart/${filter}`,
-      { observe: 'response' }
+  getArticleByCodart = (codart: string) => {
+    return this.httpClient.get<ArticleResponse>(
+      `${this.apiUrl}/articles/${codart}`
     );
   };
 
-  getArticlesByDesc = (/*description*/ filter: string, pagination: Pagination) => {
-    return this.httpClient.get<PaginatedResponseList<Article>>(`${this.apiUrl}/articles/find/description/${filter}${this.queryStringBuilder(pagination)}`,
-      {observe: "response"}
+  getArticlesByDesc = (description: string, pagination: Pagination) => {
+    return this.httpClient.get<PaginatedResponseList<ArticleResponse>>(
+      `${this.apiUrl}/articles${this.queryStringBuilder(
+        { description: description },
+        pagination
+      )}`
     );
   };
 
-  getArticleByBarcode = (/*barcode(=ean)*/ filter: string) => {
-    return this.httpClient.get<Article>(`${this.apiUrl}/articles/find/barcode/${filter}`,
-      {observe: "response"}
+  getArticleByBarcode = (barcode: string) => {
+    return this.httpClient.get<ArticleResponse>(
+      `${this.apiUrl}/articles/by-barcode/${barcode}`
     );
   };
 
-  deleteArticleByCodart = (codArt: string) => {
-    return this.httpClient.delete<Object>(`${this.apiUrl}/articles/delete/${codArt}`,
-      {observe: "response"}
-    );
-  }
+  deleteArticleByCodart = (codart: string) => {
+    return this.httpClient.delete<void>(`${this.apiUrl}/articles/${codart}`);
+  };
 
-  createArt = (article: Article) => {
-    return this.httpClient.post<Article>(`${this.apiUrl}/articles/create`, article,
-      {observe: "response"}
+  createArt = (article: ArticleCreateRequest) => {
+    return this.httpClient.post<ArticleResponse>(
+      `${this.apiUrl}/articles`,
+      article
     );
-  }
+  };
 
-  updateArt = (article: Article) => {
-    return this.httpClient.put<Article>(`${this.apiUrl}/articles/update`, article,
-      {observe: "response"}
+  updateArt = (article: ArticleUpdateRequest, codart: string) => {
+    return this.httpClient.put<ArticleResponse>(
+      `${this.apiUrl}/articles/${codart}`,
+      article
     );
-  }
+  };
 
   getCategories = () => {
-    return this.httpClient.get<Category[]>(`${this.apiUrl}/categories/find/all`,
-      {observe: "response"}
+    return this.httpClient.get<Category[]>(
+      `${this.apiUrl}/categories/find/all`
     );
-  }
+  };
 
   getVatList = () => {
-    return this.httpClient.get<Vat[]>(`${this.apiUrl}/vat/find/all`,
-      {observe: "response"}
+    return this.httpClient.get<Vat[]>(`${this.apiUrl}/vat/find/all`);
+  };
+
+  private queryStringBuilder(
+    params: {
+      description?: string;
+    },
+    pagination?: Pagination
+  ) {
+    let queryString = '?';
+    Object.entries(params).forEach(
+      ([key, value]) => (queryString += `${key}=${value}&`)
     );
+
+    queryString = queryString.slice(0, -1); // Remove '&' from tail
+
+    if (pagination != null) {
+      const currentPage = pagination?.currentPage ?? 1;
+      const pageSize = pagination?.pageSize ?? 10;
+      queryString += `&currentPage=${currentPage}&pageSize=${pageSize}`;
+    }
+
+    return queryString;
   }
 }

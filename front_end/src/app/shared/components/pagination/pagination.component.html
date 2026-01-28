@@ -1,0 +1,22 @@
+<ul *ngIf="pagination.hasPages" class="pagination justify-content-end">
+
+  <!-- Previous Page -->
+  <li class="page-item" [ngClass]="{'disabled pe-none': pagination.currentPage==1}">
+    <a class="page-link" (click)="onPageBtnClick(pagination.currentPage-1)">Previous</a>
+  </li>
+
+  <!-- Loop: Page Number -->
+  <div *ngFor="let pageNr of pagination.pageNrArray">
+    <li *ngIf="shouldDisplayPageNr(pageNr)" [ngClass]="{'active': isCurrentPageNr(pageNr)}" class="page-item">
+      <a class="page-link" (click)="onPageBtnClick(pageNr)">
+        {{ displayPageNr(pageNr) }}
+      </a>
+    </li>
+  </div>
+
+  <!-- Next Page -->
+  <li class="page-item" [class]="pagination.currentPage==pagination.totalPages ? 'disabled pe-none' : ''">
+    <a class="page-link" (click)="onPageBtnClick(pagination.currentPage+1)">Next</a>
+  </li>
+
+</ul>

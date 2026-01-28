@@ -8,6 +8,41 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-  <app-root></app-root>
+  <!-- App-Root -->
+  <app-root>
+    <style>
+      .app-loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f8f9fa;
+        font-family: sans-serif;
+      }
+      .loading-spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 0.25em solid #dee2e6;
+        border-right-color: #0d6efd; /* Colore Primary Bootstrap */
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+        margin-bottom: 1rem;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      .loading-text {
+        color: #6c757d;
+        font-weight: 500;
+      }
+    </style>
+
+    <!-- Spinner -->
+    <div class="app-loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">System initialization...</div>
+    </div>
+  </app-root>
 </body>
 </html>

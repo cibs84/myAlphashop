@@ -1,39 +1,29 @@
 package com.alphashop.articles_web_service.mappers;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Component;
 
-import com.alphashop.articles_web_service.common.mappers.BaseAlphaMapper;
-import com.alphashop.articles_web_service.dtos.CategoryDto;
+import com.alphashop.articles_web_service.dtos.CategoryRefDto;
+import com.alphashop.articles_web_service.dtos.CategoryResponseDto;
 import com.alphashop.articles_web_service.entities.Category;
 
 @Component
-public class CategoryMapper extends BaseAlphaMapper<Category, CategoryDto> {
+public class CategoryMapper {
 
-	@Override
-	public CategoryDto toModel(Category entity, CategoryDto model) {
-		CategoryDto categoryDto = null;
+	public CategoryResponseDto toModel(Category entity) {
+		if(entity == null) return null;
 		
-		if (entity != null) {
-			categoryDto = Optional.ofNullable(model).orElseGet(CategoryDto::new);
-			categoryDto.setDescription(entity.getDescription());
-			categoryDto.setId(entity.getId());
-		}
+		CategoryResponseDto categoryDto = new CategoryResponseDto();
+		categoryDto.setDescription(entity.getDescription());
+		categoryDto.setId(entity.getId());
 		
 		return categoryDto;
 	}
 
-	@Override
-	public Category toEntity(CategoryDto model, Category entity) {
-		Category category = null;
+	public Category toEntity(CategoryRefDto model) {
+		if (model == null) return null;
 		
-		if (model != null) {
-			category = Optional.ofNullable(entity).orElseGet(Category::new);
-			category.setDescription(model.getDescription());
-			category.setId(model.getId());
-		}
-		
+		Category category = new Category();
+		category.setId(model.getId());
 		return category;
 	}
 

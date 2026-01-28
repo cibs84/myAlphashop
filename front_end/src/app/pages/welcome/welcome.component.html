@@ -1,7 +1,27 @@
-<app-jumbotron [title]="title" [subtitle]="subtitle" [show]="false"></app-jumbotron>
-<section>
-  <h1 class="mb-3">Welcome {{userId}}, click <a routerLink="/articles">here</a> to view our products</h1>
-  <button class="btn btn-primary mb-3 mx-auto" (click)="getGreetings()">SAY HELLO</button>
-  <h3 *ngIf="greetings !== ''">{{ greetings }}</h3>
-  <h3 *ngIf="error" class="text-danger">{{ error }}</h3>
-</section>
+<ng-container *ngIf="viewModel$ | async as vm">
+  <!-- Jumbotron -->
+  <app-jumbotron
+    [title]="vm.title"
+    [subtitle]="vm.subtitle"
+    [showLoginSignup]="false">
+  </app-jumbotron>
+
+  <!-- Local Spinner -->
+  <app-spinner [isVisible]="vm.showLoading"></app-spinner>
+
+  <!-- Error - Status Info Component -->
+  <app-status-info
+    *ngIf="vm.errorVM && vm.errorVM?.status === 404"
+    [title]="vm.errorVM.message"
+    icon="fa-circle-exclamation"
+    iconClass="text-danger"
+    [showBackButton]="true"
+    [showHomeButton]="true"
+    (back)="goBack()">
+  </app-status-info>
+
+  <!-- Welcome -->
+  <section *ngIf="vm.showData">
+    <h1 class="mb-3">Welcome {{vm.username}}, click <a routerLink="/articles">here</a> to view our products</h1>
+  </section>
+</ng-container>

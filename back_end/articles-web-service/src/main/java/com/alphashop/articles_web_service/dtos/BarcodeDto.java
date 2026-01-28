@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class BarcodeDto {
 
-	@NotBlank(message = "{NotBlank.BarcodeDto.barcode.Validation}")
+	@NotBlank(message = "{validation.required}")
 	private String barcode;
 	
-	@NotBlank(message = "{NotBlank.BarcodeDto.type.Validation}")
-	private String type;
+	@NotBlank(message = "{validation.required}")
+	private String idTypeArt;
 }

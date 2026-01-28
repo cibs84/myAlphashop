@@ -5,23 +5,31 @@ import {
   HttpEvent,
   HttpInterceptor
 } from '@angular/common/http';
-import { finalize, Observable } from 'rxjs';
-import { LoadingService } from 'src/app/core/services/loading.service';
+import { delay, finalize, Observable } from 'rxjs';
 import { LoggingService } from 'src/app/core/services/logging.service';
+import { LoadingStateService } from '../services/loading-state.service';
 
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
 
-  constructor(private loader: LoadingService, private logger: LoggingService) {}
+  constructor(private loader: LoadingStateService, private logger: LoggingService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 
-    this.loader.show();
+    const isGlobalLoading = this.loader.isGlobalLoading;
+
+    if (!isGlobalLoading) {
+      this.loader.setLocal(true);
+    }
 
     return next.handle(request).pipe(
+      delay(800),
       finalize(() => {
         this.logger.log('LoadingInterceptor : finalize');
-        this.loader.hide();
+
+        if (!isGlobalLoading) {
+          this.loader.setLocal(false);
+        }
       })
     );
   }

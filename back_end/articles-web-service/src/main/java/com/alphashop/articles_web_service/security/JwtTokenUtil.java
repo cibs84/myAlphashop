@@ -53,7 +53,7 @@ public class JwtTokenUtil implements Serializable {
 				  .parseSignedClaims(token).getPayload();
 	}
 
-	private Boolean isTokenExpired(String token) throws Exception {
+	public Boolean isTokenExpired(String token) throws Exception {
 		final Date expiration = getExpirationDateFromToken(token);
 		if (expiration.before(Date.from(clock.instant()))) {
 			return true;

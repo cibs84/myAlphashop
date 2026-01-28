@@ -10,6 +10,6 @@ public class ErrorResponse {
 
 	private Date date = new Date();
 	private int status;
-	private String message;
+	private String code;
 	private Map<String, List<String>> errorValidationMap;
 }

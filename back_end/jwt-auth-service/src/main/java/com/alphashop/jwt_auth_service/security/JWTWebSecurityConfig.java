@@ -8,25 +8,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.alphashop.jwt_auth_service.security.constants.PublicRoutes;
 
-import lombok.SneakyThrows;
-
 
 @Configuration
 @EnableWebSecurity
-public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class JWTWebSecurityConfig {
 
     @Autowired
     @Qualifier("CustomUserDetailsService")
@@ -34,44 +31,37 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Autowired
     private JwtCookieAuthenticationFilter jwtCookieAuthenticationFilter;
-    
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoderBean());
-    }
 
+    // 2. Il PasswordEncoder rimane un Bean
     @Bean
-    static PasswordEncoder passwordEncoderBean() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // 3. Nuovo modo per esportare l'AuthenticationManager
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 
-    @Override
-    @SneakyThrows
-    protected void configure(HttpSecurity httpSecurity) {
+    // 4. Configurazione principale tramite SecurityFilterChain
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors(withDefaults()) // usa la configurazione CORS globale definita nel FiltersCorsConfig
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeRequests(requests -> requests
-                        .antMatchers(HttpMethod.POST, PublicRoutes.LOGIN).permitAll()
-                        .antMatchers(HttpMethod.POST, PublicRoutes.REFRESH).permitAll()
-                        .antMatchers(HttpMethod.POST, PublicRoutes.LOGOUT).permitAll()
-                        .antMatchers(HttpMethod.GET, PublicRoutes.PUBLIC_ROUTES).permitAll()
-                        .anyRequest().authenticated())
-                .exceptionHandling(handling -> handling.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
-                .addFilterBefore(jwtCookieAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    }
-    
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring()
-            .antMatchers(HttpMethod.OPTIONS, "/**");
+            .cors(withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth // Nota: authorizeHttpRequests invece di authorizeRequests
+                .requestMatchers(HttpMethod.POST, PublicRoutes.LOGIN).permitAll() // requestMatchers invece di antMatchers
+                .requestMatchers(HttpMethod.POST, PublicRoutes.REFRESH).permitAll()
+                .requestMatchers(HttpMethod.POST, PublicRoutes.LOGOUT).permitAll()
+                .requestMatchers(HttpMethod.GET, PublicRoutes.PUBLIC_ROUTES).permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Sostituisce WebSecurity.ignoring()
+                .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+            .addFilterBefore(jwtCookieAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return httpSecurity.build();
     }
 }
-

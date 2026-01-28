@@ -1,0 +1,130 @@
+<div class="container my-5">
+  <ng-container *ngIf="viewModel$ | async as vm">
+
+    <!-- *** SPINNER - LOADING *** -->
+    <app-spinner
+      [isVisible]="vm.showLoading">
+    </app-spinner>
+
+    <!-- Error 404 - Not Found Article -->
+    <app-status-info
+      *ngIf="vm.errorVM && vm.errorVM?.status === 404"
+      [title]="vm.errorVM.message"
+      icon="fa-circle-exclamation"
+      iconClass="text-danger"
+      [showBackButton]="true"
+      [showHomeButton]="true"
+      (back)="goBack()">
+    </app-status-info>
+
+    <!-- Article Detail -->
+    <ng-container *ngIf="vm.article">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Dettaglio Articolo: {{ vm.article.description }}</h1>
+      </div>
+
+      <div class="row g-4">
+
+          <div class="col-lg-8">
+              <div class="card shadow-sm h-100">
+                  <div class="card-body">
+
+                      <div class="row mb-3">
+                          <div class="col-md-6">
+                              <p class="mb-1"><strong class="text-primary">Codice Articolo:</strong> {{ vm.article.codart }}</p>
+                              <p class="mb-1"><strong>Descrizione Completa:</strong> {{ vm.article.description }}</p>
+                              <p class="mb-1" *ngIf="vm.article.category"><strong>Categoria:</strong> {{ vm.article.category.id }} - {{ vm.article.category?.description }}</p>
+                          </div>
+                          <div class="col-md-6">
+                              <p class="mb-1"><strong>Unità di Misura:</strong> {{ vm.article.um }}</p>
+                              <p class="mb-1"><strong>Codice Statistico:</strong> {{ vm.article.codStat }}</p>
+                              <p class="mb-1"><strong>Stato Articolo:</strong>
+                                  <span class="badge rounded-pill"
+                                        [ngClass]="{
+                                                    'bg-success': vm.article.idArtStatus === 1,
+                                                    'bg-warning text-dark': vm.article.idArtStatus === 2,
+                                                    'bg-danger': vm.article.idArtStatus === 3
+                                                  }">
+                                      {{ vm.article.idArtStatus | literalItemStatus }}
+                                  </span>
+                              </p>
+                          </div>
+                      </div>
+
+                      <hr>
+
+                      <!-- Dati Commerciali -->
+                      <h5 class="card-title text-success mb-3">Dati Commerciali</h5>
+                      <div class="row">
+                          <div class="col-md-4">
+                              <p class="mb-1"><strong>Prezzo (Netto):</strong> <span class="fs-4">{{ vm.article.price | currency:'EUR' }}</span></p>
+                          </div>
+                          <div class="col-md-4">
+                              <p class="mb-1"><strong>Peso Netto:</strong> {{ vm.article.netWeight | number:'1.2-2' }} kg</p>
+                              <p class="mb-1"><strong>Pezzi per Cartone:</strong> {{ vm.article.pcsCart }}</p>
+                          </div>
+                          <div class="col-md-4">
+                              <p class="mb-1" *ngIf="vm.article.vat"><strong>Aliquota IVA:</strong> {{ vm.article.vat.idVat }}% ({{ vm.article.vat.description }})</p>
+                              <p class="mb-1"><strong>Data Creazione:</strong> {{ vm.article.creationDate | date:'dd/MM/YYYY' }}</p>
+                          </div>
+                      </div>
+
+                      <hr>
+
+                      <!-- Barcodes -->
+                      <h5 class="card-title mt-4 mb-3">Codici a Barre</h5>
+                      <ng-container *ngIf="vm.article.barcodes && vm.article.barcodes.length > 0; else noBarcodes">
+                        <ul class="list-group list-group-flush">
+                          <li *ngFor="let barcode of vm.article.barcodes"
+                              class="list-group-item d-flex justify-content-between">
+                              <span>{{ barcode.barcode }}</span>
+                              <small class="text-muted">{{ barcode.barcode }}</small>
+                          </li>
+                        </ul>
+                      </ng-container>
+                      <!-- No Barcode - Template -->
+                      <ng-template #noBarcodes>
+                        <p class="text-muted small">Nessun codice a barre disponibile.</p>
+                      </ng-template>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-lg-4">
+
+              <!-- Action Buttons - Card -->
+              <div class="card bg-light mb-4">
+                  <div class="card-header">Azioni</div>
+                  <div class="card-body d-grid gap-2">
+                      <button class="btn btn-warning" (click)="goToEdit()">
+                          <i class="bi bi-pencil-square"></i> Modifica Articolo
+                      </button>
+                      <button class="btn btn-danger"
+                              (click)="onDelete()">
+                          <i class="bi bi-trash"></i> Elimina Articolo
+                      </button>
+                      <button class="btn btn-outline-secondary" [routerLink]="['/articles']">
+                          Torna alla Lista
+                      </button>
+                  </div>
+              </div>
+
+              <!-- Ingredients - Card -->
+              <div class="card shadow-sm h-auto">
+                  <div class="card-header">Ingredienti</div>
+                  <div class="card-body">
+                      <p *ngIf="vm.article.ingredients?.info; else noIngredients">
+                        {{ vm.article.ingredients.info }}
+                      </p>
+                      <!-- No Ingredients - Template -->
+                      <ng-template #noIngredients>
+                        <p class="text-muted small">Nessuna informazione sugli ingredienti disponibile.</p>
+                      </ng-template>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>
+

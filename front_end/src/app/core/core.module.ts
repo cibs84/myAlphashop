@@ -6,6 +6,7 @@ import { JumbotronComponent } from '../shared/components/jumbotron/jumbotron.com
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from '../shared/components/spinner/spinner.component';
 import { ValidationMessagesComponent } from '../shared/components/validation-messages/validation-messages.component';
+import { NotificationAreaComponent } from '../shared/components/notification-area/notification-area.component';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { ValidationMessagesComponent } from '../shared/components/validation-mes
     FooterComponent,
     JumbotronComponent,
     SpinnerComponent,
-    ValidationMessagesComponent
+    ValidationMessagesComponent,
+    NotificationAreaComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +26,8 @@ import { ValidationMessagesComponent } from '../shared/components/validation-mes
     FooterComponent,
     JumbotronComponent,
     SpinnerComponent,
-    ValidationMessagesComponent
+    ValidationMessagesComponent,
+    NotificationAreaComponent
   ]
 })
 export class CoreModule { }

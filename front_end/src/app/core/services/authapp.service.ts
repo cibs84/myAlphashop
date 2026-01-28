@@ -5,6 +5,7 @@ import { environment } from "src/environments/environment";
 import { LoggingService } from "./logging.service";
 import { PublicRoutesService } from "./public-routes.service";
 import { UserStateService } from "./user-state.service";
+import { LoadingStateService } from "./loading-state.service";
 
 @Injectable({
   providedIn: 'root'
@@ -16,16 +17,17 @@ export class AuthappService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   private isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  public isAppInitializedSubject = new ReplaySubject<boolean>(1);
-  public isAppInitialized$ = this.isAppInitializedSubject.asObservable().pipe(take(1));
+  public isAppInitializedSubject = new BehaviorSubject<boolean>(false);
+  public isAppInitialized$ = this.isAppInitializedSubject.asObservable();
 
   constructor(private httpClient: HttpClient,
               private logger: LoggingService,
               private publicRoutesService: PublicRoutesService,
-              private userStateService: UserStateService) {}
+              private userStateService: UserStateService,
+              private loader: LoadingStateService) {}
 
   login = (username: string, password: string): Observable<boolean> => {
-    this.logger.log('AuthappService : login');
+    this.logger.log('[AuthappService] login()');
 
     return this.httpClient.post(`${this.apiUrl}/authentication/login`,
       { username, password }, { observe: "response" }).pipe(
@@ -37,14 +39,14 @@ export class AuthappService {
             return true;
           }),
           catchError((error) => {
-            this.logger.error("❌ Errore nel recupero delle informazioni utente:", error);
+            this.logger.error("[AuthappService] ❌ Errore nel recupero delle informazioni utente:", error);
             this.setAuthenticated(false);
             return of(false);
           }),
         );
       }),
       catchError((error) => {
-        this.logger.error("❌ Errore nel login:", error);
+        this.logger.error("[AuthappService] ❌ Errore nel login:", error);
         this.setAuthenticated(false);
         return throwError(() => error);
       })
@@ -52,17 +54,17 @@ export class AuthappService {
   }
 
   logout = () => {
-    this.logger.log('AuthappService : logout');
+    this.logger.log('[AuthappService] logout()');
 
     return this.httpClient.post(`${this.apiUrl}/authentication/logout`, null, {observe: "response"})
       .pipe(
         tap(() => {
-          this.logger.log('Logout eseguito con successo');
+          this.logger.log('[AuthappService] Logout eseguito con successo');
           this.setAuthenticated(false);
           this.userStateService.clearUserState();
         }),
         catchError(error => {
-          this.logger.error("❌ Errore durante il logout:", error);
+          this.logger.error("[AuthappService] ❌ Errore durante il logout:", error);
           this.setAuthenticated(false);
           this.userStateService.clearUserState();
           return throwError(() => error);
@@ -79,28 +81,28 @@ export class AuthappService {
   }
 
   initializeAuthStatus(): Observable<any> {
-    this.logger.log('App Initializer: Loading public routes, user info and initializing authenticated status...');
+    this.logger.log('[AuthappService] initializeAuthStatus() | App Initializer: Loading public routes, user info and initializing authenticated status...');
     return this.publicRoutesService.loadPublicRoutes().pipe(
       switchMap(() => {
-        this.logger.log('✅ Rotte pubbliche caricate. Ora inizializzo user info...');
+        this.logger.log('[AuthappService] ✅ Rotte pubbliche caricate. Ora inizializzo user info...');
         return this.userStateService.getUserInfo().pipe(
           take(1),
           tap(userInfo => {
             if (userInfo && userInfo.username) {
-              this.logger.log('👤 Utente autenticato durante init:', userInfo.username);
+              this.logger.log('[AuthappService] 👤 Utente autenticato durante init:', userInfo.username);
               this.setAuthenticated(true);
             } else {
-              this.logger.log('🚫 Nessun utente autenticato durante init');
+              this.logger.log('[AuthappService] 🚫 Nessun utente autenticato durante init');
               this.setAuthenticated(false);
             }
           }),
           catchError(error => {
-            this.logger.log('⚠️ getUserInfo() fallita durante init:', error.status);
+            this.logger.log('[AuthappService] ⚠️ getUserInfo() fallita durante init:', error.status);
             this.setAuthenticated(false);
             return of(null);
           }),
           finalize(() => {
-            this.logger.log('✅ App initialization completed');
+            this.logger.log('[AuthappService] ✅ App initialization completed');
             this.isAppInitializedSubject.next(true);
           }),
         );

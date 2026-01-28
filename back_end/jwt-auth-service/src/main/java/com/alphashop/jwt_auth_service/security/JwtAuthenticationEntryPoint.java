@@ -1,10 +1,12 @@
 package com.alphashop.jwt_auth_service.security;
 
+import java.io.IOException;
+
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

@@ -17,3 +17,34 @@ html, body { height:100% }
 
 .page-item { cursor: pointer }
 
+/* Rimuove il focus per i click del mouse */
+input:focus {
+    outline: unset !important;
+    box-shadow: none !important;
+}
+
+.global-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.7);
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: all;
+}
+
+// Local Spinner Wrapper
+.spinner-wrapper {
+  display: flex;
+  align-items: center;
+
+  .spinner-text {
+    margin-left: 1rem;
+    font-size: 1.3rem
+  }
+}

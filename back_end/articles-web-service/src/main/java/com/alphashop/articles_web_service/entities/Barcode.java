@@ -30,10 +30,10 @@ public class Barcode implements Serializable {
 
 	// 'codart' is the FK that will only appear in the db and is referenced
 	// to the 'codart' column of the 'articles' table
-	// which corresponds to the variable 'codArt' of the class Article
+	// which corresponds to the variable 'codart' of the class Article
 	@JsonBackReference
 	@EqualsAndHashCode.Exclude
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "codart", referencedColumnName = "codArt")
+	@JoinColumn(name = "codart", referencedColumnName = "codart")
     private Article article;
 }

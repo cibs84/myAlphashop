@@ -1,19 +1,11 @@
 package com.alphashop.articles_web_service.controllers;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,24 +17,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alphashop.articles_web_service.common.PaginatedResponseList;
-import com.alphashop.articles_web_service.dtos.ArticleDto;
+import com.alphashop.articles_web_service.dtos.ArticleCreateRequestDto;
+import com.alphashop.articles_web_service.dtos.ArticleResponseDto;
+import com.alphashop.articles_web_service.dtos.ArticleUpdateRequestDto;
 import com.alphashop.articles_web_service.entities.Article;
-import com.alphashop.articles_web_service.exceptions.BindingException;
 import com.alphashop.articles_web_service.exceptions.ItemAlreadyExistsException;
 import com.alphashop.articles_web_service.exceptions.NotDeletableException;
-import com.alphashop.articles_web_service.exceptions.NotFoundException;
 import com.alphashop.articles_web_service.mappers.ArticleMapper;
 import com.alphashop.articles_web_service.services.ArticleService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/articles")
 public class ArticleController {
-
-	private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
 
 	@Autowired
 	ArticleService articleService;
@@ -50,170 +40,94 @@ public class ArticleController {
 	@Autowired
 	ArticleMapper articleMapper;
 	
-	@Autowired
-	private ResourceBundleMessageSource errMessageSource;
-	
-	@Value("${codartArtNotDeletable}")
-	private String codartArtNotDeletable;
+	@Value("${codartNotDeletable}")
+	private String codartNotDeletable;
 
-	@GetMapping("/find/all")
-	public ResponseEntity<PaginatedResponseList<Article, ArticleDto>> listAll(
-			@RequestParam(name = "currentPage", required = false) Optional<Integer> currentPage,
-			@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
-		
-		logger.info("******** Get all articles ********");
-
-		PaginatedResponseList<Article, ArticleDto> articlePagList = articleService.getAll(currentPage, pageSize);
-		
-		return new ResponseEntity<PaginatedResponseList<Article, ArticleDto>>(articlePagList, HttpStatus.OK);
-	}
-
-	@GetMapping(path = {"/find/barcode/{ean}",
-						"/find/barcode/**"})
-	public ResponseEntity<ArticleDto> listArtByEan(@PathVariable(name = "ean", required = false) String ean) throws NotFoundException {
-
-		if (ean == null || ean.isBlank()) {
-			throw new NotFoundException("Insert a valid barcode!");
-		}
-		
-		logger.info("******** Get article with barcode %s ********".formatted(ean));
-
-		ArticleDto articleDto = articleService.getByBarcode(ean);
-		
-		return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
-	}
-
-	@GetMapping(path = {"/find/codart/{codart}", 
-						"/find/codart/**"})
-	public ResponseEntity<ArticleDto> listArtByCodArt(@PathVariable(name = "codart", required = false) String codArt) throws NotFoundException {
-
-		if (codArt == null || codArt.isBlank()) {
-			throw new NotFoundException("Insert a valid codArt!");
-		}
-		
-		logger.info("******** Get article with codart %s ********".formatted(codArt));
-
-		ArticleDto articleDto = articleService.getByCodArt(codArt);
-
-		if (articleDto == null) {
-			String errorMessage = "The article with codart " + codArt + " was not found!";
-			logger.warn(errorMessage);
-
-			throw new NotFoundException(errorMessage);
-		}
-		
-		return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
-	}
-	
-	@GetMapping(path = {"/find/description/{description}",
-						"/find/description/**"})
-	public ResponseEntity<PaginatedResponseList<Article, ArticleDto>> listArtByDesc(@PathVariable(name = "description", required = false) String description,
+	@GetMapping
+	public ResponseEntity<PaginatedResponseList<Article, ArticleResponseDto>> find(
+			@RequestParam(value = "description", required = false) Optional<String> description,
 			@RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
-			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) throws NotFoundException {
+			@RequestParam(value = "pageSize", required = false) Optional<Integer> pageSize) {
 		
-		if (description == null || description.isBlank()) description = "";
+		log.info("******** Search article by {} ********", description);
 		
-		logger.info("******** Get articles by description %s ********".formatted(description));
+		String desc = description.filter(s -> !s.isBlank()).orElse("");
 		
-		PaginatedResponseList<Article, ArticleDto> articlePagList = articleService.getByDescription(description, currentPage, pageSize);
-		return new ResponseEntity<PaginatedResponseList<Article, ArticleDto>>(articlePagList, HttpStatus.OK);
+		PaginatedResponseList<Article, ArticleResponseDto> articlePagList = articleService.findByDescription(desc, currentPage, pageSize);
+		return new ResponseEntity<PaginatedResponseList<Article, ArticleResponseDto>>(articlePagList, HttpStatus.OK);
 	}
 
-	@PostMapping("/create")
-	public ResponseEntity<ArticleDto> insArt(@Valid @RequestBody ArticleDto articleDto,
-											BindingResult bindingResult)
-			throws ItemAlreadyExistsException, NotFoundException, BindingException {
-
-		logger.info("******** Created article %s ********".formatted(articleDto.getCodArt()));
-
-		// Check article data validity
-		if (bindingResult.hasErrors())
-		{
-			String msgErr = errMessageSource.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
-			
-			logger.warn(msgErr);
-			
-			List<ObjectError> errorValidationList = bindingResult.getAllErrors();
-			
-			throw new BindingException(msgErr, errorValidationList);
-		}
+	@GetMapping(path = "/by-barcode/{barcode}")
+	public ResponseEntity<ArticleResponseDto> findByBarcode(@PathVariable(name = "barcode") String barcode) {
 		
+		log.info("******** Get article with {} ********", barcode);
+
+		ArticleResponseDto articleDto = articleService.findByBarcode(barcode);
+		
+		return new ResponseEntity<ArticleResponseDto>(articleDto, HttpStatus.OK);
+	}
+
+	@GetMapping(path = "/{codart}")
+	public ResponseEntity<ArticleResponseDto> findByCodart(@PathVariable(name = "codart") String codart) {
+		
+		log.info("******** Get article with {} ********", codart);
+
+		ArticleResponseDto articleDto = articleService.findByCodart(codart);
+		
+		return new ResponseEntity<ArticleResponseDto>(articleDto, HttpStatus.OK);
+	}
+
+	@PostMapping
+	public ResponseEntity<ArticleResponseDto> create(
+			@Valid @RequestBody ArticleCreateRequestDto articleDto) {
+
+		log.info("******** Creation of article with codart {} ********", articleDto.getCodart());
+
 		// Check if the article to be created already exists
-		ArticleDto article = articleService.getByCodArt(articleDto.getCodArt());
-		if (article != null) {
+		if (articleService.existsByCodart(articleDto.getCodart())) {
 			String errorMessage = "Article '%s - %s' already exists"
-					.formatted(articleDto.getCodArt(), articleDto.getDescription());
-			logger.warn(errorMessage);
+					.formatted(articleDto.getCodart(), articleDto.getDescription());
+			log.warn(errorMessage);
 
 			throw new ItemAlreadyExistsException(errorMessage);
 		}
 		
 		Article articleCreated = articleService.create(articleDto);
-		ArticleDto articleDtoCreated = articleMapper.toModel(articleCreated);
-		return new ResponseEntity<ArticleDto>(articleDtoCreated, HttpStatus.CREATED);
+		ArticleResponseDto articleDtoCreated = articleMapper.toModel(articleCreated);
+		return new ResponseEntity<ArticleResponseDto>(articleDtoCreated, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/update")
-	public ResponseEntity<ArticleDto> updArticle(@Valid @RequestBody ArticleDto articleDto,
-												BindingResult bindingResult) throws BindingException, NotFoundException, ItemAlreadyExistsException {
+	@PutMapping(path = "/{codart}")
+	public ResponseEntity<ArticleResponseDto> update(
+			@Valid @RequestBody ArticleUpdateRequestDto articleDto,
+			@PathVariable(name = "codart") String codart) {
 		
-		logger.info("******** Update of article %s ********".formatted(articleDto.getCodArt()));
+		log.info("******** Update article with codart {} ********", codart);
+				
+		Article updatedArt = articleService.update(articleDto, codart);
+		ArticleResponseDto updatedArtDto = articleMapper.toModel(updatedArt);
 		
-		if (bindingResult.hasErrors()) {
-			
-			String msgErr = errMessageSource.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
-			
-			logger.warn(msgErr);
-			
-			List<ObjectError> errorValidationList = bindingResult.getAllErrors();
-			
-			throw new BindingException(msgErr, errorValidationList);
-		}
-		
-		ArticleDto articleCheck = articleService.getByCodArt(articleDto.getCodArt());
-		
-		if (articleCheck == null) {
-			String errMsg = String.format("Article '%s' doesn't exist", articleDto.getCodArt());
-
-			logger.warn(errMsg);
-	
-			throw new NotFoundException(errMsg);
-		}
-		
-		Article updatedArt = articleService.create(articleDto);
-		ArticleDto updatedArtDto = articleMapper.toModel(updatedArt);
-		
-		return new ResponseEntity<ArticleDto>(updatedArtDto, HttpStatus.OK);
+		return new ResponseEntity<ArticleResponseDto>(updatedArtDto, HttpStatus.OK);
 	}
 	
 	
-	@DeleteMapping("/delete/{codart}")
-	public ResponseEntity<ObjectNode> delArt(@PathVariable("codart") String codArt) throws NotFoundException, NotDeletableException {
+	@DeleteMapping(path = "/{codart}")
+	public ResponseEntity<Void> delete(@PathVariable(name = "codart") String codart) {
 		
-		ArticleDto articleDto = articleService.getByCodArt(codArt);
+		log.info("******** Deleting of artilce with codart {} ********", codart);
 		
-		if (articleDto == null) {
-			String errMessage = String.format("Article to be deleted '%s' was not found", codArt);
-			logger.warn(errMessage);
-			
-			throw new NotFoundException(errMessage);
-		}
+		ArticleResponseDto articleDto = articleService.findByCodart(codart);
 		
-		if (articleDto.getCodArt().equals(codartArtNotDeletable)) {
-			String errMessage = String.format("Article '%s' not deletable", this.codartArtNotDeletable);
-			logger.warn(errMessage);
+		if (articleDto.getCodart().equals(codartNotDeletable)) {
+			String errMessage = String.format("Article '%s' not deletable", this.codartNotDeletable);
+			log.warn(errMessage);
 			throw new NotDeletableException(errMessage);
 		}
 
-		Article article = articleMapper.toEntity(articleDto);
-		articleService.delete(article);
+		articleService.delete(codart);
 		
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode responseNode = mapper.createObjectNode();
+		log.warn(String.format("Deleting article '%s - %s' performed successfully", articleDto.getCodart(), articleDto.getDescription()));
 		
-		responseNode.put("status", HttpStatus.OK.toString());
-		responseNode.put("message", String.format("Deleting article '%s - %s' performed successfully", article.getCodArt(), article.getDescription()));
-		
-		return new ResponseEntity<ObjectNode>(responseNode, HttpStatus.OK);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 }

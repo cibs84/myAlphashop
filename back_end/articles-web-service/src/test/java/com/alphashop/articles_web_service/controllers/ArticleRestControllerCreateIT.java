@@ -22,7 +22,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 	
 	private String JsonData = """
 	{
-	    "codArt": "123Test",
+	    "codart": "123Test",
 	    "description": "ARTICOLO UNIT TEST INSERIMENTO",
 	    "um": "PZ",
 	    "codStat": "TESTART",
@@ -37,7 +37,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 	        }
 	    ],
 	    "ingredients": {
-	        "codArt": "123Test",
+	        "codart": "123Test",
 	        "info": "TEST INGREDIENTI"
 	    },
 	    "category": {
@@ -60,7 +60,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 				.andExpect(content().json(JsonData))
 				.andReturn();
 		
-		Article article = articleRepository.findByCodArt("123Test").get();
+		Article article = articleRepository.findByCodart("123Test").get();
 		assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST INSERIMENTO");
 	}
 
@@ -74,7 +74,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 					.andExpect(status().isCreated())
 					.andDo(print());
 			
-			Article article = articleRepository.findByCodArt("123Test").get();
+			Article article = articleRepository.findByCodart("123Test").get();
 			assertThat(article.getDescription()).isEqualTo("ARTICOLO UNIT TEST INSERIMENTO");
 		}
 		
@@ -91,7 +91,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 
 	String ErrJsonData = """
 	{
-	    "codArt": "123Test",
+	    "codart": "123Test",
 	    "description": "asd",
 	    "um": "PZ",
 	    "codStat": "TESTART",
@@ -106,7 +106,7 @@ class ArticleRestControllerCreateIT extends BaseSpringIT {
 	        }
 	    ],
 	    "ingredients": {
-	        "codArt": "123Test",
+	        "codart": "123Test",
 	        "info": "TEST INGREDIENTI"
 	    },
 	    "category": {

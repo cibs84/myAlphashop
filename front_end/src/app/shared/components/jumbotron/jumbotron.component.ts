@@ -12,7 +12,7 @@ export class JumbotronComponent implements OnInit {
   @Input()
   subtitle: string = "Subtitle";
   @Input()
-  show: boolean = true;
+  showLoginSignup: boolean = true;
 
   constructor() { }
 

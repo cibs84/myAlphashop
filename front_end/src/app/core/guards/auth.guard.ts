@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthappService } from 'src/app/core/services/authapp.service';
-import { map, catchError, take, switchMap } from 'rxjs/operators';
+import { map, catchError, take, switchMap, filter } from 'rxjs/operators';
 import { LoggingService } from 'src/app/core/services/logging.service';
 
 @Injectable({
@@ -20,6 +20,8 @@ export class AuthGuard implements CanActivate {
     this.logger.log('🔐 AuthGuard: controllo login (attendendo inizializzazione)');
 
     return this.authService.isAppInitialized$.pipe(
+      filter(initialized => initialized === true),
+      take(1),
       switchMap(() => {
         return this.authService.isLogged().pipe(
           take(1),

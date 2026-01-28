@@ -1,13 +1,14 @@
 package com.alphashop.articles_web_service.security;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,8 +44,26 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
+    // Routes that the filter should ignore
+    private static final List<String> SKIP_FILTER_URLS = Arrays.asList(
+            "/api/public",
+            "/v3/api-docs",
+            "/swagger-ui",
+            "/favicon.ico"
+    );
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        
+        // If the path starts with one of those in the list, the filter is not performed.
+        return SKIP_FILTER_URLS.stream().anyMatch(path::startsWith);
+    }
+    
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request, 
+    								@NonNull HttpServletResponse response, 
+    								@NonNull FilterChain chain)
             throws ServletException, IOException {
 
         log.info(String.format("Authentication Request For '%s'", request.getRequestURL()));
@@ -52,8 +71,6 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
         String jwtToken = getTokenFromCookies(request);
 
         if (jwtToken != null) {
-
-
             try {
                 jwtTokenUtil.validateToken(jwtToken);
 	            Claims claims = jwtTokenUtil.getAllClaimsFromToken(jwtToken);
@@ -78,8 +95,8 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
                 return;
             }
         } else {
-			handleJwtException(response, null);
-            return;
+        	handleJwtException(response, null);
+        	return;
         }
 
         // Filters chain continues..
@@ -102,28 +119,28 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
     private void handleJwtException(HttpServletResponse response, Throwable e) throws IOException {
     	log.warning("Unauthorized Access");
     	
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType("application/json");
+    	String code = "UNAUTHORIZED";
+
+        if (e instanceof ExpiredJwtException) {
+            code = "TOKEN_EXPIRED";
+        } else if (
+            e instanceof SignatureException ||
+            e instanceof MalformedJwtException ||
+            e instanceof UnsupportedJwtException
+        ) {
+            code = "INVALID_TOKEN";
+        } else if (e == null) {
+            code = "UNAUTHORIZED"; // token mancante
+        }
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setDate(new Date());
         errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-
-        // Map to associate exceptions with custom messages
-        Map<Class<? extends Throwable>, String> errorMessages = Map.of(
-                ExpiredJwtException.class, "Token expired.",
-                SignatureException.class, "Invalid token signature.",
-                MalformedJwtException.class, "Invalid token format.",
-                UnsupportedJwtException.class, "Unsupported token type."
-        );
-
-        if (e == null) {
-            errorResponse.setMessage("Authentication error: No JWT token found.");
-        } else {
-            errorResponse.setMessage(errorMessages.getOrDefault(e.getClass(), e.getMessage()));
-        }
+        errorResponse.setCode(code);
 
         // Write the response error
         response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
     }
 }

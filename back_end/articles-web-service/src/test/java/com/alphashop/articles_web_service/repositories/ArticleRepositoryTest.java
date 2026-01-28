@@ -26,13 +26,13 @@ public class ArticleRepositoryTest extends BaseSpringIT {
 
 	@Test
 	public void testFindByDescriptionLikePage() {
-		Page<Article> items = articleRepository.findByDescriptionLikeOrderByCodArtAsc("%ACquA%", PageRequest.of(0, 10));
+		Page<Article> items = articleRepository.findByDescriptionLikeOrderByCodartAsc("%ACquA%", PageRequest.of(0, 10));
 		assertEquals(10, items.getNumberOfElements());
 	}
 
 	@Test
-	public void testFindByCodArt() throws Exception {
-		assertThat(articleRepository.findByCodArt("002000301").get()).extracting(Article::getDescription)
+	public void testFindByCodart() throws Exception {
+		assertThat(articleRepository.findByCodart("002000301").get()).extracting(Article::getDescription)
 				.isEqualTo("ACQUA ULIVETO 15 LT");
 
 	}

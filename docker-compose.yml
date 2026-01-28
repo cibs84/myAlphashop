@@ -21,7 +21,7 @@ services:
       - ${PGSQL_SVC_NAME}
 
   postgresql:
-    image: postgres:16
+    image: ${PGSQL_DKR_IMAGE}
     restart: ${PGSQL_RESTART}
     container_name: ${PGSQL_SVC_NAME}
     volumes: 
@@ -33,6 +33,7 @@ services:
     ports:
       - ${PGSQL_PORTS}
     environment:
+      - POSTGRES_DB=${PGSQL_INITIAL_DB}
       - POSTGRES_PASSWORD=${PGSQL_PWD}
 
   pgadmin:
@@ -69,8 +70,6 @@ services:
       - ${USR_MNG__PORTS}
     environment:
       - SPRING_PROFILES_ACTIVE=${USR_MNG__SPR_PROFILE}
-    depends_on:
-        - ${MGDB_SVC_NAME}
     networks: 
       alphashop:
         aliases: 
@@ -81,17 +80,43 @@ services:
     restart: ${MGDB_RESTART}
     container_name: ${MGDB_SVC_NAME}
     volumes: 
+      # Lo script JS viene eseguito solo al primo avvio (volume vuoto)
+      - ./database/mongodb/init-mongo-users.js:/docker-entrypoint-initdb.d/init-mongo-users.js:ro
+      
       - ${MGDB_SVC_NAME}-data:${MGDB_CONTAINER_DATA}
       - ${MGDB_SVC_NAME}-config:${MGDB_CONTAINER_CONFIG}
       - ${MGDB_SVC_NAME}-log:${MGDB_CONTAINER_LOG}
     ports:
       - ${MGDB_PORTS}
-    user: "root"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=pass123
+      - MONGO_INITDB_DATABASE=ms-users
     networks:
       alphashop:
         aliases:
           - ${MGDB_SVC_NAME}
-    entrypoint: ["mongod", "-f", "/etc/mongod.conf"]
+
+  ###---- BACK-END - JWT-AUTH ----###
+  jwt-auth:
+    image: ${SPR_BT__DKR_IMAGE}:${JWT_AUTH__SVC_NAME}
+    build:
+      context: ${SPR_BT__DKR_CONTEXT}
+      dockerfile: ${SPR_BT__DKR_FILE}
+      args:
+        - JAR_FILE=${JWT_AUTH__JAR_FILE}
+    restart: ${JWT_AUTH__RESTART}
+    container_name: ${JWT_AUTH__SVC_NAME}
+    ports:
+      - ${JWT_AUTH__PORTS}
+    environment:
+      - SPRING_PROFILES_ACTIVE=${JWT_AUTH__SPR_PROFILE}
+    depends_on:
+        - ${USR_MNG__SVC_NAME}
+    networks: 
+      alphashop:
+        aliases: 
+          - ${JWT_AUTH__SVC_NAME}
 
   ###---- FRONT-END - ALPHASHOP-NGINX ----###
   nginx:
@@ -108,6 +133,7 @@ services:
       # Used in 'nginx.conf' as host for routes
       - ART_MNG__HOST=${ART_MNG__SVC_NAME}
       - USR_MNG__HOST=${USR_MNG__SVC_NAME}
+      - JWT_AUTH__HOST=${JWT_AUTH__SVC_NAME}
       #
       # The backend services' internal port.
       # Used in 'nginx.conf' to redirect requests '/api/...'
@@ -115,13 +141,11 @@ services:
     depends_on:
       - ${ART_MNG__SVC_NAME}
       - ${USR_MNG__SVC_NAME}
+      - ${JWT_AUTH__SVC_NAME}
     networks:
       alphashop:
         aliases:
           - ${NGINX_SVC_NAME}
-    volumes:
-      - ./nginx.conf:'/etc/nginx/nginx.conf'
-  
 
 ###---- COMMONS - Networks and Volumes ----###
 networks:
@@ -136,36 +160,11 @@ networks:
 volumes:
   postgresql:
     name: ${PGSQL_SVC_NAME}
-    driver: local
-    driver_opts:
-      type: none
-      device: ${PGSQL_VOLUME_DATA}
-      o: bind
   mongodb-data:
     name: ${MGDB_SVC_NAME}-data
-    driver: local
-    driver_opts:
-      type: none
-      device: ${MGDB_VOLUME_DATA}
-      o: bind
   mongodb-config:
     name: ${MGDB_SVC_NAME}-config
-    driver: local
-    driver_opts:
-      type: none
-      device: ${MGDB_VOLUME_CONFIG}
-      o: bind
   mongodb-log:
     name: ${MGDB_SVC_NAME}-log
-    driver: local
-    driver_opts:
-      type: none
-      device: ${MGDB_VOLUME_LOG}
-      o: bind
   pgadmin:
     name: ${PGADMIN_SVC_NAME}
-    driver: local
-    driver_opts:
-      type: none
-      device: ${PGADMIN_VOLUME_DATA}
-      o: bind

@@ -18,11 +18,11 @@ export class PublicRoutesService {
     return this.httpClient.get<string[]>(`${this.apiUrl}/authentication/public-routes`).pipe(
       tap(routes => {
         this.routes = routes;
-        this.logger.log("✅ Public routes loaded:", routes);
+        this.logger.log("[PublicRoutesService] ✅ Public routes loaded:", routes);
       }),
       map(() => void 0),
       catchError(error => {
-        this.logger.error('⚠️ Errore nel caricamento delle rotte pubbliche', error);
+        this.logger.error('[PublicRoutesService] ⚠️ Error loading public routes', error);
         this.routes = [];
         return of(void 0);
       })

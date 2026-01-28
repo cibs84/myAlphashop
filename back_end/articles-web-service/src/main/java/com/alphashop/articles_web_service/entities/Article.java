@@ -5,11 +5,17 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.alphashop.articles_web_service.converters.IdArtStatusConverter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -17,11 +23,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Data;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Data
 @Table(name = "articles")
 public class Article implements Serializable {
@@ -30,7 +35,7 @@ public class Article implements Serializable {
 
 	@Id
 	@Column(name = "codart")
-	private String codArt;
+	private String codart;
 
 	@Column(name = "description")
 	private String description;
@@ -47,10 +52,11 @@ public class Article implements Serializable {
 	@Column(name = "netweight")
 	private Double netWeight;
 
-	@Column(name = "idartstatus")
-	private String idArtStatus;
+	@Convert(converter = IdArtStatusConverter.class)
+	@Column(name = "idartstatus", columnDefinition = "CHAR(1")
+	private Integer idArtStatus;
 
-	@Temporal(TemporalType.DATE)
+	@CreatedDate
 	@Column(name = "creationdate")
 	private LocalDate creationDate;
 
@@ -58,7 +64,6 @@ public class Article implements Serializable {
 			  orphanRemoval = true)
 	private Ingredients ingredients;
 
-	
 	@JsonManagedReference
 	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, 
 			   mappedBy = "article", orphanRemoval = true)

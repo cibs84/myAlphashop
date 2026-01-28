@@ -3,8 +3,46 @@
 
 <!-- MAIN -->
 <main>
+
+  <!-- Notification -->
+  <app-notification-area></app-notification-area>
+
+  <!-- Global Spinner -->
+  <app-spinner
+    [isGlobal]="true"
+    [isVisible]="(globalLoading$ | async) || false">
+  </app-spinner>
+
+  <!-- Router Outlet -->
   <router-outlet></router-outlet>
+
 </main>
 
 <!-- FOOTER -->
 <footer></footer>
+
+<!-- MODAL COMPONENT -->
+<div class="modal fade" id="globalModal" tabindex="-1" aria-hidden="true" *ngIf="modalData$ | async as data">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header text-white"
+           [ngClass]="{'bg-danger': data.type === 'danger', 'bg-warning text-dark': data.type === 'warning', 'bg-primary': data.type === 'primary'}">
+        <h5 class="modal-title">{{ data.title }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="onClose(false)"></button>
+      </div>
+      <div class="modal-body">
+        <p [innerHTML]="data.message"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" (click)="onClose(false)">
+          {{ data.cancelText || 'Cancel' }}
+        </button>
+        <button type="button" class="btn"
+                [ngClass]="{'btn-danger': data.type === 'danger', 'btn-warning': data.type === 'warning', 'btn-primary': data.type === 'primary'}"
+                data-bs-dismiss="modal" (click)="onClose(true)">
+          {{ data.confirmText || 'Confirm' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

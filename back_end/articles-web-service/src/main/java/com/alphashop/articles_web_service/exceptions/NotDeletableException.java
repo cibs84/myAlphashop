@@ -1,6 +1,6 @@
 package com.alphashop.articles_web_service.exceptions;
 
-public class NotDeletableException extends Exception {
+public class NotDeletableException extends RuntimeException {
 	
 	private static final long serialVersionUID = 9016521721110018196L;
 	

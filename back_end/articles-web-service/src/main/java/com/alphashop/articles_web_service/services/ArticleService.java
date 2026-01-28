@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alphashop.articles_web_service.common.PaginatedResponseList;
-import com.alphashop.articles_web_service.dtos.ArticleDto;
+import com.alphashop.articles_web_service.dtos.ArticleCreateRequestDto;
+import com.alphashop.articles_web_service.dtos.ArticleResponseDto;
+import com.alphashop.articles_web_service.dtos.ArticleUpdateRequestDto;
 import com.alphashop.articles_web_service.entities.Article;
 import com.alphashop.articles_web_service.exceptions.ItemAlreadyExistsException;
 import com.alphashop.articles_web_service.exceptions.NotFoundException;
@@ -34,29 +36,7 @@ public class ArticleService {
 		this.articleMapper = articleMapper;
 	}
 
-	public PaginatedResponseList<Article, ArticleDto> getAll(Optional<Integer> currentPage, Optional<Integer> pageSize) throws NotFoundException {
-		
-		Pageable articlesPagination = PageRequest.of(currentPage.filter(n -> n > -1).orElse(1),
-				pageSize.filter(n -> n > 0).orElse(10));
-		Page<Article> articleList = articleRepository.findAllByOrderByCodArtAsc(articlesPagination);
-		
-		if (articleList.isEmpty()) {
-			String errMessage = "No articles were found";
-			
-			logger.warn(errMessage);
-			
-			throw new NotFoundException(errMessage);
-		}
-		
-		List<ArticleDto> articleDtoList = articleList.stream().map(art -> articleMapper.toModel(art))
-				.collect(Collectors.toList());
-		
-		PaginatedResponseList<Article, ArticleDto> articleResponse = new PaginatedResponseList<Article, ArticleDto>(articleList, articleDtoList);
-		
-		return articleResponse;
-	}
-
-	public PaginatedResponseList<Article, ArticleDto> getByDescription(String description, Optional<Integer> currentPage,
+	public PaginatedResponseList<Article, ArticleResponseDto> findByDescription(String description, Optional<Integer> currentPage,
 			Optional<Integer> pageSize) throws NotFoundException {
 
 		String descriptionMod = "%" + description.toUpperCase() + "%";
@@ -67,7 +47,7 @@ public class ArticleService {
 		);
 		
 		Page<Article> articleList = 
-				articleRepository.findByDescriptionLikeOrderByCodArtAsc(descriptionMod, articlesPagination);
+				articleRepository.findByDescriptionLikeOrderByCodartAsc(descriptionMod, articlesPagination);
 		
 		if (articleList.isEmpty()) {
 			String errMessage = description.isEmpty() 
@@ -80,53 +60,72 @@ public class ArticleService {
 		}
 		
 		// Converts Page<Article> to List<ArticleDto>
-		List<ArticleDto> articleDtoList = articleList.stream().map(art -> articleMapper.toModel(art))
-				.collect(Collectors.toList());
+		List<ArticleResponseDto> articleDtoList = articleList.stream().map(art -> articleMapper.toModel(art))
+															  .collect(Collectors.toList());
 
-		PaginatedResponseList<Article, ArticleDto> articleResponse = new PaginatedResponseList<Article, ArticleDto>(articleList, articleDtoList);
-		
+		PaginatedResponseList<Article, ArticleResponseDto> articleResponse = new PaginatedResponseList<Article, ArticleResponseDto>(articleList, articleDtoList);
 		
 		return articleResponse;
 	}
+	
+	private Article findEntityByCodart(String codart) throws NotFoundException {
+		return articleRepository.findByCodart(codart)
+				.orElseThrow(() -> {
+					String msg = "The article with codart " + codart + " was not found!";
+					logger.warn(msg);
+					return new NotFoundException(msg);
+				});
+	}
 
-	public ArticleDto getByCodArt(String codArt) throws NotFoundException {
+	public ArticleResponseDto findByCodart(String codart) throws NotFoundException {
 		
-		Optional<Article> article = articleRepository.findByCodArt(codArt);
-		ArticleDto articleDto = null;
+		Article article = findEntityByCodart(codart);
 		
-		if (article.isPresent()) {
-			articleDto = articleMapper.toModel(article.get());
-		}
+		ArticleResponseDto articleDto = articleMapper.toModel(article);
 		
 		return articleDto;
 	}
+	
+	public boolean existsByCodart(String codart) {
+		if (codart == null || codart.isBlank()) {
+			return false;
+		}
+		return articleRepository.existsByCodart(codart);
+	}
 
-	public ArticleDto getByBarcode(String ean) throws NotFoundException {
+	public ArticleResponseDto findByBarcode(String barcode) throws NotFoundException {
 
-		Optional<Article> article = articleRepository.selByEan(ean);
+		Optional<Article> article = articleRepository.selByEan(barcode);
 		
 		if (article.isEmpty()) {
 
 			// This error message may not be used in the frontend
-			String errMessage = "The article with barcode '%s' was not found!".formatted(ean);
+			String errMessage = "The article with barcode '%s' was not found!".formatted(barcode);
 			logger.warn(errMessage);
 			
 			throw new NotFoundException(errMessage);
 		}
-		ArticleDto articleDto = articleMapper.toModel(article.get());
+		ArticleResponseDto articleDto = articleMapper.toModel(article.get());
 		
 		return articleDto;
 	}
 
 	@Transactional
-	public Article create(ArticleDto articleDto) throws ItemAlreadyExistsException {
-		Article article = articleMapper.toEntity(articleDto);
-		article.setDescription(article.getDescription().toUpperCase());
+	public Article create(ArticleCreateRequestDto articleDto) throws ItemAlreadyExistsException {
+		Article article = articleMapper.createToEntity(articleDto);
+		return articleRepository.save(article);
+	}
+	
+	@Transactional
+	public Article update(ArticleUpdateRequestDto articleDto, String codart) throws NotFoundException {
+		Article article = findEntityByCodart(codart);
+		articleMapper.updateToEntity(articleDto, article);
 		return articleRepository.save(article);
 	}
 
 	@Transactional
-	public void delete(Article article) {
+	public void delete(String codart) throws NotFoundException {
+		Article article = findEntityByCodart(codart);
 		articleRepository.delete(article);
 	}
 }

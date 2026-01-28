@@ -1,0 +1,68 @@
+<!-- Articles Table -->
+<table id="articles" class="table table-hover mb-5">
+  <thead>
+    <tr>
+      <th scope="col">Codart</th>
+      <th scope="col">Description</th>
+      <th scope="col">Um</th>
+      <th scope="col">CodStat</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Weight(KG/LT)</th>
+      <th scope="col">IdArtStatus</th>
+      <th scope="col">Price</th>
+      <th scope="col">Date</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngIf="data && data.length > 0; else noResultTableRow">
+      <tr *ngFor="let article of data"
+          class="cursor-pointer"
+          (click)="goToDetail(article.codart)">
+        <td>{{ article.codart }}</td>
+        <td>{{ article.description }}</td>
+        <td>{{ article.um }}</td>
+        <td>{{ article.codStat }}</td>
+        <td>{{ article.pcsCart }}</td>
+        <td>{{ article.netWeight }}</td>
+        <td class="text-center">
+          <span class="badge rounded-pill"
+            [ngClass]="{'bg-success': article.idArtStatus === 1,
+                        'bg-warning text-dark': article.idArtStatus === 2,
+                        'bg-danger': article.idArtStatus === 3,
+                        'bg-dark text-white': article.idArtStatus === null
+                      }">
+              {{ article.idArtStatus | literalItemStatus }}
+          </span>
+        </td>
+        <td>{{ article.price | currency:"EUR" }}</td>
+        <td>{{ article.creationDate | date:"dd-MM-yyyy" }}</td>
+
+        <!-- Buttons Group: DELETE, MODIFY, INFO, DETAIL -->
+        <td class="btn-group" (click)="$event.stopPropagation()">
+          <button type="button" class="btn btn-light text-danger me-3"
+                  data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                  (click)="setSelectedArticle(article)">Delete</button>
+          <button type="button" class="btn btn-light fw-bold"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">...</button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" (click)="goToDetail(article.codart)">Detail</a></li>
+            <li><a class="dropdown-item" (click)="goToEdit(article.codart)">Edit</a></li>
+          </ul>
+        </td>
+      </tr>
+
+    </ng-container>
+
+    <!-- No Result Table Row '<tr>' - NgTemplate -->
+    <ng-template #noResultTableRow>
+      <tr *ngIf="data.length === 0">
+        <td colspan="10" class="text-center py-4">
+          <i class="fa-solid fa-triangle-exclamation mb-2 me-2"></i>
+          <span class="fw-bold text-secondary">{{ NO_RESULT_MSG_KEY | translate }}</span>
+        </td>
+      </tr>
+    </ng-template>
+  </tbody>
+</table>

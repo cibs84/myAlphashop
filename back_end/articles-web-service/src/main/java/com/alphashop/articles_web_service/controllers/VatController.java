@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alphashop.articles_web_service.dtos.VatDto;
+import com.alphashop.articles_web_service.dtos.VatResponseDto;
 import com.alphashop.articles_web_service.exceptions.NotFoundException;
 import com.alphashop.articles_web_service.mappers.VatMapper;
 import com.alphashop.articles_web_service.services.VatService;
@@ -32,12 +32,12 @@ public class VatController {
 	
 
 	@GetMapping("/find/all")
-	public ResponseEntity<List<VatDto>> listAll() throws NotFoundException {
+	public ResponseEntity<List<VatResponseDto>> listAll() throws NotFoundException {
 		
 		logger.info("******** Get all categories ********");
 
-		List<VatDto> vatList = vatService.getAll();
+		List<VatResponseDto> vatList = vatService.getAll();
 		
-		return new ResponseEntity<List<VatDto>>(vatList, HttpStatus.OK);
+		return new ResponseEntity<List<VatResponseDto>>(vatList, HttpStatus.OK);
 	}
 }

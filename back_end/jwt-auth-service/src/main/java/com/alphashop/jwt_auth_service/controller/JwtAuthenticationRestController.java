@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +31,8 @@ import com.alphashop.jwt_auth_service.exceptions.JwtAuthenticationException;
 import com.alphashop.jwt_auth_service.security.JwtTokenUtil;
 import com.alphashop.jwt_auth_service.security.constants.PublicRoutes;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.extern.java.Log;
 
 @RestController
@@ -51,7 +51,7 @@ public class JwtAuthenticationRestController {
 
     @PostMapping(PublicRoutes.LOGIN) // /api/authentication/login
     public ResponseEntity<Void> login(
-            @RequestBody JwtTokenRequest authenticationRequest, HttpServletResponse response) {
+    		@Valid @RequestBody JwtTokenRequest authenticationRequest, HttpServletResponse response) {
 
         log.info("Authentication and Tokens Generation");
 
@@ -121,14 +121,6 @@ public class JwtAuthenticationRestController {
 
         return ResponseEntity.ok().build();
     }
-
-//    @GetMapping("api/authentication/me")
-//    public ResponseEntity<UserInfoResponse> getUserInfoFromToken(@CookieValue(value = "jwt", required = false) String token) {
-//    	List<String> roles = jwtTokenUtil.getRolesFromToken(token);
-//    	String username = jwtTokenUtil.getUsernameFromToken(token);
-//        
-//        return ResponseEntity.ok(new UserInfoResponse(username, roles));
-//    }
     
     @GetMapping("api/authentication/me")
     public ResponseEntity<UserInfoResponse> getUserInfo(Authentication authentication){

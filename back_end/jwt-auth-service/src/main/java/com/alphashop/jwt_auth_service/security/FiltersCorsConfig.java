@@ -14,7 +14,9 @@ public class FiltersCorsConfig implements WebMvcConfigurer {
             public void addCorsMappings(CorsRegistry registry) {
                 registry
                     .addMapping("/**")
-                    .allowedOrigins("http://localhost:4200", "http://localhost:4300")
+                    .allowedOrigins("http://localhost:4200", 
+                    				"http://localhost:4300",
+                    				"http://localhost:8084")
                     .allowedMethods("PUT","DELETE","GET","POST","OPTIONS","HEAD","PATCH")
                     .allowedHeaders("*")
                     .allowCredentials(true) // Permette i cookie

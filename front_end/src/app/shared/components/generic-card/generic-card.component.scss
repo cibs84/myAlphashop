@@ -1,0 +1,45 @@
+.card-img-top {
+  padding-top: 1rem;
+}
+.card {
+  margin-bottom: 1.5rem;
+  padding: 0.1rem;
+  min-height: 17rem;
+
+  &-title{
+    font-size: 1rem;
+    color: #7a7a7a;
+    margin-bottom: 0.1rem;
+  }
+  &-text{
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  &-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &-bottom{
+      font-size: 0.8rem;
+
+      .badge{
+        font-size: 0.6rem;
+      }
+
+      // Buttons
+      .btn {
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+        padding: 0.2rem;
+
+        span.material-icons-outlined {
+          vertical-align: top;
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+
+}

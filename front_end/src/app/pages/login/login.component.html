@@ -1,36 +1,50 @@
-<!-- JumbotronComponent -->
-<app-jumbotron [title]="title" [subtitle]="subtitle"></app-jumbotron>
+<div *ngIf="viewModel$ | async as vm">
+  <!-- JumbotronComponent -->
+  <app-jumbotron [title]="vm.title" [subtitle]="vm.subtitle"></app-jumbotron>
 
-<!-- Form Login -->
-<section>
-  <form #f="ngForm" (ngSubmit)="login(f)">
-    <h1 class="h3 mb-3 fw-normal">Login</h1>
-    <div class="form-floating">
-      <input type="text" class="form-control"
-             id="username" name="username" placeholder="Username"
-             ngModel
-      >
-      <label for="username">Username</label>
-    </div>
-    <div class="form-floating">
-      <input type="password" class="form-control"
-             id="password" name="password" placeholder="Password"
-             ngModel
-      >
-      <label for="password">Password</label>
-    </div>
+  <!-- Form Login -->
+  <section>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h1 class="h3 mb-3 fw-normal">Login</h1>
+      <div class="form-floating">
+        <input type="text" class="form-control"
+              id="username" placeholder="Username"
+              formControlName="username"
+              [class]="getValidationClass('username')">
+        <label for="username">Username</label>
+        <app-validation-messages
+          [formCtrl]="form.get('username')"
+          [beErrorMsgs]="getBackendErrorsByField('username')"
+          [feErrorMsgs]="FE_ERROR_MSGS['username']">
+        </app-validation-messages>
+      </div>
+      <div class="form-floating">
+        <input type="password" class="form-control"
+              id="password" placeholder="Password"
+              formControlName="password"
+              [class]="getValidationClass('password')">
+        <label for="password">Password</label>
+        <app-validation-messages
+          [formCtrl]="form.get('password')"
+          [beErrorMsgs]="getBackendErrorsByField('password')"
+          [feErrorMsgs]="FE_ERROR_MSGS['password']">
+        </app-validation-messages>
+      </div>
 
-    <div class="my-3">
-      <label>
-        <a routerLink="password-recovery">Forgot your password?</a>
-      </label>
-    </div>
-    <button class="w-100 btn btn-lg btn-primary"
-            >Login</button>
+      <div class="my-3">
+        <label>
+          <a routerLink="password-recovery">Forgot your password?</a>
+        </label>
+      </div>
 
-    <!-- Error Message -->
-    <div *ngIf="errMsg" class="alert alert-danger mt-4" role="alert">
-      {{ errMsg }}
-    </div>
-  </form>
-</section>
+      <!-- Error Message -->
+      <div *ngIf="vm.errorVM" class="alert alert-danger mt-4" role="alert">
+        {{ vm.errorVM.message }}
+      </div>
+
+      <!-- LOGIN btn -->
+      <button type="submit" class="w-100 btn btn-lg btn-primary">Login</button>
+
+    </form>
+  </section>
+</div>

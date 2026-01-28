@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alphashop.articles_web_service.dtos.VatDto;
+import com.alphashop.articles_web_service.dtos.VatResponseDto;
 import com.alphashop.articles_web_service.entities.Vat;
 import com.alphashop.articles_web_service.exceptions.NotFoundException;
 import com.alphashop.articles_web_service.mappers.VatMapper;
@@ -28,7 +28,7 @@ public class VatService {
 		this.vatMapper = vatMapper;
 	}
 
-	public List<VatDto> getAll() throws NotFoundException {
+	public List<VatResponseDto> getAll() throws NotFoundException {
 		List<Vat> vatList = vatRepository.findAll();
 		
 		if (vatList.isEmpty()) {
@@ -39,7 +39,7 @@ public class VatService {
 			throw new NotFoundException(errMessage);
 		}
 		
-		List<VatDto> vatListDto = vatList.stream().map(vat -> vatMapper.toModel(vat))
+		List<VatResponseDto> vatListDto = vatList.stream().map(vat -> vatMapper.toModel(vat))
 				.collect(Collectors.toList());
 		
 		return vatListDto;

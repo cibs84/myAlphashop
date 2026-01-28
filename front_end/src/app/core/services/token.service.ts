@@ -1,75 +1,105 @@
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, EMPTY, finalize, Observable, ReplaySubject, take, tap, throwError } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  finalize,
+  Observable,
+  of,
+  take,
+  tap,
+  throwError,
+} from 'rxjs';
 import { LoggingService } from './logging.service';
 import { environment } from 'src/environments/environment';
 import { UserStateService } from './user-state.service';
 import { AuthappService } from './authapp.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TokenService {
-
   private apiUrl: string = environment.apiUrl;
   private isRefreshing = false;
-  private refreshTokenSubject = new ReplaySubject<boolean>(1);
+  private pendingRequests: Array<(ok: boolean) => void> = [];
 
-  constructor(private logger: LoggingService,
-              private httpClient: HttpClient,
-              private userStateService: UserStateService,
-              private authappService: AuthappService) { }
+  constructor(
+    private logger: LoggingService,
+    private httpClient: HttpClient,
+    private userStateService: UserStateService,
+    private authappService: AuthappService
+  ) {}
 
-  retryRequest = (request: HttpRequest<any>): Observable<HttpEvent<unknown>> => {
-      this.logger.log('AuthappService : retryRequest', request);
-      const newRequest = request.clone({ withCredentials: true });
-      console.log("request.withCredentials >>> ", request.withCredentials);
+  refreshToken = (): Observable<any> => {
+    this.logger.log('[TokenService] refreshToken()');
 
-      return this.httpClient.request(newRequest).pipe(
-        catchError(error => {
-          this.logger.error("❌ Errore nel retry della richiesta:", error);
-          return throwError(() => error);
-        })
+    if (this.isRefreshing) {
+      this.logger.log(
+        '🔄 Skip refresh: già in esecuzione — metto la chiamata in pending'
       );
+      return new Observable<boolean>((subscriber) => {
+        // aggiungi alla coda una funzione che verrà chiamata da releasePendingRequests
+        this.pendingRequests.push((ok: boolean) => {
+          if (ok) {
+            // next() serve semplicemente a sbloccare la pipe;
+            // il valore è opzionale, ma se lo metti rende il flusso
+            // più leggibile e sicuro per futuri sviluppi.
+            subscriber.next(true);
+            subscriber.complete();
+          } else {
+            // se 'ok' === false notifichiamo l'errore (simulate 401)
+            subscriber.error({ status: 401, message: 'refresh failed' });
+          }
+        });
+      });
     }
 
-    refreshToken = (): Observable<any> => {
-      this.logger.log('AuthappService : refreshToken');
+    this.isRefreshing = true;
 
-      if (this.isRefreshing) {
-        this.logger.log("🔄 Skip refresh: già in esecuzione");
-        return this.refreshTokenSubject.asObservable().pipe(take(1));
-      }
-
-      this.isRefreshing = true;
-
-      return this.httpClient.post(`${this.apiUrl}/authentication/refresh`, null, {observe: "response"}).pipe(
+    return this.httpClient
+      .post(`${this.apiUrl}/authentication/refresh`, null, {
+        observe: 'response',
+        withCredentials: true,
+      })
+      .pipe(
         take(1),
         tap(() => {
-          this.logger.log("✅ Refresh token eseguito con successo");
+          this.logger.log('✅ [TokenService] Refresh token eseguito con successo');
           this.authappService.setAuthenticated(true);
-          this.refreshTokenSubject.next(true);
+
+          // risveglia eventuali richieste in pending (true = successo)
+          this.pendingRequests.forEach((cb) => {
+            try {
+              cb(true);
+            } catch (e) {
+              /* ignore */
+            }
+          });
+          this.pendingRequests = [];
         }),
         catchError((error) => {
-          this.logger.error("❌ Errore nel refresh token:", error);
-          this.refreshTokenSubject.error(error); // Indica l'errore a chi era in attesa
+          this.logger.error('❌ [TokenService] Errore nel refresh token:', error);
 
-          this.logger.log("🔴 Refresh fallito. Effettuo pulizia stato.");
+          // risveglia la coda con errore (ok = false)
+          this.pendingRequests.forEach((cb) => {
+            try {
+              cb(false);
+            } catch (e) {
+              /* ignore */
+            }
+          });
+          this.pendingRequests = [];
+
+          this.logger.log('🔴 [TokenService] Refresh fallito. Effettuo pulizia stato.');
           this.authappService.setAuthenticated(false);
           this.userStateService.clearUserState();
 
-
-          if (error.status === 401) {
-            // L'AuthappService ritorna EMPTY solo se l'errore è 401
-            return EMPTY;
-          }
-
-          // Per tutti gli altri errori, rilascia l'errore (sarà gestito da ErrorHandlingService che lo convertirà in EMPTY)
+          // Per gli errori che NON sono 401, rilascia l'errore (sarà gestito da ErrorHandlingService che lo convertirà in EMPTY)
           return throwError(() => error);
         }),
         finalize(() => {
           this.isRefreshing = false;
         })
       );
-    }
+  };
 }

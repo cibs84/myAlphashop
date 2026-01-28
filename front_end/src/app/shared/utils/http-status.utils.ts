@@ -3,7 +3,7 @@
  * or a "Network Error" (status == 0).
  */
 export function isNetworkOrServerError(status: number): boolean {
-  return status === 0 || status.toString().startsWith("50");
+  return status === 0 || status >= 500;
 }
 
 export function isClientErrorStatus(status: number): boolean {

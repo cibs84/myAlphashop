@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthappService } from '../../core/services/authapp.service';
+import { LoggingService } from 'src/app/core/services/logging.service';
 
 @Component({
   selector: 'app-logout',
@@ -8,16 +9,17 @@ import { AuthappService } from '../../core/services/authapp.service';
 })
 export class LogoutComponent implements OnInit {
 
-  private status = 'success';
-
-  constructor(private authappService: AuthappService) { }
+  constructor(private authappService: AuthappService,
+              private logger: LoggingService
+  ) { }
 
   ngOnInit(): void {
     this.authappService.logout().subscribe({
-      next: () => this.status = 'success',
+      next: () => {
+        this.logger.log("[LogoutComponent] Logout and redirect to /logout successfully completed")
+      },
       error: (error) => {
-        console.error("Errore in /logout", error);
-        this.status = 'failed';
+        this.logger.error("[LogoutComponent] Errore in /logout", error);
       }
     });
   }

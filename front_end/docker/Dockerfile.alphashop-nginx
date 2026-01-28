@@ -1,10 +1,15 @@
 FROM nginx:alpine
 
-COPY ./dist /usr/share/nginx/html
 COPY ./docker/nginx.conf.template /etc/nginx/nginx.conf.template
-COPY ./docker/entrypoint_alphashop_nginx.sh /entrypoint_alphashop_nginx.sh
+COPY ./docker/entrypoint_alphashop_nginx.sh /entrypoint.sh
+
+# Make the script executable
+RUN chmod +x /entrypoint.sh
+
+# Copy the Angular build files
+COPY ./dist /usr/share/nginx/html
 
 EXPOSE 80
 
-# # Definisce il comando principale che deve essere eseguito quando il container viene avviato
-ENTRYPOINT [ "sh", "entrypoint_alphashop_nginx.sh" ]
+# Defines the main command that should be executed when the container is started
+ENTRYPOINT [ "sh", "entrypoint.sh" ]
