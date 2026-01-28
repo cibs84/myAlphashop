@@ -1,4 +1,3 @@
-```markdown
 # Progetto Full Stack - Sistema Gestione Articoli e Utenti
 
 Questo progetto nasce come ambiente di studio e sperimentazione pratica sulle architetture a microservizi, focalizzandosi sull'integrazione tra diverse tecnologie e sulla gestione reattiva dello stato nel frontend.
@@ -46,5 +45,3 @@ docker compose down -v && docker compose up -d --build
 Dati di accesso predefiniti:
 - Amministratore: userAdmin / pass1234
 - Utente standard: userRead / pass1234
-
-```
