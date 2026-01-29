@@ -4,9 +4,10 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 import { Notification } from 'src/app/shared/models/Notification';
 
 @Component({
-  selector: 'app-notification-area',
-  templateUrl: './notification-area.component.html',
-  styleUrls: ['./notification-area.component.scss']
+    selector: 'app-notification-area',
+    templateUrl: './notification-area.component.html',
+    styleUrls: ['./notification-area.component.scss'],
+    standalone: false
 })
 export class NotificationAreaComponent {
 

@@ -22,9 +22,10 @@ import { ModalService } from 'src/app/core/services/modal.service';
 import { FE_ERROR_MSGS, VALIDATION_CONFIGS } from './article-manager.config';
 
 @Component({
-  selector: 'app-article-manager',
-  templateUrl: './article-manager.component.html',
-  styleUrls: ['./article-manager.component.scss'],
+    selector: 'app-article-manager',
+    templateUrl: './article-manager.component.html',
+    styleUrls: ['./article-manager.component.scss'],
+    standalone: false
 })
 export class ArticleManagerComponent implements OnInit, ComponentCanDeactivate {
   // -------------------------------------------------------------------------

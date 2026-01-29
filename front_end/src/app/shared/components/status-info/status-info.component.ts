@@ -1,9 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-status-info',
-  templateUrl: './status-info.component.html',
-  styleUrls: ['./status-info.component.scss']
+    selector: 'app-status-info',
+    templateUrl: './status-info.component.html',
+    styleUrls: ['./status-info.component.scss'],
+    standalone: false
 })
 export class StatusInfoComponent {
   @Input() title: string = '';

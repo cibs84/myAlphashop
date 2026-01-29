@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { ItemStatus } from '../enums';
 
 @Pipe({
-  name: 'literalItemStatus'
+    name: 'literalItemStatus',
+    standalone: false
 })
 export class LiteralItemStatusPipe implements PipeTransform {
 

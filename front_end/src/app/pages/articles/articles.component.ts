@@ -20,9 +20,10 @@ import { strSanitize } from 'src/app/shared/utils/string.utils';
 import { ModalService } from 'src/app/core/services/modal.service';
 
 @Component({
-  selector: 'app-articles',
-  templateUrl: './articles.component.html',
-  styleUrls: ['./articles.component.scss'],
+    selector: 'app-articles',
+    templateUrl: './articles.component.html',
+    styleUrls: ['./articles.component.scss'],
+    standalone: false
 })
 export class ArticlesComponent implements OnInit {
   // -------------------------------------------------------------------------

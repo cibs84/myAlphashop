@@ -4,9 +4,10 @@ import { MESSAGE_KEYS } from 'src/app/core/i18n/message-keys';
 import { MsgKey } from 'src/app/core/i18n/msg-key.type';
 
 @Component({
-  selector: 'app-articles-table',
-  templateUrl: './articles-table.component.html',
-  styleUrls: ['./articles-table.component.scss']
+    selector: 'app-articles-table',
+    templateUrl: './articles-table.component.html',
+    styleUrls: ['./articles-table.component.scss'],
+    standalone: false
 })
 export class ArticlesTableComponent implements OnInit {
   @Input() data!: ArticleResponse[];

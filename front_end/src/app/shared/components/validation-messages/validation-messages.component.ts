@@ -2,8 +2,9 @@ import { Component, Input } from '@angular/core';
 import { AbstractControl, FormControl } from '@angular/forms';
 
 @Component({
-  selector: 'app-validation-messages',
-  templateUrl: './validation-messages.component.html',
+    selector: 'app-validation-messages',
+    templateUrl: './validation-messages.component.html',
+    standalone: false
 })
 export class ValidationMessagesComponent {
   @Input() formCtrl?: AbstractControl | null;

@@ -14,9 +14,10 @@ import { ERROR_MSGS } from '../article-manager/article-manager.config';
 import { toMsgKey } from 'src/app/core/errors/to-msg-key.fn';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    standalone: false
 })
 export class LoginComponent implements OnInit {
   // --------------------------------------------------------------

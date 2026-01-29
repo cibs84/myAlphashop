@@ -4,9 +4,10 @@ import { LoadingStateService } from './core/services/loading-state.service';
 import { ModalService } from './core/services/modal.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
   globalLoading$: Observable<boolean> = this.loader.globalLoading$;

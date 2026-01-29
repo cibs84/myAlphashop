@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-modal',
-  templateUrl: './app-modal.component.html'
+    selector: 'app-modal',
+    templateUrl: './app-modal.component.html',
+    standalone: false
 })
 export class AppModalComponent {
   @Input() modalId: string = 'genericModal';

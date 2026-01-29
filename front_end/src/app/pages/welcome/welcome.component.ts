@@ -10,9 +10,10 @@ import { ErrorViewModel } from 'src/app/core/errors/ErrorViewModel';
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-welcome',
-  templateUrl: './welcome.component.html',
-  styleUrls: ['./welcome.component.scss'],
+    selector: 'app-welcome',
+    templateUrl: './welcome.component.html',
+    styleUrls: ['./welcome.component.scss'],
+    standalone: false
 })
 export class WelcomeComponent {
   // -------------------------------------------------------------
