@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleService } from 'src/app/shared/services/article.service';
 import { StatusCodes } from 'src/app/shared/enums';
@@ -40,7 +40,7 @@ export class ArticleManagerComponent implements OnInit, ComponentCanDeactivate {
   // -------------------------------------------------------------------------
   // FORM & STATE MANAGEMENT
   // -------------------------------------------------------------------------
-  form!: FormGroup;
+  form!: UntypedFormGroup;
 
   private initialState: ArticleManagerState = {
     codart: '',
@@ -145,7 +145,7 @@ export class ArticleManagerComponent implements OnInit, ComponentCanDeactivate {
     private route: ActivatedRoute,
     private articleService: ArticleService,
     private logger: LoggingService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private notificationService: NotificationService,
     private router: Router,
     private translator: TranslationService,

@@ -33,7 +33,7 @@
                           <div class="col-md-6">
                               <p class="mb-1"><strong class="text-primary">Codice Articolo:</strong> {{ vm.article.codart }}</p>
                               <p class="mb-1"><strong>Descrizione Completa:</strong> {{ vm.article.description }}</p>
-                              <p class="mb-1" *ngIf="vm.article.category"><strong>Categoria:</strong> {{ vm.article.category.id }} - {{ vm.article.category?.description }}</p>
+                              <p class="mb-1" *ngIf="vm.article.category"><strong>Categoria:</strong> {{ vm.article.category.id }} - {{ vm.article.category.description }}</p>
                           </div>
                           <div class="col-md-6">
                               <p class="mb-1"><strong>Unità di Misura:</strong> {{ vm.article.um }}</p>

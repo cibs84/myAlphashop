@@ -13,7 +13,7 @@ import { MsgKey } from 'src/app/core/i18n/msg-key.type';
 import { toMsgKey } from 'src/app/core/errors/to-msg-key.fn';
 import { toErrorViewModel } from 'src/app/core/errors/to-error-view-model.fn';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { LoadingStateService } from 'src/app/core/services/loading-state.service';
 import { ArticlesState, ArticlesViewModel, FilterTypes } from './ArticlesPageModel';
 import { strSanitize } from 'src/app/shared/utils/string.utils';
@@ -108,7 +108,7 @@ export class ArticlesComponent implements OnInit {
   private stateSubject = new BehaviorSubject<ArticlesState>(this.initialState);
 
   // FORM GROUP
-  form!: FormGroup;
+  form!: UntypedFormGroup;
 
 
   // -------------------------------------------------------------------------
@@ -223,7 +223,7 @@ export class ArticlesComponent implements OnInit {
     private logger: LoggingService,
     private notificationService: NotificationService,
     private translator: TranslationService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private loader: LoadingStateService,
     private modalService: ModalService
   ) {
