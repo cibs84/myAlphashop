@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthappService } from 'src/app/core/services/authapp.service';
 import { map, catchError, take, switchMap, filter } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { LoggingService } from 'src/app/core/services/logging.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class AuthGuard  {
 
   constructor(
     private authService: AuthappService,

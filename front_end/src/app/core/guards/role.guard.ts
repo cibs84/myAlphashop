@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  CanActivate,
-  ActivatedRouteSnapshot,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { LoggingService } from 'src/app/core/services/logging.service';
 import { map, catchError, take, filter, switchMap } from 'rxjs/operators';
@@ -14,7 +9,7 @@ import { AuthappService } from '../services/authapp.service';
 @Injectable({
   providedIn: 'root',
 })
-export class RoleGuard implements CanActivate {
+export class RoleGuard  {
   constructor(
     private userStateService: UserStateService,
     private router: Router,

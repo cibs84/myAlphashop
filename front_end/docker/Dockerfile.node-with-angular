@@ -1,2 +1,2 @@
 FROM node:20-alpine
-RUN npm install -g @angular/cli@14
+RUN npm install -g @angular/cli@16
