@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor
-} from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { delay, finalize, Observable } from 'rxjs';
 import { LoggingService } from 'src/app/core/services/logging.service';
 import { LoadingStateService } from '../services/loading-state.service';

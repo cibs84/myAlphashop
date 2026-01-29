@@ -12,7 +12,7 @@ import { Page404Component } from './pages/page-404/page-404.component';
 import { Page5xxComponent } from './pages/page-5xx/page-5xx.component';
 import { CoreModule } from './core/core.module';
 import { LogoutComponent } from './pages/logout/logout.component';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { ForbiddenComponent } from './pages/forbidden/forbidden.component';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
@@ -34,45 +34,39 @@ export function initializeApp(authService: AuthappService) {
   };
 }
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    WelcomeComponent,
-    Page404Component,
-    Page5xxComponent,
-    ArticlesComponent,
-    GenericCardComponent,
-    LogoutComponent,
-    ArticleManagerComponent,
-    ForbiddenComponent,
-    PaginationComponent,
-    ArticlesTableComponent,
-    LiteralItemStatusPipe,
-    ArticleDetailComponent,
-    TranslatePipe,
-    StatusInfoComponent,
-    AppModalComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    CoreModule,
-    HttpClientModule,
-    ReactiveFormsModule
-  ],
-  providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApp,
-      deps: [AuthappService],
-      multi: true
-    },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: GlobalErrorInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LoginComponent,
+        WelcomeComponent,
+        Page404Component,
+        Page5xxComponent,
+        ArticlesComponent,
+        GenericCardComponent,
+        LogoutComponent,
+        ArticleManagerComponent,
+        ForbiddenComponent,
+        PaginationComponent,
+        ArticlesTableComponent,
+        LiteralItemStatusPipe,
+        ArticleDetailComponent,
+        TranslatePipe,
+        StatusInfoComponent,
+        AppModalComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        CoreModule,
+        ReactiveFormsModule], providers: [
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeApp,
+            deps: [AuthappService],
+            multi: true
+        },
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: GlobalErrorInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }
