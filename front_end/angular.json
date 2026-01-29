@@ -108,22 +108,22 @@
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",
 					"configurations": {
-						"production": {
-							"browserTarget": "myAlphashop:build:production"
+            "production": {
+              "buildTarget": "myAlphashop:build:production"
 						},
-						"development": {
-							"browserTarget": "myAlphashop:build:development"
+            "development": {
+              "buildTarget": "myAlphashop:build:development"
 						},
             "dev-no-container": {
-							"browserTarget": "myAlphashop:build:dev-no-container"
+              "buildTarget": "myAlphashop:build:dev-no-container"
 						}
 					},
 					"defaultConfiguration": "development"
 				},
 				"extract-i18n": {
 					"builder": "@angular-devkit/build-angular:extract-i18n",
-					"options": {
-						"browserTarget": "myAlphashop:build"
+          "options": {
+            "buildTarget": "myAlphashop:build"
 					}
 				},
 				"test": {
