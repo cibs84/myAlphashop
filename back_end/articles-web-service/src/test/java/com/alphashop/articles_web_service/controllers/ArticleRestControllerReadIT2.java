@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alphashop.articles_web_service.repositories.ArticleRepository;
 import com.alphashop.articles_web_service.test.BaseSpringIT;
 
-public class ArticleRestControllerReadIT extends BaseSpringIT {
+public class ArticleRestControllerReadIT2 extends BaseSpringIT {
 	
 	@Autowired
 	ArticleRepository articleRepository;
@@ -38,11 +38,11 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	            "idTypeArt": "CP"
 	        }
 	    ],
+	    "ingredients": null,
 	    "category": {
 	        "id": 1,
 	        "description": "DROGHERIA ALIMENTARE"
 	    },
-	    "ingredients": null,
 	    "vat": {
 	        "idVat": 22,
 	        "description": "IVA RIVENDITA 22%",
@@ -56,9 +56,9 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		String existentBarcode = "8008490000021";
 		
 		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/articles/by-barcode/" + existentBarcode).accept(MediaType.APPLICATION_JSON))
+				MockMvcRequestBuilders.get("/api/articles/find/barcode/" + existentBarcode).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				// article
+				// articolo
 				.andExpect(jsonPath("$.codart").exists()).andExpect(jsonPath("$.codart").value("002000301"))
 				.andExpect(jsonPath("$.description").exists())
 				.andExpect(jsonPath("$.description").value("ACQUA ULIVETO 15 LT")).andExpect(jsonPath("$.um").exists())
@@ -66,20 +66,20 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 				.andExpect(jsonPath("$.codStat").value("")).andExpect(jsonPath("$.pcsCart").exists())
 				.andExpect(jsonPath("$.pcsCart").value("6")).andExpect(jsonPath("$.netWeight").exists())
 				.andExpect(jsonPath("$.netWeight").value("1.5")).andExpect(jsonPath("$.idArtStatus").exists())
-				.andExpect(jsonPath("$.idArtStatus").value(1)).andExpect(jsonPath("$.creationDate").exists())
+				.andExpect(jsonPath("$.idArtStatus").value("1")).andExpect(jsonPath("$.creationDate").exists())
 				.andExpect(jsonPath("$.creationDate").value("2010-06-14"))
 				// barcode
 				.andExpect(jsonPath("$.barcodes[0].barcode").exists())
 				.andExpect(jsonPath("$.barcodes[0].barcode").value("8008490000021"))
-				.andExpect(jsonPath("$.barcodes[0].idTypeArt").exists())
-				.andExpect(jsonPath("$.barcodes[0].idTypeArt").value("CP"))
-				// category
+				.andExpect(jsonPath("$.barcodes[0].type").exists())
+				.andExpect(jsonPath("$.barcodes[0].type").value("CP"))
+				// famAssort
 				.andExpect(jsonPath("$.category.id").exists()).andExpect(jsonPath("$.category.id").value("1"))
 				.andExpect(jsonPath("$.category.description").exists())
 				.andExpect(jsonPath("$.category.description").value("DROGHERIA ALIMENTARE"))
-				// ingredients
+				// ingredienti
 				.andExpect(jsonPath("$.ingredients").isEmpty())
-				// vat
+				// Vat
 				.andExpect(jsonPath("$.vat.idVat").exists()).andExpect(jsonPath("$.vat.idVat").value("22"))
 				.andExpect(jsonPath("$.vat.description").exists())
 				.andExpect(jsonPath("$.vat.description").value("IVA RIVENDITA 22%"))
@@ -93,20 +93,20 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		String inexistentBarcode = "inexistent_barcode";
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/by-barcode/" + inexistentBarcode)
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/barcode/" + inexistentBarcode)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
-		.andExpect(jsonPath("$.code").value("ITEM_NOT_FOUND"))
+		.andExpect(jsonPath("$.message").value("The article with barcode \'" + inexistentBarcode + "\' was not found!"))
 		.andDo(print());
 	}
 
 	@Test
 	public void errListArtByEanWithoutBarcode() throws Exception {
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/by-barcode/")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/barcode")
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
-				.andExpect(jsonPath("$.code").value("ITEM_NOT_FOUND"))
+				.andExpect(jsonPath("$.message").value("Insert a valid barcode!"))
 				.andDo(print());
 	}
 	
@@ -116,7 +116,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		String existentCodart = "002000301";
 		
 		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/articles/" + existentCodart).accept(MediaType.APPLICATION_JSON))
+				MockMvcRequestBuilders.get("/api/articles/find/codart/" + existentCodart).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(content().json(JsonData)).andReturn();
 	}
@@ -129,17 +129,17 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/codart/" + inexistentCodart)
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
-				.andExpect(jsonPath("$.code").value("ITEM_NOT_FOUND"))
+				.andExpect(jsonPath("$.message").value("The article with codart " + inexistentCodart + " was not found!"))
 				.andDo(print());
 	}
 
 	@Test
 	public void errListArtByCodartWithoutCodart() throws Exception {
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/codart")
 				.contentType(MediaType.APPLICATION_JSON).content(JsonData).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
-				.andExpect(jsonPath("$.code").value("ITEM_NOT_FOUND"))
+				.andExpect(jsonPath("$.message").value("Insert a valid codart!"))
 				.andDo(print());
 	}
 	
@@ -148,8 +148,13 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	    "pagination": {
 	        "currentPage": 1,
 	        "totalPages": 1,
+	        "nextPage": 1,
+	        "previousPage": 1,
 	        "pageSize": 10,
-	        "totalElements": 2
+	        "totalElements": 2,
+	        "totalPagesArray": [
+	            1
+	        ]
 	    },
 	    "itemList": [
 	        {
@@ -159,13 +164,13 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	            "codStat": "",
 	            "pcsCart": 6,
 	            "netWeight": 1.5,
-	            "idArtStatus": 1,
+	            "idArtStatus": "1",
 	            "creationDate": "2010-06-14",
 	            "price": null,
 	            "barcodes": [
 	                {
 	                    "barcode": "8008490000021",
-	                    "idTypeArt": "CP"
+	                    "type": "CP"
 	                }
 	            ],
 	            "ingredients": null,
@@ -186,13 +191,13 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	            "codStat": "",
 	            "pcsCart": 24,
 	            "netWeight": 0.5,
-	            "idArtStatus": 2,
+	            "idArtStatus": "2",
 	            "creationDate": "2011-01-12",
 	            "price": null,
 	            "barcodes": [
 	                {
 	                    "barcode": "8008490991046",
-	                    "idTypeArt": "CP"
+	                    "type": "CP"
 	                }
 	            ],
 	            "ingredients": null,
@@ -211,7 +216,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 	
 	@Test
 	public void listAllArticles() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/all")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.pagination.totalPages").value(598))
@@ -224,19 +229,28 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		String existentDescription = "ACQUA ULIVETO";
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles?description=" + existentDescription)
-//				api/articles?description=ACQUA%20ULIVETO&currentPage=1&pageSize=10
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/" + existentDescription)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.itemList", hasSize(2)))
 		.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 		.andExpect(content().json(JsonData2)).andReturn();
 	}
 	
 	@Test
-	public void errListArtByDescWithoutDescription() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles?description=")
-				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.pagination.totalPages", equalTo(598)))
-				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andReturn();
+	public void errListArtByDescWithoutDescription1() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.message").value("Insert a valid description!"))
+				.andDo(print());
+	}
+
+	@Test
+	public void errorListArtByDescWithoutDescription2() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description")
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.message").value("Insert a valid description!"))
+				.andDo(print());
 	}
 	
 	@Test
@@ -244,7 +258,7 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 
 		String emptyDescription = " ";
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles?description=" + emptyDescription)
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/" + emptyDescription)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.pagination.totalPages", equalTo(598)))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andReturn();
@@ -256,12 +270,12 @@ public class ArticleRestControllerReadIT extends BaseSpringIT {
 		
 		articleRepository.deleteAll();
 		
-		String emptyDescription = " ";
+		String Codart = " ";
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles?description=" + emptyDescription)
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/articles/find/description/" + Codart)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404))
-				.andExpect(jsonPath("$.code").value("ITEM_NOT_FOUND"))
+				.andExpect(jsonPath("$.message").value("No articles were found"))
 				.andDo(print());
 	}
 }
