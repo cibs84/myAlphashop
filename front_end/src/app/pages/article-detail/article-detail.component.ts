@@ -94,6 +94,11 @@ export class ArticleDetailComponent implements OnInit {
         ? toErrorViewModel(articleResult.error, this.translator)
         : null;
 
+        this.logger.log("isLocalLoading:", isLocalLoading);
+        this.logger.log("isRequestInProgress:", isRequestInProgress);
+        this.logger.log("isGlobalLoading:", isGlobalLoading);
+        this.logger.log("Result:", ((isLocalLoading || isRequestInProgress) && !isGlobalLoading))
+
       return {
         ...state,
         article,
@@ -197,7 +202,7 @@ export class ArticleDetailComponent implements OnInit {
     this.notificator.setNotificationError(msgKey);
   }
 
-  updateState(partialState: Partial<ArticleDetailState>) {
+  private updateState(partialState: Partial<ArticleDetailState>) {
     this.stateSubject.next({
       ...this.stateSubject.value,
       ...partialState,

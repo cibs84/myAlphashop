@@ -19,6 +19,8 @@ public class IngredientsMapper {
 	}
 
 	public Ingredients toEntity(IngredientsDto model) {
+		if (model == null) return null;
+		
 		Ingredients ingredients = new Ingredients();
 		ingredients.setCodart(model.getCodart());
 		ingredients.setInfo(model.getInfo());

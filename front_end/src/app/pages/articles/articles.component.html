@@ -21,20 +21,22 @@
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <!-- Input: Search... -->
           <input type="text" placeholder="Search..."
-                 formControlName="filter" class="form-control"
-                 [ngClass]="{'is-invalid': form.get('filter')?.invalid && (form.get('filter')?.touched || form.get('filter')?.dirty)}">
+            formControlName="filter" class="form-control"
+            [ngClass]="{'is-invalid': form.get('filter')?.invalid && (form.get('filter')?.touched || form.get('filter')?.dirty)}">
           <app-validation-messages
             [formCtrl]="form.get('filter')"
             [feErrorMsgs]="FE_ERROR_MSGS['filter']">
           </app-validation-messages>
           <!-- Select: Filter Type -->
           <select id="filterType" class="form-select" name="filterType"
-                  formControlName="filterType"
-                  (change)="updateFilterValidators(form.get('filterType')?.value)">
-            <option *ngFor="let filterTypeItem of filterTypeList"
-                    [ngValue]="filterTypeItem.value">
-              {{filterTypeItem.key}}
-            </option>
+            formControlName="filterType"
+            (change)="updateFilterValidators(form.get('filterType')?.value)">
+            @for (filterTypeItem of filterTypeList; track filterTypeItem) {
+              <option
+                [ngValue]="filterTypeItem.value">
+                {{filterTypeItem.key}}
+              </option>
+            }
           </select>
         </form>
       </div>
@@ -62,52 +64,60 @@
     <div class="row grid-body">
 
       <!-- *** ARTICLES *** -->
-      <ng-container *ngIf="viewModel$ | async as vm" id="articles-container">
+      @if (viewModel$ | async; as vm) {
+        <ng-container id="articles-container">
 
-        <!-- *** Spinner - Local Loading *** -->
-        <app-spinner [isVisible]="vm.showLoading"></app-spinner>
+          <!-- *** Spinner - Local Loading *** -->
+          <app-spinner [isVisible]="vm.showLoading"></app-spinner>
 
-        <!-- Article Result List - GRID / TABLE -->
-        <ng-container *ngIf="vm.showData">
-          <!-- VIEW-MODE: Grid -->
-          <ng-container *ngIf="vm.viewMode === 'grid'">
-            <div *ngIf="vm.articles.length > 0"
+          <!-- Article Result List - GRID / TABLE -->
+          @if (vm.showData) {
+
+            <!-- VIEW-MODE: Grid -->
+            @if (vm.viewMode === 'grid') {
+              @if (vm.articles.length > 0) {
+                <div
                   class="row row-cols-1 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
-              <app-generic-card *ngFor="let article of vm.articles"
-                [data]="article"
-                [fieldsConfig]="cardFieldsConfig"
+                  @for (article of vm.articles; track article) {
+                    <app-generic-card
+                      [data]="article"
+                      [fieldsConfig]="cardFieldsConfig"
+                      (edit)="goToEdit($event)"
+                      (delete)="onDelete($event)">
+                    </app-generic-card>
+                  }
+                </div>
+              }
+              <!-- No Result Grid -->
+              @if (vm.articles.length === 0) {
+                <div class="text-center py-4">
+                  <i class="fa-solid fa-triangle-exclamation mb-2 me-2"></i>
+                  <span class="fw-bold text-secondary">{{ NO_RESULT_MSG_KEY | translate }}</span>
+                </div>
+              }
+            }
+
+            <!-- VIEW-MODE: Table -->
+            @if (vm.viewMode === 'table') {
+              <app-articles-table
+                [data]="vm.articles"
                 (edit)="goToEdit($event)"
-                (delete)="onDelete($event)">
-              </app-generic-card>
-            </div>
-            <!-- No Result Grid -->
-            <div *ngIf="vm.articles.length === 0" class="text-center py-4">
-              <i class="fa-solid fa-triangle-exclamation mb-2 me-2"></i>
-              <span class="fw-bold text-secondary">{{ NO_RESULT_MSG_KEY | translate }}</span>
-            </div>
-          </ng-container>
+                (delete)="onDelete($event)"
+                (detail)="goToDetail($event)">
+              </app-articles-table>
+            }
 
-          <!-- VIEW-MODE: Table -->
-          <ng-container *ngIf="vm.viewMode === 'table'">
-            <app-articles-table
-              [data]="vm.articles"
-              (edit)="goToEdit($event)"
-              (delete)="onDelete($event)"
-              (detail)="goToDetail($event)">
-            </app-articles-table>
-          </ng-container>
-
-          <!-- *** PAGINATION *** -->
-          <ng-container *ngIf="vm.showPagination">
-            <app-pagination
-              [pagination]="vm.pagination"
-              [maxPagBtns]="MAX_TOT_PAG_BTNS"
-              (pageChange)="pageChange($event)">
-            </app-pagination>
-          </ng-container>
+            <!-- *** PAGINATION *** -->
+            @if (vm.showPagination) {
+              <app-pagination
+                [pagination]="vm.pagination"
+                [maxPagBtns]="MAX_TOT_PAG_BTNS"
+                (pageChange)="pageChange($event)">
+              </app-pagination>
+            }
+          }
         </ng-container>
-
-      </ng-container>
+      }
     </div>
   </div>
 </section>

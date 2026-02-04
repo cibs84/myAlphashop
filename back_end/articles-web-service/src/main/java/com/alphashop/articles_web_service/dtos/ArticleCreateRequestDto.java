@@ -27,8 +27,7 @@ public class ArticleCreateRequestDto {
 	
 	@NotBlank(message = "{validation.required}")
     @Length(min = 6, message = "{validation.minLength}")
-    @Length(max = 80, message = "{validation.maxLength"
-    		+ "}")
+    @Length(max = 80, message = "{validation.maxLength}")
 	private String description;
 	
 	@Nullable
@@ -56,7 +55,6 @@ public class ArticleCreateRequestDto {
 	private Double price;
 
 	@Nullable
-	@Size(min = 1, message = "{validation.sizeMin}")
 	@Valid
 	private Set<BarcodeDto> barcodes;
 	

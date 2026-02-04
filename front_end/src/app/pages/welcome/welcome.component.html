@@ -1,27 +1,27 @@
-<ng-container *ngIf="viewModel$ | async as vm">
+@if (viewModel$ | async; as vm) {
   <!-- Jumbotron -->
   <app-jumbotron
     [title]="vm.title"
     [subtitle]="vm.subtitle"
     [showLoginSignup]="false">
   </app-jumbotron>
-
   <!-- Local Spinner -->
   <app-spinner [isVisible]="vm.showLoading"></app-spinner>
-
   <!-- Error - Status Info Component -->
-  <app-status-info
-    *ngIf="vm.errorVM && vm.errorVM?.status === 404"
-    [title]="vm.errorVM.message"
-    icon="fa-circle-exclamation"
-    iconClass="text-danger"
-    [showBackButton]="true"
-    [showHomeButton]="true"
-    (back)="goBack()">
-  </app-status-info>
-
+  @if (vm.errorVM && vm.errorVM.status === 404) {
+    <app-status-info
+      [title]="vm.errorVM.message"
+      icon="fa-circle-exclamation"
+      iconClass="text-danger"
+      [showBackButton]="true"
+      [showHomeButton]="true"
+      (back)="goBack()">
+    </app-status-info>
+  }
   <!-- Welcome -->
-  <section *ngIf="vm.showData">
-    <h1 class="mb-3">Welcome {{vm.username}}, click <a routerLink="/articles">here</a> to view our products</h1>
-  </section>
-</ng-container>
+  @if (vm.showData) {
+    <section>
+      <h1 class="mb-3">Welcome {{vm.username}}, click <a routerLink="/articles">here</a> to view our products</h1>
+    </section>
+  }
+}

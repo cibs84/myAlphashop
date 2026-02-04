@@ -1,4 +1,3 @@
-import { Component } from '@angular/core';
 import { BehaviorSubject, catchError, combineLatest, map, Observable, of, Subject, tap } from 'rxjs';
 import { LoadingStateService } from 'src/app/core/services/loading-state.service';
 import { UserStateService } from 'src/app/core/services/user-state.service';
@@ -8,6 +7,7 @@ import { toErrorViewModel } from 'src/app/core/errors/to-error-view-model.fn';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { ErrorViewModel } from 'src/app/core/errors/ErrorViewModel';
 import { Location } from '@angular/common';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-welcome',

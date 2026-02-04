@@ -1,259 +1,310 @@
 <!-- SECTION: Article-Manager -->
-<section id="article-manager" class="container py-4"
-         *ngIf="viewModel$ | async as vm">
+@if (viewModel$ | async; as vm) {
+  <section id="article-manager" class="container py-4">
 
-  <!-- *** SPINNER - LOADING *** -->
-  <app-spinner [isVisible]="vm.showLoading"></app-spinner>
+    <!-- *** SPINNER - LOADING *** -->
+    <app-spinner [isVisible]="vm.showLoading"></app-spinner>
 
-  <!-- Show Data -->
-  <ng-container *ngIf="vm.showData">
+    <!-- Show Data -->
+    @if (vm.showData) {
 
-    <!-- Error 404 - Not found article -->
-    <app-status-info
-      *ngIf="vm.errorVM && vm.errorVM?.status === 404"
-      [title]="vm.errorVM.message"
-      icon="fa-circle-exclamation"
-      iconClass="text-danger"
-      [showBackButton]="true"
-      [showHomeButton]="true"
-      (back)="goBack()">
-    </app-status-info>
+      <!-- Error 404 - Not found article -->
+      @if (vm.errorVM && vm.errorVM.status === 404) {
+        <app-status-info
+          [title]="vm.errorVM.message"
+          icon="fa-circle-exclamation"
+          iconClass="text-danger"
+          [showBackButton]="true"
+          [showHomeButton]="true"
+          (back)="goBack()">
+        </app-status-info>
+      }
 
-    <!-- Article Manager -->
-    <div class="row g-5 justify-content-md-center"
-         *ngIf="!vm.errorVM || vm.errorVM.status !== 404">
+      <!-- Article Manager -->
+      @if (!vm.errorVM || vm.errorVM.status !== 404) {
+        <div class="row g-5 justify-content-md-center">
+          <div class="col-md-7 col-lg-8">
+            <h4 class="mb-3">{{ vm.title }}</h4>
 
-      <div class="col-md-7 col-lg-8">
-        <h4 class="mb-3">{{ vm.title }}</h4>
+            <!-- FORM -->
+            <form class="needs-validation"
+                  [formGroup]="form"
+                  (ngSubmit)="onSubmit()">
+              <div class="row g-3">
 
-        <!-- FORM -->
-        <form class="needs-validation" [formGroup]="form">
-          <div class="row g-3">
-
-            <!-- Codart -->
-            <div class="col-sm-6">
-              <label for="codart" class="form-label">Codart*</label>
-              <input type="text" class="form-control" id="codart"
+                <!-- Codart -->
+                <div class="col-sm-6">
+                  <label for="codart" class="form-label">Codart*</label>
+                  <input type="text" class="form-control" id="codart"
                     formControlName="codart"
-                    [class]="getValidationClass('codart')">
-              <app-validation-messages
-                [formCtrl]="form.get('codart')"
-                [beErrorMsgs]="getBackendErrorsByField('codart')"
-                [feErrorMsgs]="FE_ERROR_MSGS['codart']">
-              </app-validation-messages>
-            </div>
+                    [class]="getValidationClass(form.get('codart'))">
+                  <app-validation-messages
+                    [formCtrl]="form.get('codart')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('codart'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['codart']">
+                  </app-validation-messages>
+                </div>
 
-            <!-- Barcode -->
-            <div class="col-sm-6">
-              <label for="barcodes" class="form-label">Barcodes</label>
-              <input type="text" class="form-control" id="barcodes"
-                    formControlName="barcodes"
-                    [class]="getValidationClass('barcodes')">
-              <app-validation-messages
-                [formCtrl]="form.get('barcodes')"
-                [beErrorMsgs]="getBackendErrorsByField('barcodes')"
-                [feErrorMsgs]="FE_ERROR_MSGS['barcodes']">
-              </app-validation-messages>
-            </div>
+                <!-- Barcodes -->
+                <div class="col-sm-6">
+                  <label for="barcodes" class="form-label">Barcodes</label>
 
-            <!-- Description -->
-            <div class="col-12">
-              <label for="description" class="form-label">Description*</label>
-              <textarea class="form-control" id="description"
-                        formControlName="description"
-                        [class]="getValidationClass('description')"></textarea>
-              <app-validation-messages
-                [formCtrl]="form.get('description')"
-                [beErrorMsgs]="getBackendErrorsByField('description')"
-                [feErrorMsgs]="FE_ERROR_MSGS['description']">
-              </app-validation-messages>
-            </div>
+                  <!-- Barcode List -->
+                  @if (vm.barcodes.length > 0) {
+                    <ul class="mb-3" [ngClass]="vm.barcodes.length === 0 ? 'd-none' : ''">
+                      @for (barcode of vm.barcodes; track $index) {
+                        <li class="mb-2">{{ barcode.barcode }} - {{ barcode.idTypeArt }}
+                          <!-- Delete -->
+                          <button type="button" class="btn btn-link btn-sm text-danger"
+                                  (click)="removeBarcode(barcode.barcode)">
+                            Delete
+                          </button>
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <p>Nessun codice a barre disponibile.</p>
+                  }
 
-            <!-- Ingredients -->
-            <div class="col-12">
-              <label for="ingredients" class="form-label">Ingredients</label>
-              <textarea class="form-control" id="ingredients"
-                        formControlName="ingredients"
-                        [class]="getValidationClass('ingredients')"></textarea>
-              <app-validation-messages
-                [formCtrl]="form.get('ingredients')"
-                [beErrorMsgs]="getBackendErrorsByField('ingredients')"
-                [feErrorMsgs]="FE_ERROR_MSGS['ingredients']">
-              </app-validation-messages>
-            </div>
+                  <!-- Barcode Form -->
+                  @if (barcodesForm) {
+                    <form class="row-group mb-2"
+                          [formGroup]="barcodesForm"
+                          (ngSubmit)="addBarcode()">
+                      <div class="d-flex gap-2">
 
-            <!-- Unit of Measurement -->
-            <div class="col-md-6">
-              <label for="um" class="form-label">Unit of measurement</label>
-              <select class="form-select" id="um"
-                      formControlName="um"
-                      [class]="getValidationClass('um')">
-                <option [ngValue]="null">Please select</option>
-                <option [ngValue]="'PZ'">Pieces</option>
-                <option [ngValue]="'LT'">Liters</option>
-                <option [ngValue]="'KG'">Kilograms</option>
-              </select>
-              <app-validation-messages
-                [formCtrl]="form.get('um')"
-                [beErrorMsgs]="getBackendErrorsByField('um')"
-                [feErrorMsgs]="FE_ERROR_MSGS['um']">
-              </app-validation-messages>
-            </div>
+                        <!-- input: barcode -->
+                        <div>
+                          <input type="text" class="form-control" id="barcode"
+                            formControlName="barcode" placeholder="Barcode"
+                            [class]="getValidationClass(barcodesForm.get('barcode'))">
+                          <app-validation-messages
+                            [formCtrl]="barcodesForm.get('barcode')"
+                            [beErrorMsgs]="getBackendErrorsByField(barcodesForm.get('barcode'))"
+                            [feErrorMsgs]="FE_ERROR_MSGS['barcodes']['barcode']">
+                          </app-validation-messages>
+                        </div>
 
-            <!-- Vat -->
-            <div class="col-md-6">
-              <label for="vat" class="form-label">Vat*</label>
-              <select class="form-select" id="vat"
-                      formControlName="vat"
-                      [class]="getValidationClass('vat')">
-                <option [ngValue]="null">Select</option>
-                <option [ngValue]="vat.idVat" *ngFor="let vat of vm.vatList">{{ vat.description }}</option>
-              </select>
-              <app-validation-messages
-                [formCtrl]="form.get('vat')"
-                [beErrorMsgs]="getBackendErrorsByField('vat')"
-                [feErrorMsgs]="FE_ERROR_MSGS['vat']">
-              </app-validation-messages>
-            </div>
+                        <!-- input: idTypeArt -->
+                        <div>
+                          <input type="text" class="form-control" id="idTypeArt"
+                            formControlName="idTypeArt" placeholder="Type"
+                            [class]="getValidationClass(barcodesForm.get('idTypeArt'))">
+                          <app-validation-messages
+                            [formCtrl]="barcodesForm.get('idTypeArt')"
+                            [beErrorMsgs]="getBackendErrorsByField(barcodesForm.get('idTypeArt'))"
+                            [feErrorMsgs]="FE_ERROR_MSGS['barcodes']['idTypeArt']">
+                          </app-validation-messages>
+                        </div>
+                      </div>
 
-            <!-- Quantity (PcsCart) -->
-            <div class="col-sm-3">
-              <label for="pcsCart" class="form-label">Quantity</label>
-              <input type="number" class="form-control" id="pcsCart"
-                      formControlName="pcsCart"
-                      [class]="getValidationClass('pcsCart')">
-              <app-validation-messages
-                [formCtrl]="form.get('pcsCart')"
-                [beErrorMsgs]="getBackendErrorsByField('pcsCart')"
-                [feErrorMsgs]="FE_ERROR_MSGS['pcsCart']">
-              </app-validation-messages>
-            </div>
+                      <!-- Add/Cancel - Buttons -->
+                      <button type="submit" class="btn btn-sm btn-outline-secondary mt-2">
+                        Add
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary mt-2 ms-2"
+                              (click)="resetBarcodeForm()">
+                        Cancel
+                      </button>
+                    </form>
+                  }
+                  <!-- Add Barcode Form -->
+                  @else {
+                    <div class="text-primary text-decoration-hover link-offset-2 pointer"
+                        (click)="buildBarcodeForm()">
+                      Add barcode
+                    </div>
+                  }
+                </div>
 
-            <!-- Net Weight -->
-            <div class="col-sm-3">
-              <label for="netWeight" class="form-label">Net Weight</label>
-              <input type="number" class="form-control" id="netWeight" step="0.01"
-                      formControlName="netWeight"
-                      [class]="getValidationClass('netWeight')">
-              <app-validation-messages
-                [formCtrl]="form.get('netWeight')"
-                [beErrorMsgs]="getBackendErrorsByField('netWeight')"
-                [feErrorMsgs]="FE_ERROR_MSGS['netWeight']">
-              </app-validation-messages>
-            </div>
+                <!-- Description -->
+                <div class="col-12">
+                  <label for="description" class="form-label">Description*</label>
+                  <textarea class="form-control" id="description"
+                    formControlName="description"
+                    [class]="getValidationClass(form.get('description'))"></textarea>
+                  <app-validation-messages
+                    [formCtrl]="form.get('description')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('description'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['description']">
+                  </app-validation-messages>
+                </div>
 
-            <!-- Price -->
-            <div class="col-sm-3">
-              <label for="price" class="form-label">Price*</label>
-              <input type="number" class="form-control" id="price" step="0.01"
-                      formControlName="price"
-                      [class]="getValidationClass('price')">
-              <app-validation-messages
-                [formCtrl]="form.get('price')"
-                [beErrorMsgs]="getBackendErrorsByField('price')"
-                [feErrorMsgs]="FE_ERROR_MSGS['price']">
-              </app-validation-messages>
-            </div>
+                <!-- Ingredients -->
+                <div class="col-12">
+                  <label for="ingredients" class="form-label">Ingredients</label>
+                  <textarea class="form-control" id="ingredients"
+                    formControlName="ingredients"
+                    [class]="getValidationClass(form.get('ingredients'))"></textarea>
+                  <app-validation-messages
+                    [formCtrl]="form.get('ingredients')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('ingredients'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['ingredients']">
+                  </app-validation-messages>
+                </div>
 
-            <!-- Currency -->
-            <div class="col-md-3">
-              <label for="currency" class="form-label invisible">Currency</label>
-              <select class="form-select" id="currency"
-                      formControlName="currency"
-                      [class]="getValidationClass('currency')">
-                <option [ngValue]="'EUR'">EUR</option>
-                <option [ngValue]="'USD'">USD</option>
-                <option [ngValue]="'GBP'">GBP</option>
-              </select>
-              <app-validation-messages
-                [formCtrl]="form.get('currency')"
-                [beErrorMsgs]="getBackendErrorsByField('currency')"
-                [feErrorMsgs]="FE_ERROR_MSGS['currency']">
-              </app-validation-messages>
-            </div>
+                <!-- Unit of Measurement -->
+                <div class="col-md-6">
+                  <label for="um" class="form-label">Unit of measurement</label>
+                  <select class="form-select" id="um"
+                    formControlName="um"
+                    [class]="getValidationClass(form.get('um'))">
+                    <option [ngValue]="null">Please select</option>
+                    <option [ngValue]="'PZ'">Pieces</option>
+                    <option [ngValue]="'LT'">Liters</option>
+                    <option [ngValue]="'KG'">Kilograms</option>
+                  </select>
+                  <app-validation-messages
+                    [formCtrl]="form.get('um')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('um'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['um']">
+                  </app-validation-messages>
+                </div>
 
-            <!-- Category -->
-            <div class="col-md-6">
-              <label for="category" class="form-label">Category*</label>
-              <select class="form-select" id="category"
-                      formControlName="category"
-                      [class]="getValidationClass('category')">
-                <option [ngValue]="null">Select</option>
-                <option [ngValue]="category.id" *ngFor="let category of vm.categories">
-                  {{ category.id }} - {{ category.description }}
-                </option>
-              </select>
-              <app-validation-messages
-                [formCtrl]="form.get('category')"
-                [beErrorMsgs]="getBackendErrorsByField('category')"
-                [feErrorMsgs]="FE_ERROR_MSGS['category']">
-              </app-validation-messages>
-            </div>
+                <!-- Vat -->
+                <div class="col-md-6">
+                  <label for="vat" class="form-label">Vat*</label>
+                  <select class="form-select" id="vat"
+                    formControlName="vat"
+                    [class]="getValidationClass(form.get('vat'))">
+                    <option [ngValue]="null">Select</option>
+                    @for (vat of vm.vatList; track vat.idVat) {
+                      <option [ngValue]="vat.idVat">{{ vat.description }}</option>
+                    }
+                  </select>
+                  <app-validation-messages
+                    [formCtrl]="form.get('vat')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('vat'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['vat']">
+                  </app-validation-messages>
+                </div>
 
-            <!-- Status -->
-            <div class="col-md-6">
-              <label for="idArtStatus" class="form-label">Status*</label>
-              <select class="form-select" id="idArtStatus"
-                      formControlName="idArtStatus"
-                      [class]="getValidationClass('idArtStatus')">
-                <option [ngValue]="null">Select</option>
-                <option [ngValue]="1">Active</option>
-                <option [ngValue]="2">Suspended</option>
-                <option [ngValue]="3">Deleted</option>
-              </select>
-              <app-validation-messages
-                [formCtrl]="form.get('idArtStatus')"
-                [beErrorMsgs]="getBackendErrorsByField('idArtStatus')"
-                [feErrorMsgs]="FE_ERROR_MSGS['idArtStatus']">
-              </app-validation-messages>
-            </div>
+                <!-- Quantity (PcsCart) -->
+                <div class="col-sm-3">
+                  <label for="pcsCart" class="form-label">Quantity</label>
+                  <input type="number" class="form-control" id="pcsCart"
+                    formControlName="pcsCart"
+                    [class]="getValidationClass(form.get('pcsCart'))">
+                  <app-validation-messages
+                    [formCtrl]="form.get('pcsCart')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('pcsCart'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['pcsCart']">
+                  </app-validation-messages>
+                </div>
 
-            <!-- Image -->
-            <!-- <div class="col-12">
-              <label for="artimage" class="form-label">Image</label>
-              <div class="input-group has-validation">
-                <span class="input-group-text">Select File</span>
-                <input type="text" class="form-control" id="artimage" placeholder="No file selected"
-                        formControlName="imageUrl"
-                        [class]="getValidationClass('imageUrl')">
-                <app-validation-messages
-                  [formCtrl]="form.get('imageUrl')"
-                  [beErrorMsgs]="getBackendErrorsByField('imageUrl')"
-                  [feErrorMsgs]="FE_ERROR_MSGS['imageUrl']">
-                </app-validation-messages>
+                <!-- Net Weight -->
+                <div class="col-sm-3">
+                  <label for="netWeight" class="form-label">Net Weight</label>
+                  <input type="number" class="form-control" id="netWeight" step="0.01"
+                    formControlName="netWeight"
+                    [class]="getValidationClass(form.get('netWeight'))">
+                  <app-validation-messages
+                    [formCtrl]="form.get('netWeight')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('netWeight'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['netWeight']">
+                  </app-validation-messages>
+                </div>
+
+                <!-- Price -->
+                <div class="col-sm-3">
+                  <label for="price" class="form-label">Price*</label>
+                  <input type="number" class="form-control" id="price" step="0.01"
+                    formControlName="price"
+                    [class]="getValidationClass(form.get('price'))">
+                  <app-validation-messages
+                    [formCtrl]="form.get('price')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('price'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['price']">
+                  </app-validation-messages>
+                </div>
+
+                <!-- Currency -->
+                <div class="col-md-3">
+                  <label for="currency" class="form-label invisible">Currency</label>
+                  <select class="form-select" id="currency"
+                    formControlName="currency"
+                    [class]="getValidationClass(form.get('currency'))">
+                    <option [ngValue]="'EUR'">EUR</option>
+                    <option [ngValue]="'USD'">USD</option>
+                    <option [ngValue]="'GBP'">GBP</option>
+                  </select>
+                  <app-validation-messages
+                    [formCtrl]="form.get('currency')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('currency'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['currency']">
+                  </app-validation-messages>
+                </div>
+
+                <!-- Category -->
+                <div class="col-md-6">
+                  <label for="category" class="form-label">Category*</label>
+                  <select class="form-select" id="category"
+                    formControlName="category"
+                    [class]="getValidationClass(form.get('category'))">
+                    <option [ngValue]="null">Select</option>
+                    @for (category of vm.categories; track category.id) {
+                      <option [ngValue]="category.id">
+                        {{ category.id }} - {{ category.description }}
+                      </option>
+                    }
+                  </select>
+                  <app-validation-messages
+                    [formCtrl]="form.get('category')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('category'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['category']">
+                  </app-validation-messages>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6">
+                  <label for="idArtStatus" class="form-label">Status*</label>
+                  <select class="form-select" id="idArtStatus"
+                    formControlName="idArtStatus"
+                    [class]="getValidationClass(form.get('idArtStatus'))">
+                    <option [ngValue]="null">Select</option>
+                    <option [ngValue]="1">Active</option>
+                    <option [ngValue]="2">Suspended</option>
+                    <option [ngValue]="3">Deleted</option>
+                  </select>
+                  <app-validation-messages
+                    [formCtrl]="form.get('idArtStatus')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('idArtStatus'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['idArtStatus']">
+                  </app-validation-messages>
+                </div>
               </div>
-            </div> -->
+
+              <!-- Action Buttons -->
+              <div class="d-flex justify-content-between mt-4">
+                <div>
+                  <!-- DELETE - Delete Article -->
+                  @if (vm.isEditMode) {
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      (click)="onDelete()">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  }
+                </div>
+                <div class="d-flex gap-2">
+
+                  <!-- CANCEL - Go back -->
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="goBack()">
+                    Cancel
+                  </button>
+
+                  <!-- SUBMIT - Save Article -->
+                  <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+              </div>
+            </form>
           </div>
-
-          <!-- Action Buttons -->
-          <div class="d-flex justify-content-between mt-4">
-            <div>
-              <!-- DELETE - Delete Article -->
-              <button
-                *ngIf="vm.isEditMode"
-                type="button"
-                class="btn btn-danger"
-                (click)="onDelete()">
-                <i class="bi bi-trash"></i> Delete
-              </button>
-            </div>
-
-            <div class="d-flex gap-2">
-              <!-- CANCEL - Go back -->
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                (click)="goBack()">
-                Cancel
-              </button>
-
-              <!-- SUBMIT - Save Article -->
-              <button (click)="onSubmit()" class="btn btn-primary">Save</button>
-            </div>
-          </div>
-
-        </form>
-      </div>
-    </div>
-  </ng-container>
-</section>
+        </div>
+      }
+    }
+  </section>
+}

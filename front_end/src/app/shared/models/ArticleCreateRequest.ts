@@ -12,8 +12,8 @@ export interface ArticleCreateRequest {
   netWeight?: number,
   idArtStatus: number,
   price: number,
-  category: CategoryRef | null,
-  vat: VatRef | null,
+  category: CategoryRef,
+  vat: VatRef,
   barcodes?: Barcode[] | null,
   ingredients?: Ingredients | null
 }

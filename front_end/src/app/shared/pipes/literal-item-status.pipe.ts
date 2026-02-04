@@ -7,7 +7,7 @@ import { ItemStatus } from '../enums';
 })
 export class LiteralItemStatusPipe implements PipeTransform {
 
-  transform(numItemStatus: number | null): unknown {
+  transform(numItemStatus: number | null | undefined): unknown {
     const mapArtStatus: Record<number, ItemStatus> = {
       1: ItemStatus.Active,
       2: ItemStatus.Suspended,

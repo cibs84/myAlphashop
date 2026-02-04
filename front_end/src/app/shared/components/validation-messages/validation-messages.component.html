@@ -1,20 +1,24 @@
 <!-- VALID -->
-<div *ngIf="showValidMsg()">
-  <div class="valid-feedback d-block mb-3">{{IS_VALID_MSG}}</div>
-</div>
+@if (showValidMsg()) {
+  <div>
+    <div class="valid-feedback d-block">{{IS_VALID_MSG}}</div>
+  </div>
+}
 
 <!-- INVALID - Show only if there are frontend or backend errors -->
-<ng-container *ngIf="isFrontendInvalid() || (beErrorMsgs?.length ?? 0) > 0">
-
+@if (isFrontendInvalid() || beErrorMsgs.length > 0) {
   <!-- Frontend - Error -->
-  <div  *ngIf="isFrontendInvalid()" class="invalid-feedback d-block mb-3">
-    FE: {{ getFeErrorMsg() }}
-  </div>
-
+  @if (isFrontendInvalid()) {
+    <div  class="invalid-feedback d-block">
+      FE: {{ getFeErrorMsg() }}
+    </div>
+  }
   <!-- Backend - Error -->
-  <div *ngIf="!isFrontendInvalid()"
-    class="invalid-feedback d-block mb-3"
-    [class.pointed-list]="beErrorMsgs.length > 1">
-    BE: {{ beErrorMsgs[0] }}
-  </div>
-</ng-container>
+  @if (!isFrontendInvalid()) {
+    <div
+      class="invalid-feedback d-block"
+      [class.pointed-list]="beErrorMsgs.length > 1">
+      BE: {{ beErrorMsgs[0] }}
+    </div>
+  }
+}

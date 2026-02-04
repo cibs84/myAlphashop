@@ -5,9 +5,9 @@
     <p class="fs-4">{{ subtitle }}</p>
 
     <!-- Buttons - Login & Sign Up -->
-    <ng-container *ngIf="showLoginSignup">
+    @if (showLoginSignup) {
       <button class="btn btn-primary btn-lg me-2" routerLink="/login">Login</button>
       <button class="btn btn-success btn-lg" routerLink="/signup">Sign Up</button>
-    </ng-container>
+    }
   </div>
 </section>
