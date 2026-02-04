@@ -1,6 +1,7 @@
 .container {
   max-width: 960px;
 }
+
 .bd-placeholder-img {
   font-size: 1.125rem;
   text-anchor: middle;
@@ -8,14 +9,15 @@
   -moz-user-select: none;
   user-select: none;
 }
+
 .invalid-feedback {
   ul {
     li {
-      &.pointed-list {  // li.pointed-list
+      &.pointed-list {
         position: relative;
         margin-left: 10px;
 
-        &:before {  // li.pointed-list::before
+        &:before {
           content: "\2022";
           position: absolute;
           left: -10px;
@@ -24,10 +26,18 @@
     }
   }
 }
+
 #currency.is-valid {
   padding-right: 0rem;
   padding-left: 0.4rem;
 }
+
+.add-barcode-btn {
+  color: var(--bs-primary);
+  cursor: pointer;
+  text-decoration: none;
+}
+
 @media (min-width: 768px) {
   .bd-placeholder-img-lg {
     font-size: 3.5rem;
