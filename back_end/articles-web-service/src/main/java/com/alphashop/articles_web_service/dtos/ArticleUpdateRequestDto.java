@@ -46,7 +46,6 @@ public class ArticleUpdateRequestDto {
 	private Double price;
 
 	@Nullable
-	@Size(min = 1, message = "{validation.sizeMin}")
 	@Valid
 	private Set<BarcodeDto> barcodes;
 	

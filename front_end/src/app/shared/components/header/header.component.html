@@ -3,8 +3,8 @@
     <a class="navbar-brand" href="#">Alphashop</a>
     <!-- Toggler Button - #toggler -->
     <button #toggler class="navbar-toggler" type="button"
-            data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <!-- Menu - #menu -->
@@ -43,17 +43,17 @@
         </a>
         <!-- Dropdown User Menu - #dwUserMenu -->
         <ul #dwUserMenu class="dropdown-menu ms_dropdown-menu-user" aria-labelledby="navbarDropdown">
-          <ng-container *ngIf="!(isAuthenticated$ | async)">
+          @if (!(isAuthenticated$ | async)) {
             <li><a class="dropdown-item" routerLink="/login">Login</a></li>
             <li><a class="dropdown-item" routerLink="/signup">Sign Up</a></li>
-          </ng-container>
-          <ng-container *ngIf="isAuthenticated$ | async">
+          }
+          @if (isAuthenticated$ | async) {
             <li><a class="dropdown-item"
-                  routerLink="/logout">Logout {{ usernameLogged$ | async }}</a>
-            </li>
-          </ng-container>
-        </ul>
-      </li>
-    </div>
+            routerLink="/logout">Logout {{ usernameLogged$ | async }}</a>
+          </li>
+        }
+      </ul>
+    </li>
   </div>
+</div>
 </nav>

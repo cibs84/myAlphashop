@@ -3,9 +3,10 @@ import { CardFieldsConfig } from '../../models/CardFieldConfig';
 import { literalItemStatus } from '../../utils/literal-item-status.util';
 
 @Component({
-  selector: 'app-generic-card',
-  templateUrl: './generic-card.component.html',
-  styleUrls: ['./generic-card.component.scss'],
+    selector: 'app-generic-card',
+    templateUrl: './generic-card.component.html',
+    styleUrls: ['./generic-card.component.scss'],
+    standalone: false
 })
 export class GenericCardComponent<T> implements OnInit {
   @Input() data!: T;

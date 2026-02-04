@@ -4,15 +4,21 @@
   </div>
 
   <h2 class="display-6 fw-bold">{{ title }}</h2>
-  <p *ngIf="subtitle" class="text-muted fs-5">{{ subtitle }}</p>
+  @if (subtitle) {
+    <p class="text-muted fs-5">{{ subtitle }}</p>
+  }
 
   <div class="mt-4 d-flex justify-content-center gap-2">
-    <button *ngIf="showBackButton" class="btn btn-outline-primary" (click)="back.emit()">
-      <i class="fa-solid fa-arrow-left me-2"></i>Indietro
-    </button>
+    @if (showBackButton) {
+      <button class="btn btn-outline-primary" (click)="back.emit()">
+        <i class="fa-solid fa-arrow-left me-2"></i>Indietro
+      </button>
+    }
 
-    <button *ngIf="showHomeButton" class="btn btn-primary" routerLink="/articles">
-      <i class="fa-solid fa-list me-2"></i>Torna alla Lista
-    </button>
+    @if (showHomeButton) {
+      <button class="btn btn-primary" routerLink="/articles">
+        <i class="fa-solid fa-list me-2"></i>Torna alla Lista
+      </button>
+    }
   </div>
 </div>

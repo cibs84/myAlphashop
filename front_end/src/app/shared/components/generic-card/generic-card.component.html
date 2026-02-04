@@ -3,31 +3,39 @@
     <img src="assets/img/articles/default-product-image.png" class="card-img-top" alt="...">
     <div class="card-body">
       <div class="card-body-top">
-        <span *ngIf="fieldsConfig.status" class="badge rounded-pill mb-3"
+        @if (fieldsConfig.status) {
+          <span class="badge rounded-pill mb-3"
           [ngClass]="{'bg-success': isStatusValue(1),
                       'bg-warning text-dark': isStatusValue(2),
                       'bg-danger': isStatusValue(3),
                       'bg-dark text-white': isStatusValue(null)
                       }">
-          {{ getItemStatus(data[fieldsConfig.status]) }}
-        </span>
-        <h5 *ngIf="fieldsConfig.title" class="card-title">{{data[fieldsConfig.title]}}</h5>
+            {{ getItemStatus(data[fieldsConfig.status]) }}
+          </span>
+        }
+        @if (fieldsConfig.title) {
+          <h5 class="card-title">{{data[fieldsConfig.title]}}</h5>
+        }
       </div>
       <hr>
-      <div class="card-body-bottom">
-        <label *ngIf="fieldsConfig.text" for="text">{{ fieldsConfig.text.toString().toUpperCase() }}</label>
-        <p *ngIf="fieldsConfig.text" class="card-text">{{data[fieldsConfig.text]}}</p>
-        <div class="d-flex flex-wrap justify-content-end">
-          <button class="btn btn-outline-success d-flex"
-                  (click)="editItem()">
-            <span class="material-icons-outlined">edit</span>
-          </button>
-          <button class="btn btn-outline-danger d-flex"
-                  (click)="deleteItem()">
-            <span class="material-icons-outlined">delete</span>
-          </button>
+        <div class="card-body-bottom">
+          @if (fieldsConfig.text) {
+            <label for="text">{{ fieldsConfig.text.toString().toUpperCase() }}</label>
+          }
+          @if (fieldsConfig.text) {
+            <p class="card-text">{{data[fieldsConfig.text]}}</p>
+          }
+          <div class="d-flex flex-wrap justify-content-end">
+            <button class="btn btn-outline-success d-flex"
+              (click)="editItem()">
+              <span class="material-icons-outlined">edit</span>
+            </button>
+            <button class="btn btn-outline-danger d-flex"
+              (click)="deleteItem()">
+              <span class="material-icons-outlined">delete</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>

@@ -7,7 +7,7 @@ COPY ./docker/entrypoint_alphashop_nginx.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Copy the Angular build files
-COPY ./dist /usr/share/nginx/html
+COPY ./dist/browser /usr/share/nginx/html
 
 EXPOSE 80
 

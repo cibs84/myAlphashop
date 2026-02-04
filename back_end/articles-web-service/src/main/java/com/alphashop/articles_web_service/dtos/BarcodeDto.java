@@ -11,4 +11,12 @@ public class BarcodeDto {
 	
 	@NotBlank(message = "{validation.required}")
 	private String idTypeArt;
+	
+	public void setBarcode(String barcode) {
+		this.barcode = barcode.trim(); 
+	}
+	
+	public void setIdTypeArt(String idTypeArt) {
+		this.idTypeArt = idTypeArt.trim(); 
+	}
 }

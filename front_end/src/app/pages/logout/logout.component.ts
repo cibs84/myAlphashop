@@ -3,9 +3,10 @@ import { AuthappService } from '../../core/services/authapp.service';
 import { LoggingService } from 'src/app/core/services/logging.service';
 
 @Component({
-  selector: 'app-logout',
-  templateUrl: './logout.component.html',
-  styleUrls: ['./logout.component.scss']
+    selector: 'app-logout',
+    templateUrl: './logout.component.html',
+    styleUrls: ['./logout.component.scss'],
+    standalone: false
 })
 export class LogoutComponent implements OnInit {
 

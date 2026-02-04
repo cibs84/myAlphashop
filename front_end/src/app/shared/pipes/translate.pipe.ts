@@ -3,8 +3,9 @@ import { MsgKey } from 'src/app/core/i18n/msg-key.type';
 import { TranslationService } from 'src/app/core/services/translation.service';
 
 @Pipe({
-  name: 'translate',
-  pure: false
+    name: 'translate',
+    pure: false,
+    standalone: false
 })
 export class TranslatePipe implements PipeTransform {
 

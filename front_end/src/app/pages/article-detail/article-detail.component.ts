@@ -16,9 +16,10 @@ import { ErrorViewModel } from 'src/app/core/errors/ErrorViewModel';
 import { ModalService } from 'src/app/core/services/modal.service';
 
 @Component({
-  selector: 'app-article-detail',
-  templateUrl: './article-detail.component.html',
-  styleUrls: ['./article-detail.component.scss'],
+    selector: 'app-article-detail',
+    templateUrl: './article-detail.component.html',
+    styleUrls: ['./article-detail.component.scss'],
+    standalone: false
 })
 export class ArticleDetailComponent implements OnInit {
   // *** STATE MANAGEMENT ***
@@ -92,6 +93,11 @@ export class ArticleDetailComponent implements OnInit {
       const errorFromApi = articleResult?.error
         ? toErrorViewModel(articleResult.error, this.translator)
         : null;
+
+        this.logger.log("isLocalLoading:", isLocalLoading);
+        this.logger.log("isRequestInProgress:", isRequestInProgress);
+        this.logger.log("isGlobalLoading:", isGlobalLoading);
+        this.logger.log("Result:", ((isLocalLoading || isRequestInProgress) && !isGlobalLoading))
 
       return {
         ...state,
@@ -196,7 +202,7 @@ export class ArticleDetailComponent implements OnInit {
     this.notificator.setNotificationError(msgKey);
   }
 
-  updateState(partialState: Partial<ArticleDetailState>) {
+  private updateState(partialState: Partial<ArticleDetailState>) {
     this.stateSubject.next({
       ...this.stateSubject.value,
       ...partialState,

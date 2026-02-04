@@ -45,7 +45,9 @@ export const VALIDATION_CONFIGS: Record<string, Record<string, any>> = {
 // -------------------------------------------------------------------------
 // FRONTEND ERROR MESSAGES: used by 'validation-messages' component
 // -------------------------------------------------------------------------
-export const FE_ERROR_MSGS: Record<string, Record<string, string>> = {
+type ErrorContent = string | Record<string, string>;
+
+export const FE_ERROR_MSGS: Record<string, any> = {
   codart: {
     required: ERROR_MSGS.REQ_FIELD_MSG,
     pattern: ERROR_MSGS.ONLY_LETTERS_NUMBERS_MSG,
@@ -90,4 +92,12 @@ export const FE_ERROR_MSGS: Record<string, Record<string, string>> = {
   idArtStatus: {
     required: ERROR_MSGS.REQ_FIELD_MSG,
   },
+  barcodes: {
+    barcode: {
+      required: ERROR_MSGS.REQ_FIELD_MSG
+    },
+    idTypeArt: {
+      required: ERROR_MSGS.REQ_FIELD_MSG
+    }
+  }
 };

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthappService } from '../../core/services/authapp.service';
 import { LoggingService } from 'src/app/core/services/logging.service';
@@ -14,9 +14,10 @@ import { ERROR_MSGS } from '../article-manager/article-manager.config';
 import { toMsgKey } from 'src/app/core/errors/to-msg-key.fn';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    standalone: false
 })
 export class LoginComponent implements OnInit {
   // --------------------------------------------------------------
@@ -45,7 +46,7 @@ export class LoginComponent implements OnInit {
   // --------------------------------------------------------------
   // FORM & STATE MANAGEMENT
   // --------------------------------------------------------------
-  form!: FormGroup;
+  form!: UntypedFormGroup;
 
   initialState: LoginState = {
     title: this.TITLE,
@@ -84,7 +85,7 @@ export class LoginComponent implements OnInit {
     private logger: LoggingService,
     private notificator: NotificationService,
     private translator: TranslationService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private loader: LoadingStateService,
   ) {
     this.buildForm();
