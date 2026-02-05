@@ -143,6 +143,19 @@
                   </app-validation-messages>
                 </div>
 
+                <!-- Statistical Code -->
+                <div class="col-12">
+                  <label for="codStat" class="form-label">Statistical Code</label>
+                  <textarea class="form-control" id="codStat"
+                    formControlName="codStat"
+                    [class]="getValidationClass(form.get('codStat'))"></textarea>
+                  <app-validation-messages
+                    [formCtrl]="form.get('codStat')"
+                    [beErrorMsgs]="getBackendErrorsByField(form.get('codStat'))"
+                    [feErrorMsgs]="FE_ERROR_MSGS['codStat']">
+                  </app-validation-messages>
+                </div>
+
                 <!-- Unit of Measurement -->
                 <div class="col-md-6">
                   <label for="um" class="form-label">Unit of measurement</label>
