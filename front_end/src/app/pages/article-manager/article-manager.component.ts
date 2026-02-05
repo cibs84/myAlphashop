@@ -586,7 +586,7 @@ export class ArticleManagerComponent implements OnInit, ComponentCanDeactivate {
           : null,
       barcodes,
       ingredients: formValues.ingredients
-        ? { codart: state.codart, info: formValues.ingredients }
+        ? { codart: state.codart || formValues.codart, info: formValues.ingredients }
         : null,
     };
   }
