@@ -475,6 +475,7 @@ export class ArticleManagerComponent implements OnInit, ComponentCanDeactivate {
           ),
         ],
       ],
+      codStat: [''],
       um: [''],
       pcsCart: [
         null,
