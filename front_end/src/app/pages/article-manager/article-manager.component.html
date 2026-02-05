@@ -146,9 +146,9 @@
                 <!-- Statistical Code -->
                 <div class="col-12">
                   <label for="codStat" class="form-label">Statistical Code</label>
-                  <textarea class="form-control" id="codStat"
+                  <input type="text" class="form-control" id="codStat"
                     formControlName="codStat"
-                    [class]="getValidationClass(form.get('codStat'))"></textarea>
+                    [class]="getValidationClass(form.get('codStat'))">
                   <app-validation-messages
                     [formCtrl]="form.get('codStat')"
                     [beErrorMsgs]="getBackendErrorsByField(form.get('codStat'))"
