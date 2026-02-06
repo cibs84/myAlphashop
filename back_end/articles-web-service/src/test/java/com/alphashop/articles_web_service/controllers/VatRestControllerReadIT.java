@@ -16,7 +16,7 @@ public class VatRestControllerReadIT extends BaseSpringIT {
 	@Test
 	public void listAllCategories() throws Exception {
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/vat/find/all")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/vat")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(4)))
 		.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andReturn();
 	}

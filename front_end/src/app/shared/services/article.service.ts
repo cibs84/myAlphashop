@@ -58,12 +58,12 @@ export class ArticleService {
 
   getCategories = () => {
     return this.httpClient.get<Category[]>(
-      `${this.apiUrl}/categories/find/all`
+      `${this.apiUrl}/categories`
     );
   };
 
   getVatList = () => {
-    return this.httpClient.get<Vat[]>(`${this.apiUrl}/vat/find/all`);
+    return this.httpClient.get<Vat[]>(`${this.apiUrl}/vat`);
   };
 
   private queryStringBuilder(
