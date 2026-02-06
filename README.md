@@ -4,20 +4,20 @@ Questo progetto nasce come ambiente di studio e sperimentazione pratica sulle ar
 
 ## Architettura di Sistema
 
-L'applicazione è composta da una catena di servizi containerizzati, tutti basati su **Java 21** e **Spring Boot 3.4.x**:
+L'applicazione è composta da una catena di servizi containerizzati, tutti basati su **Java 21** e **Spring Boot 3.4**:
 
-- **Frontend**: Angular 20 (implementata nuova sintassi *Control Flow*).
+- **Frontend: Angular 20**
   - Styling gestito tramite **Bootstrap 6** e **SCSS**.
 - **Backend 1: Articles Service (Port 8080)**
-  - Framework: **Spring Boot 3.4.0**.
+  - Framework: **Spring Boot 3.4**.
   - Database: **PostgreSQL** con **Flyway** per la migrazione degli schemi.
-  - Testing: Integrazione con **Testcontainers** (attualmente in fase di aggiornamento).
+  - Testing: **JUnit** e integrazione con **Testcontainers**.
 - **Backend 2: User Management Service (Port 8081)**
-  - Framework: **Spring Boot 3.4.3**.
+  - Framework: **Spring Boot 3.4**.
   - Database: **MongoDB** (Spring Data MongoDB).
 - **Backend 3: JWT Auth Service (Port 8082)**
-  - Framework: **Spring Boot 3.4.0**.
-  - Sicurezza: **JJWT 0.12.3** per la generazione e validazione dei token.
+  - Framework: **Spring Boot 3.4**.
+  - Sicurezza: **JJWT** per la generazione e validazione dei token.
 - **Reverse Proxy**: Nginx (configurato come webserver e gateway per il routing dei servizi).
 
 Questa scelta tecnologica eterogenea è stata adottata per l'utilizzo di database relazionali e documentali all'interno della stessa infrastruttura.
@@ -41,7 +41,7 @@ Il progetto è un prototipo funzionale in fase di sviluppo ("Work in Progress").
 - **Comunicazione Inter-Service**: Implementazione del sistema di comunicazione tra microservizi tramite **Spring Cloud OpenFeign**.
 - **State Management**: Integrazione prevista di **NgRx** per la gestione globale dello stato.
 - **Gestione Ruoli**: Implementazione completa lato frontend dei ruoli.
-- **Testing**: Creazione della suite di test per Angular e ripristino dei test backend post-refactoring.
+- **Testing**: Creazione della suite di test per Angular e per il servizio di gestione degli utenti (user-management-service).
 
 ## Note Tecniche
 
