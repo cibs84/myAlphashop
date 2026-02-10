@@ -51,14 +51,36 @@ Il progetto è un prototipo funzionale in fase di sviluppo ("Work in Progress").
 
 ## Istruzioni per l'esecuzione (Docker)
 
-Per avviare l'intero ecosistema con il seeding automatico dei dati, eseguire dalla root del progetto:
+Il progetto è configurato per essere avviato immediatamente tramite Docker. Le immagini dei microservizi sono pre-buildate e ospitate su **Docker Hub**, garantendo che l'applicazione sia testabile senza la necessità di installare localmente Java, Maven o Angular.
+
+### Prerequisiti
+
+1. **Docker e Docker Compose** installati sul sistema.
+2. Presenza del file `.env` nella root del progetto (necessario per mappare i nomi delle immagini e le porte).
+
+### Avvio dell'applicazione
+
+Per assicurarti di utilizzare le versioni più recenti dei servizi buildate dalla pipeline CI/CD (Jenkins), esegui i seguenti comandi dalla root del progetto:
 
 ```bash
-docker compose down -v && docker compose up -d --build
+# Scarica le ultime versioni delle immagini dal Docker Hub
+docker compose pull
+
+# Avvia l'intero ecosistema (ignora la build locale se l'immagine è presente)
+docker compose up -d
+
 ```
 
-L'applicazione sarà raggiungibile all'indirizzo: http://localhost:8084
+> **Nota per il test**: Se desideri forzare un avvio pulito rimuovendo eventuali volumi di database precedenti, utilizza:
+> `docker compose down -v && docker compose pull && docker compose up -d`
 
-Dati di accesso predefiniti:
-- Amministratore: userAdmin / pass1234
-- Utente standard: userRead / pass1234
+### Accesso all'applicazione
+
+Una volta avviati i container, l'interfaccia frontend sarà raggiungibile all'indirizzo:
+**[http://localhost:8084](https://www.google.com/search?q=http://localhost:8084)**
+
+**Credenziali di test:**
+| Ruolo | Username | Password |
+| :--- | :--- | :--- |
+| **Amministratore** | `userAdmin` | `pass1234` |
+| **Utente standard** | `userRead` | `pass1234` |

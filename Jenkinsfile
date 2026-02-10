@@ -1,158 +1,121 @@
+// Dichiarazione variabili globali
 def envFilePath = '.env'
-
 def angularImageName = 'node-with-angular'
-def angularDkrContext = 'front_end'
-def angularDockerfile = 'front_end/docker/Dockerfile.node-with-angular'
-
 def distCachedFolder = 'distCachedFolder'
-
-def frontendDkrContext = ''
-def frontendDkrImage = ''
-def frontendDockerfile = ''
-
 def mavenDkrImage = 'maven:3.9.9-amazoncorretto-21-debian'
-
-def articleSvcName = ''
-def articleDockerfile = ''
-def articleDkrContext = ''
-def articleDkrImage = ''
-def articleSprBtProfile = 'prod'
-def articleSprBtPath = 'back_end/articles-web-service'
-def articleSprBtJarFile = ''
-
-def userSvcName = ''
-def userDkrContext = ''
-def userDockerfile = ''
-def userDkrImage = ''
-def userSprBtProfile = 'prod'
-def userSprBtPath = 'back_end/user-management-service'
-def userSprBtJarFile = ''
-
 def dockerRegistryUrl = 'https://registry.hub.docker.com'
 def dockerRegistryCredentialsId = 'dockerhub'
 
-catchError {
-    node {
-        stage('Pull repository') {
-            checkout scm
+// Variabili popolate dal .env
+def frontendDkrImage, frontendDkrContext, frontendDockerfile
+def articleDkrImage, articleDkrContext, articleDockerfile, articleSvcName, articleSprBtPath, articleSprBtProfile
+def jwtAuthDkrImage, jwtAuthDkrContext, jwtAuthDockerfile, jwtAuthSvcName, jwtAuthSprBtPath, jwtAuthSprBtProfile
+def userDkrImage, userDkrContext, userDockerfile, userSvcName, userSprBtPath, userSprBtProfile
+
+node {
+    stage('Pull repository') {
+        checkout scm
+    }
+
+    stage('Load and Clean Environment Variables') {
+        script {
+            if (fileExists(envFilePath)) {
+                def content = readFile(envFilePath)
+                def props = [:]
+                // Parsing manuale Sandbox-friendly (evita RejectedAccessException)
+                content.split('\n').each { line ->
+                    line = line.trim()
+                    if (line && !line.startsWith('#') && line.contains('=')) {
+                        def parts = line.split('=', 2)
+                        def key = parts[0].trim()
+                        def value = parts[1].trim().replaceAll(/^['"]|['"]$/, "")
+                        props[key] = value
+                    }
+                }
+
+                // --- Mapping Variabili ---
+                frontendDkrContext = props['NGINX_DKR_CONTEXT'] ?: 'front_end'
+                frontendDkrImage = props['NGINX_DKR_IMAGE']
+                frontendDockerfile = "${frontendDkrContext}/" + (props['NGINX_DKR_FILE'] ?: 'Dockerfile')
+                angularBuildConfiguration = props['NG_BUILD_CONFIG']
+
+                def baseSprImage = props['SPR_BT__DKR_IMAGE']
+                def sprBtDkrFile = props['SPR_BT__DKR_FILE']
+                def sprBtContext = props['SPR_BT__DKR_CONTEXT']
+
+                // Article
+                articleSvcName = props['ART_MNG__SVC_NAME']
+                articleDkrImage = "${baseSprImage}:${articleSvcName}"
+                articleDockerfile = sprBtDkrFile
+                articleDkrContext = sprBtContext
+                articleSprBtPath = 'back_end/articles-web-service'
+                articleSprBtProfile = props['ART_MNG__SPR_PROFILE']
+
+                // JWT Auth
+                jwtAuthSvcName = props['JWT_AUTH__SVC_NAME']
+                jwtAuthDkrImage = "${baseSprImage}:${jwtAuthSvcName}"
+                jwtAuthDockerfile = sprBtDkrFile
+                jwtAuthDkrContext = sprBtContext
+                jwtAuthSprBtPath = 'back_end/jwt-auth-service'
+                jwtAuthSprBtProfile = props['JWT_AUTH__SPR_PROFILE']
+
+                // User Management
+                userSvcName = props['USR_MNG__SVC_NAME']
+                userDkrImage = "${baseSprImage}:${userSvcName}"
+                userDkrContext = sprBtContext
+                userDockerfile = sprBtDkrFile
+                userSprBtPath = 'back_end/user-management-service'
+                userSprBtProfile = props['USR_MNG__SPR_PROFILE']
+
+                echo "Variabili caricate per: ${articleSvcName}, ${jwtAuthSvcName}, ${userSvcName}"
+            } else {
+                error ".env non trovato!"
+            }
         }
-        stage('Load Environment Variables') {
+    }
+
+    // --- FRONTEND ---
+    stage('Build Angular Image & Project') {
+        sh "docker build -t ${angularImageName} -f ${frontendDkrContext}/docker/Dockerfile.node-with-angular ${frontendDkrContext}"
+        dir(frontendDkrContext) {
+            docker.image(angularImageName).inside {
+                sh "npm install && ng build --configuration=${angularBuildConfiguration}"
+            }
+        }
+    }
+
+    stage('Push Frontend Image') {
+        script {
+            def customImage = docker.build("${frontendDkrImage}", "-f ${frontendDockerfile} ${frontendDkrContext}")
+            docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
+                customImage.push("latest")
+            }
+        }
+    }
+
+    // --- MICROSERVICES (Maven + Docker) ---
+    def services = [
+        [name: 'Article', path: articleSprBtPath, img: articleDkrImage, svc: articleSvcName, prof: articleSprBtProfile],
+        [name: 'JWT Auth', path: jwtAuthSprBtPath, img: jwtAuthDkrImage, svc: jwtAuthSvcName, prof: jwtAuthSprBtProfile],
+        [name: 'User', path: userSprBtPath, img: userDkrImage, svc: userSvcName, prof: userSprBtProfile]
+    ]
+
+    services.each { service ->
+        stage("Build & Push ${service.name}") {
             script {
-                def envFile = readFile(envFilePath)
-                def envVars = envFile.split('\n').collect { it.trim() }.findAll { it && !it.startsWith('#') }
-                envVars.each { envVar ->
-                    def (key, value) = envVar.split('=', 2)
-                    env[key] = value
+                // Maven Build
+                docker.image(mavenDkrImage).inside("-u root -v $HOME/.m2:/var/maven/.m2") {
+                    sh "mvn -B -DskipTests clean package -f ${service.path} -Dspring.profiles.active=${service.prof}"
                 }
-                frontendDkrContext = env.NGINX_DKR_CONTEXT
-                frontendDkrImage = env.NGINX_DKR_IMAGE
-                frontendDockerfile = "${env.NGINX_DKR_CONTEXT}/${env.NGINX_DKR_FILE}"
-                articleSvcName = env.ART_MNG__SVC_NAME
-                articleDockerfile = env.SPR_BT__DKR_FILE
-                articleDkrContext = env.SPR_BT__DKR_CONTEXT
-                articleDkrImage = "${env.SPR_BT__DKR_IMAGE}:${env.ART_MNG__SVC_NAME}"
-                articleSprBtJarFile = env.ART_MNG__JAR_FILE
-                userSvcName = env.USR_MNG__SVC_NAME
-                userDkrContext = env.SPR_BT__DKR_CONTEXT
-                userDockerfile = env.SPR_BT__DKR_FILE
-                userDkrImage = "${env.SPR_BT__DKR_IMAGE}:${env.USR_MNG__SVC_NAME}"
-                userSprBtJarFile = env.USR_MNG__JAR_FILE
-            }
-        }
-    }
-}
-
-node {
-    stage('Build Angular Image') {
-        sh "docker build -t ${angularImageName} -f ${angularDockerfile} ${angularDkrContext}"
-    }
-    stage('Build Angular Project') {
-        def customNodeImage = docker.image(angularImageName)
-        dir('front_end') {
-            customNodeImage.inside {
-                stage('Install npm') {
-                    sh 'npm install'
+                
+                // Docker Build & Push
+                def jarFile = sh(script: "ls ${service.path}/target/*.jar", returnStdout: true).trim()
+                def customImage = docker.build("${service.img}", "-f ${articleDockerfile} --build-arg JAR_FILE=${jarFile} ${articleDkrContext}")
+                
+                docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
+                    customImage.push("latest")
+                    customImage.push(service.svc)
                 }
-                stage('Build') {
-                    sh 'ng build'
-                }
-                stage('Stash dist folder') {
-                    stash includes: 'dist/**/*', name: distCachedFolder
-                }
-            }
-        }
-    }
-    stage('Build and Push Frontend Docker Image') {
-        unstash distCachedFolder
-        def customImage = docker.build("${frontendDkrImage}", "-f ${frontendDockerfile} ${frontendDkrContext}")
-        docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
-            customImage.push("$BUILD_NUMBER")
-            customImage.push("latest")
-        }
-    }
-}
-
-node {
-    stage('Build and Push Article Management Docker Image') {
-        docker.image(mavenDkrImage).inside("-u root -v $HOME/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2 -e MAVEN_OPTS=\"-Duser.home=/var/maven\"") {
-            stage('Create Jenkins User and Group') {
-                sh '''
-                    useradd jenkins
-                    usermod -aG jenkins jenkins
-                '''
-            }
-            stage('Build Article Management') {
-                sh "mvn -B -DskipTests clean package -f ${articleSprBtPath} -Dspring.profiles.active=${articleSprBtProfile}"
-            }
-            stage('Set Jenkins ownership on artifact file') { 
-                sh "chown jenkins:jenkins ${articleSprBtPath}/target/*.jar"
-            }
-            stage('Stash Article Artifact') {
-                stash includes: "${articleSprBtPath}/target/*.jar",
-                name: 'article-artifact'
-            }
-        }
-        stage('Unstash Article Artifact') {
-            unstash 'article-artifact'
-        }
-        stage('Build and Push Article Docker Image') {
-            def jarFile = sh(script: "ls ${articleSprBtPath}/target/*.jar", returnStdout: true).trim()
-            def customImage = docker.build(articleDkrImage, "-f ${articleDockerfile} --build-arg JAR_FILE=${jarFile} ${articleDkrContext}")
-            docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
-                customImage.push(articleSvcName)
-            }
-        }
-    }
-}
-
-node {
-    stage('Build and Push User Management Docker Image') {
-        docker.image(mavenDkrImage).inside("-u root -v $HOME/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2 -e MAVEN_OPTS=\"-Duser.home=/var/maven\"") {
-            stage('Create Jenkins User and Group') {
-                sh '''
-                    useradd jenkins
-                    usermod -aG jenkins jenkins
-                '''
-            }
-            stage('Build User Management') {
-                sh "mvn -B -DskipTests clean package -f ${userSprBtPath} -Dspring.profiles.active=${articleSprBtProfile}"
-            }
-            stage('Set Jenkins ownership on artifact file') { 
-                sh "chown jenkins:jenkins ${userSprBtPath}/target/*.jar"
-            }
-            stage('Stash User Artifact') {
-                stash includes: "${userSprBtPath}/target/*.jar",
-                name: 'user-artifact'
-            }
-        }
-        stage('Unstash User Artifact') {
-            unstash 'user-artifact'
-        }
-        stage('Build and Push User Docker Image') {
-            def jarFile = sh(script: "ls ${userSprBtPath}/target/*.jar", returnStdout: true).trim()
-            def customImage = docker.build(userDkrImage, "-f ${userDockerfile} --build-arg JAR_FILE=${jarFile} ${articleDkrContext}")
-            docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
-                customImage.push(userSvcName)
             }
         }
     }
