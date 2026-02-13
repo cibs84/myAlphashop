@@ -1,16 +1,34 @@
+// Consente all'utente di selezionare l'ambiente di build
+properties([
+    parameters([
+        choice(
+            name: 'BUILD_ENV',
+            choices: ['dev', 'prod'],
+            description: 'Build environment'
+        )
+    ])
+])
+
+// Nei casi di 'webhook GitHub' l'ambiente di build viene impostato a 'dev'
+def buildEnv = params.BUILD_ENV
+if (!buildEnv) {
+    buildEnv = 'dev'
+}
+echo "Building environment: ${buildEnv}"
+
+
 // Dichiarazione variabili globali
 def envFilePath = '.env'
 def angularImageName = 'node-with-angular'
 def distCachedFolder = 'distCachedFolder'
 def mavenDkrImage = 'maven:3.9.9-amazoncorretto-21-debian'
-def dockerRegistryUrl = 'https://registry.hub.docker.com'
 def dockerRegistryCredentialsId = 'dockerhub'
 
 // Variabili popolate dal .env
 def frontendDkrImage, frontendDkrContext, frontendDockerfile
-def articleDkrImage, articleDkrContext, articleDockerfile, articleSvcName, articleSprBtPath, articleSprBtProfile
-def jwtAuthDkrImage, jwtAuthDkrContext, jwtAuthDockerfile, jwtAuthSvcName, jwtAuthSprBtPath, jwtAuthSprBtProfile
-def userDkrImage, userDkrContext, userDockerfile, userSvcName, userSprBtPath, userSprBtProfile
+def articleDkrImage, articleDkrContext, articleDockerfile, articleSvcName, articleSprBtPath
+def jwtAuthDkrImage, jwtAuthDkrContext, jwtAuthDockerfile, jwtAuthSvcName, jwtAuthSprBtPath
+def userDkrImage, userDkrContext, userDockerfile, userSvcName, userSprBtPath
 
 node {
     stage('Pull repository') {
@@ -34,10 +52,9 @@ node {
                 }
 
                 // --- Mapping Variabili ---
-                frontendDkrContext = props['NGINX_DKR_CONTEXT'] ?: 'front_end'
+                frontendDkrContext = props['NGINX_DKR_CONTEXT']
                 frontendDkrImage = props['NGINX_DKR_IMAGE']
-                frontendDockerfile = "${frontendDkrContext}/" + (props['NGINX_DKR_FILE'] ?: 'Dockerfile')
-                angularBuildConfiguration = props['NG_BUILD_CONFIG']
+                frontendDockerfile = "${frontendDkrContext}/" + props['NGINX_DKR_FILE']
 
                 def baseSprImage = props['SPR_BT__DKR_IMAGE']
                 def sprBtDkrFile = props['SPR_BT__DKR_FILE']
@@ -49,7 +66,6 @@ node {
                 articleDockerfile = sprBtDkrFile
                 articleDkrContext = sprBtContext
                 articleSprBtPath = 'back_end/articles-web-service'
-                articleSprBtProfile = props['ART_MNG__SPR_PROFILE']
 
                 // JWT Auth
                 jwtAuthSvcName = props['JWT_AUTH__SVC_NAME']
@@ -57,7 +73,6 @@ node {
                 jwtAuthDockerfile = sprBtDkrFile
                 jwtAuthDkrContext = sprBtContext
                 jwtAuthSprBtPath = 'back_end/jwt-auth-service'
-                jwtAuthSprBtProfile = props['JWT_AUTH__SPR_PROFILE']
 
                 // User Management
                 userSvcName = props['USR_MNG__SVC_NAME']
@@ -65,7 +80,6 @@ node {
                 userDkrContext = sprBtContext
                 userDockerfile = sprBtDkrFile
                 userSprBtPath = 'back_end/user-management-service'
-                userSprBtProfile = props['USR_MNG__SPR_PROFILE']
 
                 echo "Variabili caricate per: ${articleSvcName}, ${jwtAuthSvcName}, ${userSvcName}"
             } else {
@@ -75,29 +89,33 @@ node {
     }
 
     // --- FRONTEND ---
-    stage('Build Angular Image & Project') {
+    stage('Build Angular Docker Image') {
         sh "docker build -t ${angularImageName} -f ${frontendDkrContext}/docker/Dockerfile.node-with-angular ${frontendDkrContext}"
         dir(frontendDkrContext) {
             docker.image(angularImageName).inside {
-                sh "npm install && ng build --configuration=${angularBuildConfiguration}"
+                def ngConfig = buildEnv == 'prod' ? 'production' : 'development'
+                sh "npm install"
+                sh "ng build --configuration=${ngConfig}"
             }
         }
     }
 
-    stage('Push Frontend Image') {
+    stage('Push Frontend Docker Image') {
         script {
-            def customImage = docker.build("${frontendDkrImage}", "-f ${frontendDockerfile} ${frontendDkrContext}")
-            docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
-                customImage.push("latest")
+            def tag = params.BUILD_ENV
+            def customImage = docker.build("${frontendDkrImage}:${tag}", "-f ${frontendDockerfile} ${frontendDkrContext}")
+
+            docker.withRegistry('', dockerRegistryCredentialsId) {
+                customImage.push(tag)
             }
         }
     }
 
-    // --- MICROSERVICES (Maven + Docker) ---
+    // --- Backend MICROSERVICES (Maven + Docker) ---
     def services = [
-        [name: 'Article', path: articleSprBtPath, img: articleDkrImage, svc: articleSvcName, prof: articleSprBtProfile],
-        [name: 'JWT Auth', path: jwtAuthSprBtPath, img: jwtAuthDkrImage, svc: jwtAuthSvcName, prof: jwtAuthSprBtProfile],
-        [name: 'User', path: userSprBtPath, img: userDkrImage, svc: userSvcName, prof: userSprBtProfile]
+        [name: 'Article', path: articleSprBtPath, img: articleDkrImage, svc: articleSvcName],
+        [name: 'JWT Auth', path: jwtAuthSprBtPath, img: jwtAuthDkrImage, svc: jwtAuthSvcName],
+        [name: 'User', path: userSprBtPath, img: userDkrImage, svc: userSvcName]
     ]
 
     services.each { service ->
@@ -105,15 +123,14 @@ node {
             script {
                 // Maven Build
                 docker.image(mavenDkrImage).inside("-u root -v $HOME/.m2:/var/maven/.m2") {
-                    sh "mvn -B -DskipTests clean package -f ${service.path} -Dspring.profiles.active=${service.prof}"
+                    sh "mvn -B -DskipTests clean package -f ${service.path}"
                 }
                 
                 // Docker Build & Push
                 def jarFile = sh(script: "ls ${service.path}/target/*.jar", returnStdout: true).trim()
                 def customImage = docker.build("${service.img}", "-f ${articleDockerfile} --build-arg JAR_FILE=${jarFile} ${articleDkrContext}")
                 
-                docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
-                    customImage.push("latest")
+                docker.withRegistry('',dockerRegistryCredentialsId) {
                     customImage.push(service.svc)
                 }
             }

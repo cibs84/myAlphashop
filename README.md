@@ -49,6 +49,27 @@ Il progetto è un prototipo funzionale in fase di sviluppo ("Work in Progress").
 2. **Evoluzione Angular**: Utilizzo del nuovo Control Flow (`@if`, `@for`) per la gestione dei template.
 3. **Sicurezza**: I pulsanti per le operazioni non permesse sono visibili anche a utenti con permessi limitati per verificare la risposta del sistema (403 Forbidden) e la gestione degli errori tramite Interceptor.
 
+## CI/CD Pipeline
+
+Il progetto integra una pipeline CI/CD realizzata con Jenkins.
+
+### Flusso della pipeline:
+
+1. Trigger automatico ad ogni push su GitHub (CI).
+2. Build dei microservizi Spring Boot.
+3. Build del frontend Angular con selezione ambiente (dev/prod).
+4. Creazione e tagging delle immagini Docker.
+5. Push automatico su Docker Hub.
+
+### Gestione ambienti
+
+La pipeline consente di selezionare l'ambiente di build:
+
+- `dev` → configurazione per esecuzione locale
+- `prod` → configurazione per deploy su VPS
+
+Le immagini vengono taggate in modo coerente con l'ambiente selezionato.
+
 ## Istruzioni per l'esecuzione (Docker)
 
 Il progetto è configurato per essere avviato immediatamente tramite Docker. Le immagini dei microservizi sono pre-buildate e ospitate su **Docker Hub**, garantendo che l'applicazione sia testabile senza la necessità di installare localmente Java, Maven o Angular.
@@ -84,3 +105,23 @@ Una volta avviati i container, l'interfaccia frontend sarà raggiungibile all'in
 | :--- | :--- | :--- |
 | **Amministratore** | `userAdmin` | `pass1234` |
 | **Utente standard** | `userRead` | `pass1234` |
+
+---
+
+## Deploy su VPS
+
+Il deploy in produzione avviene tramite:
+
+1. Pull delle immagini Docker versionate.
+```
+docker compose pull
+```
+2. Avvio dei container con variabili ambiente di produzione.
+```
+docker compose --env-file .env --env-file .env.production up -d
+```
+> Il secondo file .env.production sovrascrive le variabili condivise in .env,
+consentendo la configurazione di IP, profili Spring e parametri specifici per l'ambiente di produzione.
+3. Reverse proxy Nginx configurato per esporre il frontend e instradare le richieste ai microservizi.
+
+Non è necessario ricompilare il codice in produzione.
